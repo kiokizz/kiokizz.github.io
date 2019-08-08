@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Greedy Dice</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+        <div id="page">
+
+                <header>
+                        <div style="text-align: center;"> <img class="headerImage" alt="Greedy DiCe" style="width:100%;"
+                                        src="./resources/greedydice1400x197.png"></img>
+                                <h1>Greedy Dice Alpha</h1>
+
+                        </div>
+                        <div class="hero">
+                        </div>
+
+                </header>
+
+                <section style="text-align: center; " class="dice">
+                        <button style="width: 35%" id="dice-button">
+                                <img src=".\resources\dice4.png" alt="Dice" style="width: 65%; padding: 5%">
+                                <br>Click to Roll!
+                        </button>
+                </section>
+
+                <section class="results">
+                        <aside >
+                                <div style="text-align: center; padding: 2%;" id="end-turn-button">
+                                        <button style="width: 40%; padding: 5%" id="end-turn-button">
+                                                End Turn
+                                        </button>
+                                </div>
+                        </aside>
+
+                        <aside>
+                                <div style="text-align: center; padding: 2%">
+
+                                        <div id="current-score" class="score">Current Score:</div>
+                                        <div id="total-score" class="score">Total Score:</div>
+                                </div>
+                        </aside>
+                </section>
+
+                <section class="rolls">
+                        <p id="dice-rolls-label">Turn 'X' Rolls: </p>
+                        <div class="rolled-dice" style="text-align: center;">
+                                <img id="roll0" class="rolls-dice" src=".\resources\dice6.png" alt="roll"
+                                        style="width:8%" ;>
+                                <img id="roll1" class="rolls-dice" src=".\resources\dice4.png" alt="roll"
+                                        style="width:8%;">
+                                <img id="roll2" class="rolls-dice" src=".\resources\dice5.png" alt="roll"
+                                        style="width:8%;">
+                                <img id="roll3" class="rolls-dice" src=".\resources\dice6.png" alt="roll"
+                                        style="width:8%;">
+                                <img id="roll4" class="rolls-dice" src=".\resources\dice4.png" alt="roll"
+                                        style="width:8%;">
+                                <img id="roll5" class="rolls-dice" src=".\resources\dice3.png" alt="roll"
+                                        style="width:8%;">
+                                <img id="roll6" class="rolls-dice" src=".\resources\dice3.png" alt="roll"
+                                        style="width:8%;">
+                                <img id="roll7" class="rolls-dice" src=".\resources\dice5.png" alt="roll"
+                                        style="width:8%;">
+                                <img id="roll8" class="rolls-dice" src=".\resources\dice3.png" alt="roll"
+                                        style="width:8%;">
+                                <img id="roll9" class="rolls-dice" src=".\resources\dice1.png" alt="roll"
+                                        style="width:8%;">
+                        </div>
+                </section>
+
+                <section class="function">
+                        <div style="text-align: center; padding: 2%">
+                                <button style="width: 45%; padding: 5%; float: middle">Start</button>
+                                <button style="width: 45%; padding: 5%; float: middle">Game Rules</button>
+                        </div>
+                </section>
+
+                <nav></nav>
+
+
+                <footer style="text-align: center;">
+                        <p style="clear: both;">&#169; Greedy Pigs...</p>
+                </footer>
+        </div>
+        <script>
+                console.log("Game Loaded");
+        </script>
+</body>
+
+</html>
