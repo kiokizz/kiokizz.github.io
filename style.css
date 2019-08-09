@@ -44,11 +44,134 @@ headerImage {
     margin-left: auto;
     margin-right: auto;
     width: 80%
-  }
+}
 
-  @media only screen 
-and (orientation : landscape) { 
-    .headpic {
-        width:50%
+
+@media only screen and (min-device-height : 200px) and (max-device-height : 500px) {
+    body {
+        color: rgb(156, 45, 45);
+    }
+
+    .headerImage {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50% !important
+    }
+
+    h1 {
+        margin: 0 0 1em 0;
+        font-size: 1.1em !important;
+        font-weight: 700;
+    }
+
+    .dice {
+        width: 30%  !important;
+        clear: both !important;
+        display: inline-block !important;
+    }
+
+    .results {
+        width: 40%  !important;
+        clear: both !important;
+        display: inline-block !important;
+    }
+
+    #dice-button>img {
+        width: 90% !important;
+        padding: 5%
+    }
+
+    .function>button {
+        text-align: center;
+        padding: 2%;
+        width: 20% !important;
+    }
+
+    #page>footer {
+        text-align: center;
+    }
+
+    #headPic {
+        text-align: center;
+    }
+
+    #dice-button {
+        width: 70% !important
+    }
+
+    #end-turn-button {
+        text-align: center;
+        padding: 2%;
+        float: left;
+        width: 48%
+    }
+
+    #dice-rolls-label {
+        text-align: center;
+    }
+
+    #roll0 {
+        width: 4% !important
+    }
+
+    #roll1 {
+        width: 4% !important
+    }
+
+    #roll2 {
+        width: 4% !important
+    }
+
+    #roll3 {
+        width: 4% !important
+    }
+
+    #roll4 {
+        width: 4% !important
+    }
+
+    #roll5 {
+        width: 4% !important
+    }
+
+    #roll6 {
+        width: 4% !important
+    }
+
+    #roll7 {
+        width: 4% !important
+    }
+
+    #roll8 {
+        width: 4% !important
+    }
+
+    #roll9 {
+        width: 4% !important
+    }
+
+    .headerImage {
+        width: 100%;
+    }
+
+    .dice {
+        text-align: center;
+    }
+
+
+    .rolls {
+        display: block;
+        padding: 2%;
+        float: left;
+        width: 95%
+    }
+
+    .rolled-dice {
+        text-align: center;
+    }
+
+    .function {
+        clear: both;
     }
 }
