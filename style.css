@@ -82,10 +82,9 @@ headerImage {
         padding: 5%
     }
 
-    .function>button {
-        text-align: center;
-        padding: 2%;
-        width: 20% !important;
+
+    .function{
+        display: inline-block !important;
     }
 
     #page>footer {
