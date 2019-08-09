@@ -45,3 +45,10 @@ headerImage {
     margin-right: auto;
     width: 80%
   }
+
+  @media only screen 
+and (orientation : landscape) { 
+    .headpic {
+        width:50%
+    }
+}
