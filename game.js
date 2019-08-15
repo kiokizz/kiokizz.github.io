@@ -6,21 +6,23 @@ let rolledOut = false;
 var rounds;
 let score = [];
 let total = 0;
+
 cC("startButton", "lightgreen");
 
 document.getElementById("startButton").onclick = function () {
-    if (!gameOngoing || gameFinished) {
+    if (!gameOngoing || (!gameOngoing && gameFinished)) {
         resetDiceImages();
         gameOngoing = true;
         gameFinished = false;
         console.log("Game starting");
         rounds = newGame();
         rounds[0] = 1; //Round counter
+        total = 0;
         console.log(rounds);
         cC("dice-button", 'lightgreen');
         cC("startButton", 'lightgrey');
-        cText("dice-rolls-label", "Round " + rounds[0] + " Rolls:");
-        cText("current-score", "Current Score: " + 0);
+        cText("dice-rolls-label", "Round " + rounds[0] + "/10 Rolls:");
+        cText("current-score", "Round Score: " + 0);
         cText("total-score", "Total Score: " + 0);
     } else {
         console.log("Restart function not yet implemented.")
@@ -35,8 +37,6 @@ function newGame() {
         score.push([0]);
     }
     return arr;
-
-    //Reset dice rolls images function.
 }
 
 //Dice button Clicked
@@ -69,7 +69,7 @@ document.getElementById("dice-button").onclick = function () {
             cC("dice-button", 'lightgrey');
         }
 
-        //Update Current Score:
+        //Update Round Score:
         let current = 0;
         if (!rolledOut) {
             for (let i = 0; i < rounds[rounds[0]].length; i++) {
@@ -78,11 +78,11 @@ document.getElementById("dice-button").onclick = function () {
             }
         }
         score[round - 1] = current;
-        cText("current-score", "Current Score: " + current);
+        cText("current-score", "Round Score: " + current);
 
         //Update Total Score:
         total = 0;
-        for (let i = 1; i < score.length; i++) {
+        for (let i = 0; i < score.length; i++) {
             total += parseInt(score[i]);
         }
         console.log("Scores: " + score);
@@ -111,7 +111,7 @@ document.getElementById("end-turn-button").onclick = function () {
         if (rounds[0] < 10) {
             cC("dice-button", 'lightgreen');
             rounds[0]++;
-            cText("dice-rolls-label", "Round " + rounds[0] + " Rolls:");
+            cText("dice-rolls-label", "Round " + rounds[0] + "/10 Rolls:");
         } else {
             previousHigh = localStorage.greedyDiceHighScore;
             highScore(total)
@@ -129,27 +129,16 @@ document.getElementById("end-turn-button").onclick = function () {
     }
 }
 
-
-//TODO
-//Customise UI - background and text color
-//Use external library / script? Requirements - could use ajax to change all element colours? https://www.w3schools.com/jquery/tryit.asp?filename=tryjquery_css_name_value
-
 function highScore(score) {
     let highScore = localStorage.greedyDiceHighScore;
-    if (highScore == undefined) {
+    if (!localStorage.greedyDiceHighScore) {
         localStorage.greedyDiceHighScore = 0;
     }
     if (highScore < score) {
         localStorage.greedyDiceHighScore = score;
     }
 }
-
-function gameRules() {
-    alert("Rules:\nThe player has 10 rounds." +
-        "\nEach round the player may roll the dice 10 times, each roll added onto his total." +
-        "\nThe player may choose to end the round at any point, risking rolling the deadly \"1\"" +
-        "\nUpon rolling a \"1\" the round will end, the rounds score set to 0");
-}
+localStorage.greedyDiceHighScore = 0;
 
 function cC(element, color) {
     document.getElementById(element).style.backgroundColor = color;
