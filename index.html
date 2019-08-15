@@ -16,8 +16,8 @@
         <div id="page">
 
                 <header>
-                        <div style="text-align: center;"> <img class="headerImage" alt="Greedy DiCe" style="width:100%;"
-                                        src="https://github.com/kiokizz/kiokizz.github.io/blob/master/resources/greedydice1400x197.png?raw=true"></img>
+                        <div style="text-align: center;"> <img class="headerImage" alt="Greedy Dice" style="width:100%;"
+                                        src="./resources/greedydice1400x197.png"></img>
                                 <h1>Greedy Dice Alpha</h1>
 
                         </div>
@@ -28,14 +28,14 @@
 
                 <section style="text-align: center; " class="dice">
                         <button style="width: 35%" id="dice-button">
-                                <img src="https://github.com/kiokizz/kiokizz.github.io/blob/master/resources/dice5.png?raw=true"width: 65%; padding: 5%">
+                                <img src=".\resources\dice4.png" alt="Dice" style="width: 65%; padding: 5%">
                                 <br>Click to Roll!
                         </button>
                 </section>
 
                 <section class="results">
-                        <aside >
-                                <div style="text-align: center; padding: 2%;" id="end-turn-button">
+                        <aside>
+                                <div style="text-align: center; padding: 2%; float: left; width: 48%">
                                         <button style="width: 40%; padding: 5%" id="end-turn-button">
                                                 End Turn
                                         </button>
@@ -43,13 +43,14 @@
                         </aside>
 
                         <aside>
-                                <div style="text-align: center; padding: 2%">
+                                <div style="text-align: center; padding: 2%;">
 
-                                        <div id="current-score" class="score">Current Score:</div>
-                                        <div id="total-score" class="score">Total Score:</div>
+                                        <div id="current-score" class="score">Current Score: 0</div>
+                                        <div id="total-score" class="score">Total Score: 0</div>
                                 </div>
                         </aside>
                 </section>
+
 
                 <section class="rolls">
                         <p id="dice-rolls-label">Turn 'X' Rolls: </p>
@@ -77,10 +78,10 @@
                         </div>
                 </section>
 
-                <section class="function">
+                <section style="clear: both;" class="function">
                         <div style="text-align: center; padding: 2%">
-                                <button style="width: 45%; padding: 5%; float: middle">Start</button>
-                                <button style="width: 45%; padding: 5%; float: middle">Game Rules</button>
+                                <button id="startButton" style="width: 45%; padding: 5%; float: middle">Start</button>
+                                <button onclick="gameRules()" style="width: 45%; padding: 5%; float: middle">Game Rules</button>
                         </div>
                 </section>
 
@@ -88,11 +89,11 @@
 
 
                 <footer style="text-align: center;">
-                        <p style="clear: both;">&#169; Greedy... Pigs...</p>
+                        <p style="clear: both;">&#169; Greedy Pigs...</p>
                 </footer>
         </div>
         <script>
-                console.log("Game Loaded");
+                console.log("HTML Loaded");
         </script>
 </body>
 
