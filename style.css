@@ -204,10 +204,10 @@ headerImage {
   
   #text{
     position: absolute;
-    top: 50%;
-    left: 50%;
-    font-size: 1.2em;
+    top: 25%;
+    left: 25%;
+    font-size: 0.8em;
     color: white;
-    transform: translate(-50%,-50%);
-    -ms-transform: translate(-50%,-50%);
+    transform: translate(-25%,-25%);
+    -ms-transform: translate(-25%,-25%);
   }
