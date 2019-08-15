@@ -7,6 +7,7 @@
         <title>Greedy Dice</title>
         <link rel="stylesheet" type="text/css" href="style.css">
         <script defer src="game.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -45,15 +46,15 @@
                         <aside>
                                 <div style="text-align: center; padding: 2%;">
 
-                                        <div id="current-score" class="score">Current Score: 0</div>
-                                        <div id="total-score" class="score">Total Score: 0</div>
+                                        <p id="current-score" class="score">Round Score: 0</p>
+                                        <p id="total-score" class="score">Total Score: 0</p>
                                 </div>
                         </aside>
                 </section>
 
 
                 <section style="display: block; padding: 2%; float: left; width: 95%" class="rolls">
-                        <p style="text-align: center;" id="dice-rolls-label">Round 'X' Rolls: </p>
+                        <p style="text-align: center;" id="dice-rolls-label">Round 'X'/10 Rolls: </p>
                         <div class="rolled-dice" style="text-align: center;">
                                 <img id="roll0" class="rolls-dice" src=".\resources\dice6.png" alt="roll"
                                         style="width:8%" ;>
@@ -81,19 +82,93 @@
                 <section style="clear: both;" class="function">
                         <div style="text-align: center; padding: 2%">
                                 <button id="startButton" style="width: 45%; padding: 5%; float: middle">Start</button>
-                                <button onclick="gameRules()" style="width: 45%; padding: 5%; float: middle">Game Rules</button>
+                                <button onclick="on()" style="width: 45%; padding: 5%; float: middle">Game
+                                        Rules</button>
                         </div>
                 </section>
 
-                <nav></nav>
+
+                <div id="overlay">
+                        <div id="text">
+                                <div>
+                                        <h4>Rules:</h1>
+                                                <ul>&#8226; The player has 10 Turns.</ul>
+                                                <ul>&#8226; Each turn the player may roll the dice 10 times, each roll
+                                                        added
+                                                        onto his Round Score.</ul>
+                                                <ul>&#8226; The player may choose to end the round at any point, risking
+                                                        rolling
+                                                        the deadly 1</ul>
+                                                <ul>&#8226; Upon rolling a 1 the round will end, the rounds score set to
+                                                        0.</ul>
+                                </div>
+                                <div>
+                                        <h4>Settings</h4>
+                                        <ul>Background Colour:
+                                                <button style="background-color: blue; color: white"
+                                                        onclick="toggleColorBlue()">Blue</button>
+                                                <button style="background-color: red; color: white"
+                                                        onclick="toggleColorRed()">Red</button>
+                                                <button style="background-color: green; color: white"
+                                                        onclick="toggleColorGreen()">Green</button>
+                                                <button style="background-color: yellow;"
+                                                        onclick="toggleColorYellow()">Yellow</button>
+                                        </ul>
+                                        <ul>Text Color:
+                                                        <button style="background-color: purple;"
+                                                        onclick="toggleTextPurple()">Purple</button>
+                                                        <button style="background-color: brown;"
+                                                        onclick="toggleTextBrown()">Brown</button>
+                                        </ul>
+                                </div>
+                                <button onclick="off()">Close</button>
 
 
-                <footer style="text-align: center;">
-                        <p style="clear: both;">&#169; Greedy Pigs...</p>
-                </footer>
+                        </div>
+
+                        <footer style="text-align: center;">
+                                <p style="clear: both;">&#169; Greedy Pigs...</p>
+                        </footer>
+                </div>
         </div>
+
+
         <script>
                 console.log("HTML Loaded");
+
+                function on() {
+                        document.getElementById("overlay").style.display = "block";
+                }
+
+                function off() {
+                        document.getElementById("overlay").style.display = "none";
+                }
+
+
+                //BackGroundColor Toggle
+                function toggleColorBlue() {
+                        document.body.style.background = "blue";
+                }
+
+                function toggleColorRed() {
+                        document.body.style.background = "red";
+                }
+
+                function toggleColorGreen() {
+                        document.body.style.background = "green";
+                }
+
+                function toggleColorYellow() {
+                        document.body.style.background = "yellow";
+                }
+
+                function toggleTextPurple() {
+                        $("p").css("color","purple")
+                }
+
+                function toggleTextBrown() {
+                        $("p").css("color","brown")
+                }
         </script>
 </body>
 
