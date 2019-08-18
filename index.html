@@ -17,7 +17,7 @@
         <div id="page">
 
                 <header>
-                        <div style="text-align: center;"> <img class="headerImage" alt="Greedy Dice" style="width:100%;"
+                        <div id="div_033f_0"> <img class="headerImage" alt="Greedy Dice" id="img_033f_0"
                                         src="./resources/greedydice1400x197.png"></img>
                                 <h1>Greedy Dice Alpha</h1>
 
@@ -27,24 +27,24 @@
 
                 </header>
 
-                <section style="text-align: center; " class="dice">
-                        <button style="width: 35%" id="dice-button">
-                                <img src=".\resources\dice4.png" alt="Dice" style="width: 65%; padding: 5%">
+                <section id="section_033f_0" class="dice">
+                        <button  id="dice-button">
+                                <img src=".\resources\dice4.png" alt="Dice" id="img_033f_1">
                                 <br>Click to Roll!
                         </button>
                 </section>
 
                 <section class="results">
                         <aside>
-                                <div style="text-align: center; padding: 2%; float: left; width: 48%">
-                                        <button style="width: 40%; padding: 5%" id="end-turn-button">
+                                <div id="div_033f_1">
+                                        <button  id="end-turn-button">
                                                 End Turn
                                         </button>
                                 </div>
                         </aside>
 
                         <aside>
-                                <div style="text-align: center; padding: 2%;">
+                                <div id="div_033f_2">
 
                                         <p id="current-score" class="score">Round Score: 0</p>
                                         <p id="total-score" class="score">Total Score: 0</p>
@@ -53,36 +53,36 @@
                 </section>
 
 
-                <section style="display: block; padding: 2%; float: left; width: 95%" class="rolls">
-                        <p style="text-align: center;" id="dice-rolls-label">Round 'X'/10 Rolls: </p>
-                        <div class="rolled-dice" style="text-align: center;">
+                <section id="section_033f_1" class="rolls">
+                        <p  id="dice-rolls-label">Round 'X'/10 Rolls: </p>
+                        <div class="rolled-dice" id="div_033f_3">
                                 <img id="roll0" class="rolls-dice" src=".\resources\dice6.png" alt="roll"
-                                        style="width:8%" ;>
+                                         ;>
                                 <img id="roll1" class="rolls-dice" src=".\resources\dice4.png" alt="roll"
-                                        style="width:8%;">
+                                        >
                                 <img id="roll2" class="rolls-dice" src=".\resources\dice5.png" alt="roll"
-                                        style="width:8%;">
+                                        >
                                 <img id="roll3" class="rolls-dice" src=".\resources\dice6.png" alt="roll"
-                                        style="width:8%;">
+                                        >
                                 <img id="roll4" class="rolls-dice" src=".\resources\dice4.png" alt="roll"
-                                        style="width:8%;">
+                                        >
                                 <img id="roll5" class="rolls-dice" src=".\resources\dice3.png" alt="roll"
-                                        style="width:8%;">
+                                        >
                                 <img id="roll6" class="rolls-dice" src=".\resources\dice3.png" alt="roll"
-                                        style="width:8%;">
+                                        >
                                 <img id="roll7" class="rolls-dice" src=".\resources\dice5.png" alt="roll"
-                                        style="width:8%;">
+                                        >
                                 <img id="roll8" class="rolls-dice" src=".\resources\dice3.png" alt="roll"
-                                        style="width:8%;">
+                                        >
                                 <img id="roll9" class="rolls-dice" src=".\resources\dice1.png" alt="roll"
-                                        style="width:8%;">
+                                        >
                         </div>
                 </section>
 
-                <section style="clear: both;" class="function">
-                        <div style="text-align: center; padding: 2%">
-                                <button id="startButton" style="width: 45%; padding: 5%; float: middle">Start</button>
-                                <button onclick="on()" style="width: 45%; padding: 5%; float: middle">Game
+                <section id="section_033f_2" class="function">
+                        <div id="div_033f_4">
+                                <button id="startButton" >Start</button>
+                                <button onclick="on()" id="button_033f_0">Game
                                         Rules</button>
                         </div>
                 </section>
@@ -92,32 +92,32 @@
                         <div id="text">
                                 <div>
                                         <h4>Rules:</h1>
-                                                <ul>&#8226; The player has 10 Turns.</ul>
-                                                <ul>&#8226; Each turn the player may roll the dice 10 times, each roll
+                                                <p>&#8226; The player has 10 Turns.</p>
+                                                <p>&#8226; Each turn the player may roll the dice 10 times, each roll
                                                         added
-                                                        onto his Round Score.</ul>
-                                                <ul>&#8226; The player may choose to end the round at any point, risking
+                                                        onto his Round Score.</p>
+                                                <p>&#8226; The player may choose to end the round at any point, risking
                                                         rolling
-                                                        the deadly 1</ul>
-                                                <ul>&#8226; Upon rolling a 1 the round will end, the rounds score set to
-                                                        0.</ul>
+                                                        the deadly 1</p>
+                                                <p>&#8226; Upon rolling a 1 the round will end, the rounds score set to
+                                                        0.</p>
                                 </div>
                                 <div>
                                         <h4>Settings</h4>
                                         <ul>Background Colour:
-                                                <button style="background-color: blue; color: white"
+                                                <button id="button_033f_1"
                                                         onclick="toggleColorBlue()">Blue</button>
-                                                <button style="background-color: red; color: white"
+                                                <button id="button_033f_2"
                                                         onclick="toggleColorRed()">Red</button>
-                                                <button style="background-color: green; color: white"
+                                                <button id="button_033f_3"
                                                         onclick="toggleColorGreen()">Green</button>
-                                                <button style="background-color: yellow;"
+                                                <button id="button_033f_4"
                                                         onclick="toggleColorYellow()">Yellow</button>
                                         </ul>
                                         <ul>Text Color:
-                                                        <button style="background-color: purple;"
+                                                        <button id="button_033f_5"
                                                         onclick="toggleTextPurple()">Purple</button>
-                                                        <button style="background-color: brown;"
+                                                        <button id="button_033f_6"
                                                         onclick="toggleTextBrown()">Brown</button>
                                         </ul>
                                 </div>
@@ -126,15 +126,16 @@
 
                         </div>
 
-                        <footer style="text-align: center;">
-                                <p style="clear: both;">&#169; Greedy Pigs...</p>
+                        <footer id="footer_033f_0">
+                                <p id="p_033f_0">&#169; Greedy Pigs...</p>
                         </footer>
                 </div>
         </div>
 
 
+        //Scripts related to non gameplay
         <script>
-                console.log("HTML Loaded");
+                console.log("HTML & Related Scripts Loaded");
 
                 function on() {
                         document.getElementById("overlay").style.display = "block";
