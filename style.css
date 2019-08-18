@@ -1,5 +1,155 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i&display=swap');
 
+#div_033f_0 {
+    text-align: center;
+}
+
+#img_033f_0 {
+    width: 100%;
+}
+
+#section_033f_0 {
+    text-align: center;
+}
+
+#dice-button {
+    width: 35%
+}
+
+#img_033f_1 {
+    width: 65%;
+    padding: 5%
+}
+
+#div_033f_1 {
+    text-align: center;
+    padding: 2%;
+    float: left;
+    width: 48%
+}
+
+#end-turn-button {
+    width: 40%;
+    padding: 5%
+}
+
+#div_033f_2 {
+    text-align: center;
+    padding: 2%;
+}
+
+#section_033f_1 {
+    display: block;
+    padding: 2%;
+    float: left;
+    width: 95%
+}
+
+#dice-rolls-label {
+    text-align: center;
+}
+
+#div_033f_3 {
+    text-align: center;
+}
+
+#roll0 {
+    width: 8%
+}
+
+#roll1 {
+    width: 8%;
+}
+
+#roll2 {
+    width: 8%;
+}
+
+#roll3 {
+    width: 8%;
+}
+
+#roll4 {
+    width: 8%;
+}
+
+#roll5 {
+    width: 8%;
+}
+
+#roll6 {
+    width: 8%;
+}
+
+#roll7 {
+    width: 8%;
+}
+
+#roll8 {
+    width: 8%;
+}
+
+#roll9 {
+    width: 8%;
+}
+
+#section_033f_2 {
+    clear: both;
+}
+
+#div_033f_4 {
+    text-align: center;
+    padding: 2%
+}
+
+#startButton {
+    width: 45%;
+    padding: 5%;
+    float: middle
+}
+
+#button_033f_0 {
+    width: 45%;
+    padding: 5%;
+    float: middle
+}
+
+#button_033f_1 {
+    background-color: blue;
+    color: white
+}
+
+#button_033f_2 {
+    background-color: red;
+    color: white
+}
+
+#button_033f_3 {
+    background-color: green;
+    color: white
+}
+
+#button_033f_4 {
+    background-color: yellow;
+}
+
+#button_033f_5 {
+    background-color: purple;
+}
+
+#button_033f_6 {
+    background-color: brown;
+}
+
+#footer_033f_0 {
+    text-align: center;
+}
+
+#p_033f_0 {
+    clear: both;
+}
+
+
 body {
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
@@ -10,7 +160,7 @@ body {
 }
 
 #page {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
@@ -48,67 +198,70 @@ headerImage {
 }
 
 
+
+
+/* Rules Overlay*/
+#overlay {
+    position: fixed;
+    display: none;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(18, 20, 39, 0.95);
+    z-index: 2;
+    cursor: pointer;
+}
+
+#text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    font-size: 1.2em;
+    color: white;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+}
+
+/* Adjusting for different screen sizes */
 @media only screen and (min-device-height : 200px) and (max-device-height : 400px) {
     body {
         color: rgb(156, 45, 45);
     }
 
     .headerImage {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
         width: 45% !important
     }
 
     h1 {
-        margin: 0 0 1em 0;
         font-size: 1.1em !important;
-        font-weight: 700;
     }
 
     .dice {
-        width: 30%  !important;
+        width: 30% !important;
         clear: both !important;
         display: inline-block !important;
     }
 
     .results {
-        width: 40%  !important;
+        width: 40% !important;
         clear: both !important;
         display: inline-block !important;
     }
 
     #dice-button>img {
         width: 90% !important;
-        padding: 5%
     }
 
 
-    .function{
+    .function {
         display: inline-block !important;
-    }
-
-    #page>footer {
-        text-align: center;
-    }
-
-    #headPic {
-        text-align: center;
     }
 
     #dice-button {
         width: 70% !important
-    }
-
-    #end-turn-button {
-        text-align: center;
-        padding: 2%;
-        float: left;
-        width: 48%
-    }
-
-    #dice-rolls-label {
-        text-align: center;
     }
 
     #roll0 {
@@ -151,63 +304,27 @@ headerImage {
         width: 4% !important
     }
 
-    .headerImage {
-        width: 100%;
-    }
-
-    .dice {
-        text-align: center;
-    }
-
-
-    .rolls {
-        display: block;
-        padding: 2%;
-        float: left;
-        width: 95%
-    }
-
-    .rolled-dice {
-        text-align: center;
-    }
-
-    .function {
-        clear: both;
-    }
-
-    #text{
-        position: absolute;
-        top: 50%;
-        left: 50%;
+    #text {
         font-size: 0.8em !important;
-        color: white;
-        transform: translate(-50%,-50%);
-        -ms-transform: translate(-50%,-50%);
-      }
+    }
 }
 
+@media only screen and (min-device-height : 400px) and (max-device-height : 500px) {
+    #page {
+        max-width: 650px !important;
 
-/* Rules Overlay*/
-#overlay {
-    position: fixed;
-    display: none;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(18, 20, 39, 0.95);
-    z-index: 2;
-    cursor: pointer;
-  }
-  
-  #text{
-    position: absolute;
-    top: 25%;
-    left: 25%;
-    font-size: 0.8em;
-    color: white;
-    transform: translate(-25%,-25%);
-    -ms-transform: translate(-25%,-25%);
-  }
+    }
+}
+
+@media only screen and (min-device-height : 500px) and (max-device-height : 600px) {
+    #page {
+        max-width: 750px !important;
+
+    }
+}
+
+@media only screen and (min-device-height : 600px) and (max-device-height : 700px) {
+    #page {
+        max-width: 850px !important;
+    }
+}
