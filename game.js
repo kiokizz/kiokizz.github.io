@@ -135,15 +135,16 @@ document.getElementById("end-turn-button").onclick = function () {
 
 //Access localStorage to set high score.
 function highScore(score) {
-    let highScore = localStorage.greedyDiceHighScore;
-    if (!localStorage.greedyDiceHighScore) {
+    let highScore;
+    if (!localStorage.greedyDiceHighScore || localStorage.greedyDiceHighScore == undefined) {
         localStorage.greedyDiceHighScore = 0;
+    } else {
+        highScore = localStorage.greedyDiceHighScore;
     }
     if (highScore < score) {
         localStorage.greedyDiceHighScore = score;
     }
 }
-localStorage.greedyDiceHighScore = 0;
 
 //Change Colour of Element
 function cC(element, color) {
