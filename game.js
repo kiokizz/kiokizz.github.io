@@ -1,5 +1,6 @@
 console.log("Javascript loaded");
 
+//Setup global variable
 let gameOngoing = false;
 let gameFinished = false;
 let rolledOut = false;
@@ -41,6 +42,7 @@ function newGame() {
 
 //Dice button Clicked
 document.getElementById("dice-button").onclick = function () {
+    //Check Game Ongoing --> Roll Dice --> Adjust Display Elements as required
     if (gameOngoing && !rolledOut) {
         let round = rounds[0];
         if (!gameFinished && round <= 10 && rounds[round].length < 10) {
@@ -50,11 +52,12 @@ document.getElementById("dice-button").onclick = function () {
             let id = 'roll' + (rounds[round].length - 1);
             let image = ".\\resources\\dice" + roll + ".png"
             document.getElementById(id).src = image;
-        } else if (rounds[round].length === 10) {
-            console.log("Round finished. Please start a new round.")
-            cC("end-turn-button", 'yellow');
         } else {
             console.log("Unknown error")
+        }
+        if (rounds[round].length === 10) {
+            console.log("Round finished. Please start a new round.")
+            cC("end-turn-button", 'yellow');
         }
         console.log(rounds);
         //If "1" has been rolled:
@@ -93,7 +96,7 @@ document.getElementById("dice-button").onclick = function () {
     }
 };
 
-//Clear dice image function - to be used in End Turn and Start functions
+//Clear dice image function - used in both End Turn and Start functions
 function resetDiceImages() {
     for (let i = 0; i < 10; i++) {
         let id = 'roll' + i;
@@ -104,6 +107,7 @@ function resetDiceImages() {
 
 //End Turn Button
 document.getElementById("end-turn-button").onclick = function () {
+    //Next round if !gameFinished --> Display results if game finished
     if (!gameFinished && gameOngoing) {
         cC("end-turn-button", "lightgrey");
         rolledOut = false;
@@ -129,6 +133,7 @@ document.getElementById("end-turn-button").onclick = function () {
     }
 }
 
+//Access localStorage to set high score.
 function highScore(score) {
     let highScore = localStorage.greedyDiceHighScore;
     if (!localStorage.greedyDiceHighScore) {
@@ -140,10 +145,12 @@ function highScore(score) {
 }
 localStorage.greedyDiceHighScore = 0;
 
+//Change Colour of Element
 function cC(element, color) {
     document.getElementById(element).style.backgroundColor = color;
 }
 
+//Change Text of Element
 function cText(element, content) {
     document.getElementById(element).innerHTML = content;
 }
