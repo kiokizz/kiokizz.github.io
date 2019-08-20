@@ -59,7 +59,7 @@ document.getElementById("dice-button").onclick = function () {
             console.log("Round finished. Please start a new round.")
             cC("end-turn-button", 'yellow');
         }
-        console.log(rounds);
+        //console.log(rounds);
         //If "1" has been rolled:
         //Disable click to roll - highlight end turn button
         if (rounds[round].includes(1)) {
@@ -88,7 +88,7 @@ document.getElementById("dice-button").onclick = function () {
         for (let i = 0; i < score.length; i++) {
             total += parseInt(score[i]);
         }
-        console.log("Scores: " + score);
+        //console.log("Scores: " + score);
         cText("total-score", "Total Score: " + total);
 
     } else if (rolledOut) {
@@ -117,11 +117,13 @@ document.getElementById("end-turn-button").onclick = function () {
             rounds[0]++;
             cText("dice-rolls-label", "Round " + rounds[0] + "/10 Rolls:");
         } else {
-            previousHigh = localStorage.greedyDiceHighScore;
-            highScore(total)
+            previousHigh = highScore;            
+            //Edit HighScore
+
+
             if (total > previousHigh) {
-                alert("Congratulations, you have set a new High Score of " + total + "!");
-                localStorage.greedyDiceHighScore = total;
+                editSettings("highScore", total);
+                alert("Congratulations, you have set a new High Score of " + total + "! The previous High Score was " + previousHigh);
             } else {
                 alert("Game finished! You scored: " + total + ". Current High Score is " + previousHigh + ".");
             }
@@ -130,19 +132,6 @@ document.getElementById("end-turn-button").onclick = function () {
             cC("startButton", "lightgreen");
             cC("dice-button", 'lightgrey');
         }
-    }
-}
-
-//Access localStorage to set high score.
-function highScore(score) {
-    let highScore;
-    if (!localStorage.greedyDiceHighScore || localStorage.greedyDiceHighScore == undefined) {
-        localStorage.greedyDiceHighScore = 0;
-    } else {
-        highScore = localStorage.greedyDiceHighScore;
-    }
-    if (highScore < score) {
-        localStorage.greedyDiceHighScore = score;
     }
 }
 
