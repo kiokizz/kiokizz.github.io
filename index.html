@@ -137,6 +137,17 @@
                 var parser, xmlDoc, highScore;
                 parser = new DOMParser();
                 try {
+                        loadSettings();
+                } catch (err) {
+                        console.log(err);
+                        localStorage.greedyDiceSettings = defaultSettings;
+                        settings = localStorage.greedyDiceSettings;
+                        console.log("Settings Reset");
+
+                        loadSettings();
+                }
+
+                function loadSettings() {
                         xmlDoc = parser.parseFromString(settings, "text/xml");
 
                         //Use BackGround Color Preference
@@ -148,9 +159,9 @@
                                         toggleColorBlue();
                                 } else if (backgroundColorSetting === "red") {
                                         toggleColorRed();
-                                }else if (backgroundColorSetting === "green") {
+                                } else if (backgroundColorSetting === "green") {
                                         toggleColorGreen();
-                                }else if (backgroundColorSetting === "yellow") {
+                                } else if (backgroundColorSetting === "yellow") {
                                         toggleColorYellow();
                                 }
                         }
@@ -170,10 +181,6 @@
                         highScore = xmlDoc.getElementsByTagName("highScore")[0].childNodes[0]
                                 .nodeValue;
                         console.log("High Score: " + highScore);
-                } catch (err) {
-                        console.log(err);
-                        localStorage.greedyDiceSettings = defaultSettings;
-                        console.log("Settings Reset");
                 }
 
                 //Toggle of Game Rules overlay
@@ -222,6 +229,7 @@
 
                 //Edit Settings
                 function editSettings(e, t) {
+                        t = t.toString();
                         xmlDoc.getElementsByTagName(e)[0].childNodes[0].nodeValue = t;
 
                         //Convert XML to Text
