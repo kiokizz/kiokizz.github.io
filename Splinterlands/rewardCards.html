@@ -1,0 +1,111 @@
+<!DOCtype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Splinterlands Reward Cards Stats</title>
+    <script src="https://cdn.jsdelivr.net/npm/steem/dist/steem.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+
+    <p id="body1"></p>
+    <p id="displayStats">Data Loading...</p>
+    <p id="body2"></p>
+
+    <style>
+        body {
+            width: 100%;
+            max-width: 750px;
+        }
+        table {
+            width: 100%;
+        }
+        table,
+        td,
+        th {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
+
+
+    <script>
+
+        var body1 = "Data regarding the remaining reward edition cards for Splinterlands."
+
+        document.getElementById("body1").innerHTML = body1;
+
+        var body2 = "<a href=\"https://github.com/kiokizz\">GitHub</a> | Check out my Steem blogs <a href=\"https://www.steemit.com/@kiokizz\">@kiokizz</a> & <a href=\"https://www.steemit.com/@kiobot\">@kiobot</a>"
+        
+            document.getElementById("body2").innerHTML = body2;
+
+        getRewardCards();
+
+        function getRewardCards() {
+
+            let url = "https://steemmonsters.com/cards/get_details";
+
+            $.get(url, url, function (data) {
+                console.log(data);
+
+                let rewardCards = [];
+                if (data) {
+                    for (let i = 0; i < data.length; i++) {
+                        const e = data[i];
+                        if (e.editions === "3") rewardCards.push(e);
+                    }
+                }
+                makeTable(rewardCards)
+            });
+        }
+
+        function makeTable(rewardCards) {
+            let cardCap = [0, 400000, 100000, 40000, 10000]
+            let xp = [0, 15, 75, 175, 750];
+            let gxp = [0, 200, 400, 800, 2000];
+            let rarities = {
+                1: "Common",
+                2: "Rare",
+                3: "Epic",
+                4: "Legendary"
+            }
+
+            let header = "<table><tr><th>Card</th><th>Rarity</th><th>Normal BCX Existing</th><th>Gold BCX Existing</th><th>BCX Burned</th><th>Total BCX</th><th>Percentage Printed</th></tr>";
+
+            let data = "";
+
+            for (let i = 0; i < rewardCards.length; i++) {
+                const e = rewardCards[i];
+                let card = e.name;
+                let rarity = rarities[e.rarity];
+                let bcxNormExist = e.distribution[0].total_xp / xp[e.rarity];
+                let bcxGoldExist = e.distribution[1].total_xp / gxp[e.rarity];
+                let bcxBurn = e.distribution[0].total_burned_xp / xp[e.rarity] + e.distribution[1].total_burned_xp /
+                    gxp[e.rarity];
+                let bcxTotal = e.total_printed;
+                let bcxPercent = parseFloat(e.total_printed / cardCap[e.rarity]).toFixed(2) + "%";
+
+                let rowData =
+                    "<tr><td>" + card + "</td><td>" + rarity +
+                    "</td><td>" + bcxNormExist + "</td><td>" + bcxGoldExist + "</td><td>" + bcxBurn + "</td><td>" +
+                    bcxTotal + "</td><td>" + bcxPercent + "</td></tr>";
+
+                data += rowData;
+            }
+            let footer = "</table>";
+            let table = header + data + footer;
+
+            createHTMLPage(table);
+        }
+
+        function createHTMLPage(table) {
+            document.getElementById("displayStats").innerHTML = table;
+        }
+    </script>
+
+</body>
+
+</html>
