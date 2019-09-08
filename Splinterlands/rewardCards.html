@@ -86,7 +86,7 @@
                 let bcxBurn = e.distribution[0].total_burned_xp / xp[e.rarity] + e.distribution[1].total_burned_xp /
                     gxp[e.rarity];
                 let bcxTotal = e.total_printed;
-                let bcxPercent = parseFloat(e.total_printed / cardCap[e.rarity]).toFixed(2) + "%";
+                let bcxPercent = parseFloat(e.total_printed / cardCap[e.rarity] * 100 ).toFixed(2) + "%";
 
                 let rowData =
                     "<tr><td>" + card + "</td><td>" + rarity +
