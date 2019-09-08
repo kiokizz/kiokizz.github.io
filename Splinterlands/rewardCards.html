@@ -81,10 +81,11 @@
                 const e = rewardCards[i];
                 let card = e.name;
                 let rarity = rarities[e.rarity];
-                let bcxNormExist = e.distribution[0].total_xp / xp[e.rarity];
-                let bcxGoldExist = e.distribution[1].total_xp / gxp[e.rarity];
-                let bcxBurn = e.distribution[0].total_burned_xp / xp[e.rarity] + e.distribution[1].total_burned_xp /
-                    gxp[e.rarity];
+                let bcxNormExist = parseInt(e.distribution[0].total_xp) / xp[e.rarity] + parseInt(e.distribution[0].num_cards);
+                let bcxGoldExist = parseInt(e.distribution[1].total_xp) / gxp[e.rarity] + parseInt(e.distribution[1].num_cards);
+                let nBCXBurn = parseInt(e.distribution[0].total_burned_xp) / xp[e.rarity] + parseInt(e.distribution[0].num_burned);
+                let gBCXBurn = parseInt(e.distribution[1].total_burned_xp) / gxp[e.rarity] + parseInt(e.distribution[1].num_burned);
+                let bcxBurn = nBCXBurn + gBCXBurn;
                 let bcxTotal = e.total_printed;
                 let bcxPercent = parseFloat(e.total_printed / cardCap[e.rarity] * 100 ).toFixed(2) + "%";
 
