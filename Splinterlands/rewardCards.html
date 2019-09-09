@@ -19,6 +19,7 @@
         body {
             width: 100%;
             max-width: 750px;
+            font-size: 12pt;
         }
         table {
             width: 100%;
@@ -78,19 +79,27 @@
             let data = "";
 
             for (let i = 0; i < rewardCards.length; i++) {
+                //Data
                 const e = rewardCards[i];
                 let card = e.name;
                 let rarity = rarities[e.rarity];
                 let bcxNormExist = parseInt(e.distribution[0].total_xp) / xp[e.rarity] + parseInt(e.distribution[0].num_cards);
-                let bcxGoldExist = parseInt(e.distribution[1].total_xp) / gxp[e.rarity] + parseInt(e.distribution[1].num_cards);
+                let bcxGoldExist = parseInt(e.distribution[1].total_xp) / gxp[e.rarity];
+                let bcxExist = bcxNormExist + bcxGoldExist;
                 let nBCXBurn = parseInt(e.distribution[0].total_burned_xp) / xp[e.rarity] + parseInt(e.distribution[0].num_burned);
-                let gBCXBurn = parseInt(e.distribution[1].total_burned_xp) / gxp[e.rarity] + parseInt(e.distribution[1].num_burned);
+                let gBCXBurn = parseInt(e.distribution[1].total_burned_xp) / gxp[e.rarity];
                 let bcxBurn = nBCXBurn + gBCXBurn;
                 let bcxTotal = e.total_printed;
+                let myBCXTotal = bcxExist + bcxBurn;
                 let bcxPercent = parseFloat(e.total_printed / cardCap[e.rarity] * 100 ).toFixed(2) + "%";
-
+                //Style
+                let cardCss;
+                if (e.color === "Black") cardCss = "style=\"background-color:" + e.color + ";color:rgb(201, 201, 201)" + "\"";
+                else if (e.color === "Blue") cardCss = "style=\"background-color:" + e.color + ";color:white" + "\"";
+                else cardCss = "style=\"background-color:" + e.color + "\"";
+                console.log(cardCss);
                 let rowData =
-                    "<tr><td>" + card + "</td><td>" + rarity +
+                    "<tr><td " + cardCss + ">" + card + "</td><td>" + rarity +
                     "</td><td>" + bcxNormExist + "</td><td>" + bcxGoldExist + "</td><td>" + bcxBurn + "</td><td>" +
                     bcxTotal + "</td><td>" + bcxPercent + "</td></tr>";
 
