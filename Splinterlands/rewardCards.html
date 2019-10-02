@@ -32,6 +32,17 @@
             border: 1px solid black;
             border-collapse: collapse;
         }
+
+        .btn {
+            border: none;
+            background-color: inherit;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: rgb(202, 189, 189);
+        }
     </style>
 
 
@@ -62,11 +73,14 @@
                         if (e.editions === "3") rewardCards.push(e);
                     }
                 }
-                makeTable(rewardCards)
+                calculations(rewardCards);
             });
         }
 
-        function makeTable(rewardCards) {
+        let data = [];
+        let sorted = {};
+
+        function calculations(rewardCards) {
             let cardCap = [0, 400000, 100000, 40000, 10000]
             let xp = [0, 15, 75, 175, 750];
             let gxp = [0, 200, 400, 800, 2000];
@@ -77,49 +91,108 @@
                 4: "Legendary"
             }
 
-            let header =
-                "<table><tr><th>Card</th><th>Rarity</th><th>Normal BCX Existing</th><th>Gold BCX Existing</th><th>BCX Burned</th><th>Total BCX</th><th>Percentage Printed</th></tr>";
-
-            let data = "";
-
             for (let i = 0; i < rewardCards.length; i++) {
-                //Data
-                const e = rewardCards[i];
-                let card = e.name;
-                let rarity = rarities[e.rarity];
-                let bcxNormExist = parseInt(e.distribution[0].total_xp) / xp[e.rarity] + parseInt(e.distribution[0]
+                //Stat data
+                let c = {}
+                let e = rewardCards[i];
+
+                c.card = e.name;
+                c.rarity = rarities[e.rarity];
+                c.bcxNormExist = parseInt(e.distribution[0].total_xp) / xp[e.rarity] + parseInt(e.distribution[0]
                     .num_cards);
-                let bcxGoldExist = parseInt(e.distribution[1].total_xp) / gxp[e.rarity];
-                let bcxExist = bcxNormExist + bcxGoldExist;
-                let nBCXBurn = parseInt(e.distribution[0].total_burned_xp) / xp[e.rarity] + parseInt(e.distribution[0]
+                c.bcxGoldExist = parseInt(e.distribution[1].total_xp) / gxp[e.rarity];
+                c.bcxExist = c.bcxNormExist + c.bcxGoldExist;
+                c.nBCXBurn = parseInt(e.distribution[0].total_burned_xp) / xp[e.rarity] + parseInt(e.distribution[0]
                     .num_burned);
-                let gBCXBurn = parseInt(e.distribution[1].total_burned_xp) / gxp[e.rarity];
-                let bcxBurn = nBCXBurn + gBCXBurn;
-                let bcxTotal = e.total_printed;
-                let myBCXTotal = bcxExist + bcxBurn;
-                let bcxPercent = parseFloat(e.total_printed / cardCap[e.rarity] * 100).toFixed(2) + "%";
+                c.gBCXBurn = parseInt(e.distribution[1].total_burned_xp) / gxp[e.rarity];
+                c.bcxBurn = c.nBCXBurn + c.gBCXBurn;
+                c.bcxTotal = e.total_printed;
+                c.yBCXTotal = c.bcxExist + c.bcxBurn;
+                c.bcxPercent = parseFloat(e.total_printed / cardCap[e.rarity] * 100).toFixed(2) + "%";
+
+                //CSS Requirements
+                c.color = e.color;
+
+                data.push(c);
+            }
+
+            makeTable(data);
+        }
+
+        function makeTable(data) {
+            let header =
+                "<table><tr><th><button id=\"card_btn\" class=\"btn\">Card</button><button id=\"color_btn\" class=\"btn\">(color)</button></th>" +
+                "<th><button id=\"rarity_btn\" class=\"btn\">Rarity</button></th>" +
+                "<th><button id=\"normal_btn\" class=\"btn\">Normal BCX Existing</button></th>" +
+                "<th><button id=\"gold_btn\" class=\"btn\">Gold BCX Existing</button></th>" +
+                "<th><button id=\"burn_btn\" class=\"btn\">BCX Burned</button></th>" +
+                "<th>Total BCX</th>" +
+                "<th><button id=\"percent_btn\" class=\"btn\">Percentage Printed</button></th></tr>";
+
+            let rows = "";
+
+            for (let i = 0; i < data.length; i++) {
                 //Style
+                const e = data[i];
+
                 let cardCss;
                 if (e.color === "Black") cardCss = "style=\"background-color:" + e.color + ";color:rgb(201, 201, 201)" +
                     "\"";
                 else if (e.color === "Blue") cardCss = "style=\"background-color:" + e.color + ";color:white" + "\"";
                 else cardCss = "style=\"background-color:" + e.color + "\"";
-                console.log(cardCss);
                 let rowData =
-                    "<tr><td " + cardCss + ">" + card + "</td><td>" + rarity +
-                    "</td><td>" + bcxNormExist + "</td><td>" + bcxGoldExist + "</td><td>" + bcxBurn + "</td><td>" +
-                    bcxTotal + "</td><td>" + bcxPercent + "</td></tr>";
+                    "<tr><td " + cardCss + ">" + e.card + "</td><td>" + e.rarity +
+                    "</td><td>" + e.bcxNormExist + "</td><td>" + e.bcxGoldExist + "</td><td>" + e.bcxBurn +
+                    "</td><td>" +
+                    e.bcxTotal + "</td><td>" + e.bcxPercent + "</td></tr>";
 
-                data += rowData;
+                rows += rowData;
             }
+
             let footer = "</table>";
-            let table = header + data + footer;
+            table = header + rows + footer;
 
             createHTMLPage(table);
         }
 
         function createHTMLPage(table) {
             document.getElementById("displayStats").innerHTML = table;
+
+            //Buttons
+            document.getElementById("card_btn").onclick = function () {
+                sortTable("card")
+            };
+            document.getElementById("color_btn").onclick = function () {
+                sortTable("color")
+            };
+            document.getElementById("rarity_btn").onclick = function () {
+                sortTable("rarity")
+            };
+            document.getElementById("normal_btn").onclick = function () {
+                sortTable("bcxNormExist")
+            };
+            document.getElementById("gold_btn").onclick = function () {
+                sortTable("bcxGoldExist")
+            };
+            document.getElementById("burn_btn").onclick = function () {
+                sortTable("bcxBurn")
+            };
+            document.getElementById("percent_btn").onclick = function () {
+                sortTable("bcxPercent")
+            };
+        }
+
+        function sortTable(column) {
+            if (!sorted[column]) sorted[column] = 1;
+            else sorted[column] *= -1;
+            data.sort(function (a, b) {
+                if (a[column] > b[column]) {
+                    return 1 * sorted[column];
+                } else {
+                    return -1 * sorted[column];
+                }
+            });
+            makeTable(data);
         }
     </script>
 
