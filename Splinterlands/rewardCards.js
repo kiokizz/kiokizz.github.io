@@ -137,11 +137,57 @@ function sortTable(column) {
     if (!sorted[column]) sorted[column] = 1;
     else sorted[column] *= -1;
     data.sort(function (a, b) {
-        if (a[column] > b[column]) {
+        let c = a[column];
+        let d = b[column];
+        if (column === "bcxPercent") {
+            c = c.slice(0, -1);
+            d = d.slice(0, -1);
+        }
+        if (column === "rarity") {
+            c = rarity(c);
+            d = rarity(d);
+
+            function rarity(x) {
+                let y = 0;
+                if (x === "Common") y = 1;
+                else if (x === "Rare") y = 2;
+                else if (x === "Epic") y = 3;
+                else if (x === "Legendary") y = 4;
+                return y;
+            }
+        }
+        let letters = ["card", "color", "rarity"]
+        if (!letters.includes(column)) {
+            c = parseFloat(c);
+            d = parseFloat(d);
+        }
+        if (c > d) {
             return 1 * sorted[column];
         } else {
             return -1 * sorted[column];
         }
     });
     makeTable(data);
+}
+
+function download() {
+    let dataCSV = "";
+    data.forEach(e => {
+        let line = e.card + "," + e.rarity + "," + e.bcxNormExist + "," + e.bcxGoldExist + "," + e.bcxBurn + "," + e.bcxPercent + "\n";
+        dataCSV += line;
+    });
+
+    let csvTXT = document.createElement('a');
+    csvTXT.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(dataCSV));
+
+    let d = new Date();
+    let descriptor = d.getFullYear().toString() + d.getDate().toString() + d.getHours().toString() + d.getSeconds().toString();
+    csvTXT.setAttribute('download', descriptor + ".csv");
+
+    csvTXT.style.display = 'none';
+    document.body.appendChild(csvTXT);
+
+    csvTXT.click();
+
+    document.body.removeChild(csvTXT);
 }
