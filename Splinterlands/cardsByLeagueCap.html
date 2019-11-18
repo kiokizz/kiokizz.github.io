@@ -13,22 +13,22 @@
 
 <body>
     <p id="body1"></p>
-
-    <select class="selectors" id="Summoner" style="display: none;">
-        <option value="1">Common</option>
-        <option value="2">Rare</option>
-        <option value="3">Epic</option>
-        <option value="4">Legendary</option>
-    </select>
-    <select class="selectors" id="League" style="display: none;">
-        <option value="novice">Novice</option>
-        <option value="bronze">Bronze</option>
-        <option value="silver">Silver</option>
-        <option value="gold">Gold</option>
-        <option value="diamond">Diamond+</option>
-    </select>
-    <br>
-    <button class="selectors" id="selectorsFilter" style="display: none;">Reload</button>
+    <section>
+        <select class="selectors" id="Summoner" style="display: none;">
+            <option value="1">Common</option>
+            <option value="2">Rare</option>
+            <option value="3">Epic</option>
+            <option value="4">Legendary</option>
+        </select>
+        <select class="selectors" id="League" style="display: none;">
+            <option value="novice">Novice</option>
+            <option value="bronze">Bronze</option>
+            <option value="silver">Silver</option>
+            <option value="gold">Gold</option>
+            <option value="diamond">Diamond+</option>
+        </select>
+        <button class="selectors" id="selectorsFilter" style="display: none;">Reload</button>
+    </section>
     <br>
 
     <button class="CSV" style="display: none;" onclick="download()">Download CSV</button>
@@ -42,7 +42,7 @@
     <style>
         body {
             width: 100%;
-            max-width: 750px;
+            max-width: 850px;
             font-size: 12pt;
         }
 

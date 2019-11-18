@@ -3,7 +3,7 @@ var body1 = "Splinterlands Cards.<br>"
 document.getElementById("body1").innerHTML = body1;
 
 var body2 =
-    "Disclaimer: Human error could result in mistakes in the representation of the above data; no waranty express or implied is provided. Extracted from https://steemmonsters.com/cards/get_details.<br>" +
+    "Disclaimer: Human error could result in mistakes in the representation of the above data. Extracted from https://steemmonsters.com/cards/get_details.<br>" +
     "<br><a href=\"https://github.com/kiokizz\">GitHub</a> | Check out my Steem blogs <a href=\"https://www.steemit.com/@kiokizz\">@kiokizz</a> & <a href=\"https://www.steemit.com/@kiobot\">@kiobot</a>"
 
 document.getElementById("body2").innerHTML = body2;
@@ -86,20 +86,23 @@ function getcards() {
 function calculations() {
     data = [];
     sorted = {};
+
+    // League && Rarity --> Summoner Level --> Monster Level
+    let thisLeague = leageCaps[league];
+    let summonerLevel = thisLeague[summoner - 1];
+    let summonersCap = summonerCaps[rarities[summoner]];
+    let levelCaps = summonersCap[summonerLevel];
+
+    console.log(summoner, league, summonerCaps);
+
     for (let i = 0; i < cards.length; i++) {
         let c = {}
         const e = cards[i];
 
-        console.log(i)
-        // League && Rarity --> Summoner Level --> Monster Level
-        let thisLeague = leageCaps[league];
-        let summonerLevel = thisLeague[summoner - 1];
+        c.level = levelCaps[e.rarity - 1] - 1;
+        if (league == "novice" && summoner !== 1) c.level = 0;
 
-        let summonersCap = summonerCaps[rarities[summoner]]
-        c.level = summonersCap[summonerLevel][e.rarity - 1] - 1;
-        if (league === "novice" && summoner !== 1) c.level = 1; 
-
-        console.log("Summoner Level: ", summonerLevel, " - Card Level ", c.level, " - Name: ", e.name)
+        //console.log(i," Summoner Level: ", summonerLevel, " - Card Level ", c.level, " - Name: ", e.name)
 
         if (e.type === "Monster") {
             c.card = e.name
@@ -112,7 +115,10 @@ function calculations() {
             c.magic = e.stats.magic[c.level];
             c.abilities = "";
             for (let ii = 0; ii <= c.level; ii++) {
-                c.abilities += e.stats.abilities[ii];
+                if (e.stats.abilities[ii].length > 0) {
+                    if (c.abilities.length > 0) c.abilities += ","
+                    c.abilities += e.stats.abilities[ii];
+                }
             }
             //CSS Requirements
             c.color = e.color;
@@ -124,9 +130,6 @@ function calculations() {
     }
 
     makeTable();
-
-
-    //TODO Make button to choose league and summoner rarity then generate table accordingly.
 }
 
 function makeTable() {
@@ -201,15 +204,14 @@ function createHTMLPage(table) {
         sortTable("magic")
     };
 
-
     document.getElementById("selectorsFilter").onclick = function () {
         let a = document.getElementById("Summoner")
         let b = a.options[a.selectedIndex].value;
         let c = document.getElementById("League");
         let d = c.options[c.selectedIndex].value;
 
-        summoner = b;
-        league = d.toLowerCase();
+        summoner = parseInt(b);
+        league = d;
         console.log("reload: ", summoner, league);
 
         calculations();
@@ -217,7 +219,7 @@ function createHTMLPage(table) {
 
     var x = document.getElementsByClassName("selectors");
     for (i = 0; i < x.length; i++) {
-        x[i].style.display = "block";
+        x[i].style.display = "inline-block";
     }
 
     var x = document.getElementsByClassName("CSV");
