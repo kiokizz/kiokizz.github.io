@@ -1,0 +1,143 @@
+<!DOCtype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Splinterlands List All Cards</title>
+    <script src="https://cdn.jsdelivr.net/npm/steem/dist/steem.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+
+    <p id="body1"></p>
+    <p id="displayStats">Data Loading...</p>
+
+    <p id="body2"></p>
+
+    <style>
+        body {
+            width: 100%;
+            max-width: 850px;
+            font-size: 12pt;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        table,
+        td,
+        th {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
+
+    <script>
+        var body1 =
+            "Data regarding all Splinterlands cards.<br>" +
+            "<br>Alpha/Beta cards stats may not be accurate due to conversions from Alpha to Beta (BCX has been rounded for affected Beta cards to better display). Please treat these as estimates."
+        document.getElementById("body1").innerHTML = body1;
+        var body2 =
+            "Disclaimer: Human error could result in mistakes in the representation of the above data; no waranty express or implied is provided. Extracted from https://steemmonsters.com/cards/get_details.<br>" +
+            "<br><a href=\"https://github.com/kiokizz\">GitHub</a> | Check out my Steem blogs <a href=\"https://www.steemit.com/@kiokizz\">@kiokizz</a> & <a href=\"https://www.steemit.com/@kiobot\">@kiobot</a>"
+
+        document.getElementById("body2").innerHTML = body2;
+        getRewardCards();
+
+        function getRewardCards() {
+            let url = "https://steemmonsters.com/cards/get_details";
+            $.get(url, url, function (data) {
+                console.log(data);
+                if (data) {
+                    makeTable(data)
+                }
+            });
+        }
+
+        function makeTable(cards) {
+            let axp = [0, 20, 100, 250, 1000];
+            let bxp = [0, 15, 75, 175, 750];
+            let agxp = [0, 250, 500, 1000, 2500];
+            let bgxp = [0, 200, 400, 800, 2000];
+            let rarities = {
+                1: "Common",
+                2: "Rare",
+                3: "Epic",
+                4: "Legendary"
+            }
+            let header =
+                "<table><tr><th>Card</th><th>Set</th><th>Rarity</th><th>Normal BCX Existing</th><th>Gold BCX Existing</th><th>BCX Burned</th><th>Total BCX</th></tr>";
+            let data = "";
+            for (let i = 0; i < cards.length; i++) {
+                const e = cards[i];
+                if (e.distribution.length == 2) {
+                    if (e.editions === 1 || 3) cardData(bxp, bgxp, 0, 1);
+                    if (e.editions === 2) cardData(axp, agxp, 0, 1);
+                } else if (e.distribution.length == 4) {
+                    cardData(axp, agxp, 0, 2);
+                    cardData(bxp, bgxp, 1, 3);
+                } else throw "Unidentified card edition"
+
+                function cardData(xp, gxp, a, b) {
+                    //Data
+                    let card = e.name;
+                    let set;
+                    if (i <= 58 & e.distribution[a].edition === 0) set = "Alpha";
+                    else if (i <= 73) set = "Beta";
+                    else if (i <= 77) set = "Kick Starter Promo";
+                    else if (i <= 107) set = "Rewards";
+                    else if (i <= 112) set = "Beta";
+                    else if (i <= 116) set = "Seed Germinator Promo";
+                    else if (i <= 128) set = "Rewards";
+                    else if (i <= 129) set = "Winds of Change";
+                    else if (i <= 129) set = "Mystery Potion";
+                    else set = "Unclassified";
+
+                    let rarity = rarities[e.rarity];
+                    let bcxNormExist = parseInt(e.distribution[a].total_xp) / xp[e.rarity] + parseInt(e.distribution[a]
+                        .num_cards);
+                    if (i === 129) bcxNormExist = parseInt(e.distribution[a].num_cards);
+                    let bcxGoldExist = parseInt(e.distribution[b].total_xp) / gxp[e.rarity];
+                    if (i === 129) bcxGoldExist = parseInt(e.distribution[b].num_cards);
+                    let bcxExist = bcxNormExist + bcxGoldExist;
+                    let nBCXBurn = parseInt(e.distribution[a].total_burned_xp) / xp[e.rarity] + parseInt(e.distribution[
+                        a].num_burned);
+                    let gBCXBurn = parseInt(e.distribution[b].total_burned_xp) / gxp[e.rarity];
+                    let bcxBurn = nBCXBurn + gBCXBurn;
+                    let bcxTotal = bcxExist + bcxBurn;
+                    //Style
+                    let cardCss;
+                    if (e.color === "Black") cardCss = "style=\"background-color:" + e.color +
+                        ";color:rgb(201, 201, 201)" +
+                        "\"";
+                    else if (e.color === "Blue") cardCss = "style=\"background-color:" + e.color + ";color:white" +
+                        "\"";
+                    else cardCss = "style=\"background-color:" + e.color + "\"";
+                    let rowData =
+                        "<tr><td " + cardCss + ">" + card + "</td><td>" + set +
+                        "</td><td>" + rarity + "</td><td>" + Math.floor(bcxNormExist) + "</td><td>" + Math.floor(
+                            bcxGoldExist) + "</td><td>" +
+                        Math.floor(bcxBurn) + "</td><td>" +
+                        Math.floor(bcxTotal) + "</td></tr>";
+                    data += rowData;
+                }
+            }
+
+            let footer = "</table>";
+            let table = header + data + footer;
+            createHTMLPage(table);
+        }
+
+
+
+        function createHTMLPage(table) {
+            document.getElementById("displayStats").innerHTML = table;
+        }
+    </script>
+
+</body>
+
+</html>
