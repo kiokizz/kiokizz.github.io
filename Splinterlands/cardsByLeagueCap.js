@@ -120,6 +120,10 @@ function calculations() {
                     c.abilities += e.stats.abilities[ii];
                 }
             }
+            if (e.editions === "0,1" || "1") c.edition = "beta"
+            if (e.editions === "2") c.edition = "promo"
+            if (e.editions === "3") c.edition = "reward"
+            if (e.editions === "4") c.edition = "untamed"
             //CSS Requirements
             c.color = e.color;
         } else if (e.type === "Summoner") {
@@ -157,8 +161,16 @@ function makeTable() {
         else if (e.color === "Blue") cardCss = "style=\"background-color:" + e.color + ";color:white" + "\"";
         else cardCss = "style=\"background-color:" + e.color + "\"";
 
+        let level = (e.level + 1);
+
+        //https://d36mxiodymuqjm.cloudfront.net/cards_by_level/reward/Creeping%20Ooze_lv1.png
+        let urlName = e.card.replace(/\s/g, "%20");
+        let imageLink = "https://d36mxiodymuqjm.cloudfront.net/cards_by_level/" + e.edition + "/" + urlName + "_lv" + level + ".png";
+        let cardToolTip = "<a class=\"tooltip\">" + e.card + "<span><img style=\"max-width:100%;height:auto;\" src=\"" + imageLink +
+            "\"><h3></h3></span></a>";
+
         let rowData =
-            "<tr><td " + cardCss + ">" + e.card + " LVL " + (e.level + 1) + "</td><td>" + e.mana +
+            "<tr><td " + cardCss + ">" + cardToolTip + " LVL " + level + "</td><td>" + e.mana +
             "</td><td>" + e.health + "</td><td>" + e.armor + "</td><td>" + e.speed +
             "</td><td>" +
             e.attack + "</td><td>" + e.ranged + "</td><td>" + e.magic + "</td><td>" + e.abilities + "</td></tr>";
@@ -186,7 +198,7 @@ function createHTMLPage(table) {
         sortTable("mana")
     };
     document.getElementById("health_btn").onclick = function () {
-        sortTable("health_btn")
+        sortTable("health")
     };
     document.getElementById("armor_btn").onclick = function () {
         sortTable("armor")

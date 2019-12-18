@@ -3,7 +3,7 @@ var body1 = "Data regarding the remaining reward edition cards for Splinterlands
 document.getElementById("body1").innerHTML = body1;
 
 var body2 =
-    "Disclaimer: Human error could result in mistakes in the representation of the above data; no waranty express or implied is provided. Extracted from https://steemmonsters.com/cards/get_details.<br>" +
+    "Disclaimer: Human error could result in mistakes in the representation of the above data. Extracted from https://steemmonsters.com/cards/get_details.<br>" +
     "<br><a href=\"https://github.com/kiokizz\">GitHub</a> | Check out my Steem blogs <a href=\"https://www.steemit.com/@kiokizz\">@kiokizz</a> & <a href=\"https://www.steemit.com/@kiobot\">@kiobot</a>"
 
 document.getElementById("body2").innerHTML = body2;
@@ -91,8 +91,15 @@ function makeTable(data) {
             "\"";
         else if (e.color === "Blue") cardCss = "style=\"background-color:" + e.color + ";color:white" + "\"";
         else cardCss = "style=\"background-color:" + e.color + "\"";
+
+        //https://d36mxiodymuqjm.cloudfront.net/cards_by_level/reward/Creeping%20Ooze_lv1.png
+        let urlName = e.card.replace(/\s/g, "%20");
+        let imageLink = "https://d36mxiodymuqjm.cloudfront.net/cards_by_level/reward/" + urlName + "_lv1.png";
+        let cardToolTip = "<a class=\"tooltip\">" + e.card + "<span><img style=\"max-width:100%;height:auto;\" src=\"" + imageLink +
+            "\"><h3></h3></span></a>";
+
         let rowData =
-            "<tr><td " + cardCss + ">" + e.card + "</td><td>" + e.rarity +
+            "<tr><td " + cardCss + ">" + cardToolTip + "</td><td>" + e.rarity +
             "</td><td>" + e.bcxNormExist + "</td><td>" + e.bcxGoldExist + "</td><td>" + e.bcxBurn +
             "</td><td>" +
             e.bcxTotal + "</td><td>" + e.bcxPercent + "</td></tr>";
