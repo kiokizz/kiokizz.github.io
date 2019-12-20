@@ -8,30 +8,51 @@ var body2 =
 
 document.getElementById("body2").innerHTML = body2;
 
+let data = [];
+let sorted = {};
+let rewardCards = [];
+let prices = [];
+
 getRewardCards();
 
 function getRewardCards() {
-
     let url = "https://steemmonsters.com/cards/get_details";
-
     $.get(url, url, function (data) {
         console.log(data);
-
-        let rewardCards = [];
         if (data) {
             for (let i = 0; i < data.length; i++) {
                 const e = data[i];
                 if (e.editions === "3") rewardCards.push(e);
             }
         }
-        calculations(rewardCards);
+        getPrices();
     });
 }
 
-let data = [];
-let sorted = {};
+function getPrices() {
+    let url = "https://steemmonsters.com/market/for_sale_grouped";
+    $.get(url, url, function (data) {
+        console.log(data);
+        if (data) {
+            rewardCards.forEach((e) => {
+                let temp = {};
+                data.forEach(ex => {
+                    if (e.id === ex.card_detail_id && ex.gold === false) {
+                        temp.low_price = ex.low_price;
+                        temp.low_price_bcx = ex.low_price_bcx;
+                    }
+                });
+                prices.push(temp);
+            });
+            console.log(prices);
+        }
+        calculations();
+    });
+}
 
-function calculations(rewardCards) {
+
+
+function calculations() {
     let cardCap = [0, 400000, 100000, 40000, 10000]
     let xp = [0, 15, 75, 175, 750];
     let gxp = [0, 200, 400, 800, 2000];
@@ -60,6 +81,7 @@ function calculations(rewardCards) {
         c.bcxTotal = e.total_printed;
         c.yBCXTotal = c.bcxExist + c.bcxBurn;
         c.bcxPercent = parseFloat(e.total_printed / cardCap[e.rarity] * 100).toFixed(2) + "%";
+        c.price = prices[i].low_price;
 
         //CSS Requirements
         c.color = e.color;
@@ -72,13 +94,14 @@ function calculations(rewardCards) {
 
 function makeTable(data) {
     let header =
-        "<table><tr><th><button id=\"card_btn\" class=\"btn\">Card</button><button id=\"color_btn\" class=\"btn\">(color)</button></th>" +
+        "<table><tr><th><button id=\"card_btn\" class=\"btn\">Card</button><button id=\"color_btn\" class=\"btn\">🌈</button></th>" +
         "<th><button id=\"rarity_btn\" class=\"btn\">Rarity</button></th>" +
-        "<th><button id=\"normal_btn\" class=\"btn\">Normal BCX Existing</button></th>" +
-        "<th><button id=\"gold_btn\" class=\"btn\">Gold BCX Existing</button></th>" +
-        "<th><button id=\"burn_btn\" class=\"btn\">BCX Burned</button></th>" +
+        "<th><button id=\"normal_btn\" class=\"btn\">Normal BCX 🔄</button></th>" +
+        "<th><button id=\"gold_btn\" class=\"btn\">Gold BCX 🔄</button></th>" +
+        "<th><button id=\"burn_btn\" class=\"btn\">BCX 🔥</button></th>" +
         "<th>Total BCX</th>" +
-        "<th><button id=\"percent_btn\" class=\"btn\">Percentage Printed</button></th></tr>";
+        "<th><button id=\"percent_btn\" class=\"btn\">% Printed</button></th>" +
+        "<th><button id=\"price_btn\" class=\"btn\">💰</button></th></tr>";
 
     let rows = "";
 
@@ -102,7 +125,7 @@ function makeTable(data) {
             "<tr><td " + cardCss + ">" + cardToolTip + "</td><td>" + e.rarity +
             "</td><td>" + e.bcxNormExist + "</td><td>" + e.bcxGoldExist + "</td><td>" + e.bcxBurn +
             "</td><td>" +
-            e.bcxTotal + "</td><td>" + e.bcxPercent + "</td></tr>";
+            e.bcxTotal + "</td><td>" + e.bcxPercent + "</td><td> $" + e.price.toFixed(3); + "</td></tr>";
 
         rows += rowData;
     }
@@ -137,6 +160,9 @@ function createHTMLPage(table) {
     };
     document.getElementById("percent_btn").onclick = function () {
         sortTable("bcxPercent")
+    };
+    document.getElementById("price_btn").onclick = function () {
+        sortTable("price")
     };
 }
 
