@@ -206,7 +206,7 @@ function sortTable(column) {
 function download() {
     let dataCSV = "";
     data.forEach(e => {
-        let line = e.card + "," + e.rarity + "," + e.bcxNormExist + "," + e.bcxGoldExist + "," + e.bcxBurn + "," + e.bcxPercent + "\n";
+        let line = e.card + "," + e.rarity + "," + e.bcxNormExist + "," + e.bcxGoldExist + "," + e.bcxBurn + "," + e.bcxPercent+ "," + e.price + "\n";
         dataCSV += line;
     });
 
