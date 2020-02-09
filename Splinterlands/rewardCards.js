@@ -12,6 +12,10 @@ let data = [];
 let sorted = {};
 let rewardCards = [];
 let prices = [];
+let hidden = {
+    complete: true,
+    length: 0
+};
 
 getRewardCards();
 
@@ -64,7 +68,7 @@ function calculations() {
     }
 
     for (let i = 0; i < rewardCards.length; i++) {
-        //Stat data
+        //Statistic data
         let c = {}
         let e = rewardCards[i];
 
@@ -93,6 +97,7 @@ function calculations() {
 }
 
 function makeTable(data) {
+    hidden.length = 0;
     let header =
         "<table><tr><th><button id=\"card_btn\" class=\"btn\">Card</button><button id=\"color_btn\" class=\"btn\">🌈</button></th>" +
         "<th><button id=\"rarity_btn\" class=\"btn\">Rarity</button></th>" +
@@ -104,16 +109,33 @@ function makeTable(data) {
         "<th><button id=\"price_btn\" class=\"btn\">💰</button></th></tr>";
 
     let rows = "";
+    let hiddenString = "";
 
     for (let i = 0; i < data.length; i++) {
         //Style
         const e = data[i];
 
-        let cardCss;
-        if (e.color === "Black") cardCss = "style=\"background-color:" + e.color + ";color:rgb(201, 201, 201)" +
-            "\"";
-        else if (e.color === "Blue") cardCss = "style=\"background-color:" + e.color + ";color:white" + "\"";
-        else cardCss = "style=\"background-color:" + e.color + "\"";
+        let backgroundColor = {
+            Red: "#FF3333",
+            Green: "#00CC66",
+            White: "#E8E8E8",
+            Gray: "#BEBEBE",
+            Gold: "#FFCC33",
+            Blue: "#00CCFF",
+            Black: "#663399"
+        }
+
+        let textColor = {
+            Red: "black",
+            Green: "black",
+            White: "black",
+            Grey: "black",
+            Gold: "black",
+            Blue: "black",
+            Black: "white"
+        }
+
+        let cardCss = "style=\"background-color:" + backgroundColor[e.color] + ";color:" + textColor[e.color] + "\"";
 
         //https://d36mxiodymuqjm.cloudfront.net/cards_by_level/reward/Creeping%20Ooze_lv1.png
         let urlName = e.card.replace(/\s/g, "%20");
@@ -127,11 +149,16 @@ function makeTable(data) {
             "</td><td>" +
             e.bcxTotal + "</td><td>" + e.bcxPercent + "</td><td> $" + e.price.toFixed(3); + "</td></tr>";
 
+        if (hidden.complete && e.bcxPercent.slice(0, -1) >= 100) rowData = "", hidden.length++, hiddenString += " | " + e.card;
+        
         rows += rowData;
     }
 
-    let footer = "</table>";
-    table = header + rows + footer;
+    let footer = "";
+    if (hidden.complete) footer = "<tr><td colspan=\"8\"><button id=\"toggleReveal_btn\" class=\"btnBordered\">Hide / Reveal Complete</button> ... " + hidden.length + " hidden " + hiddenString + "</td></tr>";
+    else footer = "<tr><td colspan=\"8\"><button id=\"toggleReveal_btn\" class=\"btnBordered\">Hide / Reveal Complete</button> ... All shown.</td></tr>";
+
+    table = header + rows + footer + "</table>";
 
     createHTMLPage(table);
 }
@@ -139,7 +166,7 @@ function makeTable(data) {
 function createHTMLPage(table) {
     document.getElementById("displayStats").innerHTML = table;
 
-    //Buttons
+    //Sort Buttons
     document.getElementById("card_btn").onclick = function () {
         sortTable("card")
     };
@@ -163,6 +190,12 @@ function createHTMLPage(table) {
     };
     document.getElementById("price_btn").onclick = function () {
         sortTable("price")
+    };
+
+    //Settings Buttons
+    document.getElementById("toggleReveal_btn").onclick = function () {
+        hidden.complete = !hidden.complete;
+        makeTable(data);
     };
 }
 
@@ -206,7 +239,7 @@ function sortTable(column) {
 function download() {
     let dataCSV = "";
     data.forEach(e => {
-        let line = e.card + "," + e.rarity + "," + e.bcxNormExist + "," + e.bcxGoldExist + "," + e.bcxBurn + "," + e.bcxPercent+ "," + e.price + "\n";
+        let line = e.card + "," + e.rarity + "," + e.bcxNormExist + "," + e.bcxGoldExist + "," + e.bcxBurn + "," + e.bcxPercent + "," + e.price + "\n";
         dataCSV += line;
     });
 
