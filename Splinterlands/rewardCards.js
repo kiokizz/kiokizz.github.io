@@ -156,10 +156,8 @@ function makeTable(data) {
         let cardToolTip = "<a class=\"tooltip\">" + e.card + "<span><img style=\"max-width:100%;height:auto;\" src=\"" + imageLink +
             "\"><h3></h3></span></a>";
 
-        let columnHoverCSS = "href=\"#hover\" onMouseOver=\"this.style.color='#0F0'\" onMouseOut=\"this.style.color='#00F'\"";   
-
         let rowData =
-            "<tr" + columnHoverCSS + "><td " + cardCss + ">" + cardToolTip + "</td><td>" + e.rarity +
+            "<tr class=\"trcard\"><td " + cardCss + ">" + cardToolTip + "</td><td>" + e.rarity +
             "</td><td>" + e.bcxNormExist + "</td><td>" + e.bcxGoldExist + "</td><td>" + e.bcxBurn +
             "</td><td>" +
             e.bcxTotal + "</td><td>" + e.bcxPercent + "</td><td> $" + e.price.toFixed(3); + "</td></tr>";
