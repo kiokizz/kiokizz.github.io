@@ -58,8 +58,9 @@ function getPrices() {
 
 function calculations() {
     let cardCap = [0, 400000, 100000, 40000, 10000]
-    let xp = [0, 15, 75, 175, 750];
-    let gxp = [0, 200, 400, 800, 2000];
+    let betaxp = [0, 15, 75, 175, 750];
+    let betagxp = [0, 200, 400, 800, 2000];
+    let untamedxp = [1,1,1,1];
     let rarities = {
         1: "Common",
         2: "Rare",
@@ -72,20 +73,32 @@ function calculations() {
         let c = {}
         let e = rewardCards[i];
 
+        let xp, gxp;
+        if (e.id <= 223) xp = betaxp, gxp = betagxp;
+        else xp = untamedxp, gxp = untamedxp;
+
         c.card = e.name;
         c.rarity = rarities[e.rarity];
-        c.bcxNormExist = parseInt(e.distribution[0].total_xp) / xp[e.rarity] + parseInt(e.distribution[0]
-            .num_cards);
-        c.bcxGoldExist = parseInt(e.distribution[1].total_xp) / gxp[e.rarity];
+
+        if (e.distribution[0]) {
+            c.bcxNormExist = parseInt(e.distribution[0].total_xp) / xp[e.rarity] + parseInt(e.distribution[0]
+                .num_cards);
+            c.nBCXBurn = parseInt(e.distribution[0].total_burned_xp) / xp[e.rarity] + parseInt(e.distribution[0]
+                .num_burned);
+        } else c.bcxNormExist = 0, c.nBCXBurn = 0;
+        if (e.distribution[1]) {
+            c.bcxGoldExist = parseInt(e.distribution[1].total_xp) / gxp[e.rarity];
+            c.gBCXBurn = parseInt(e.distribution[1].total_burned_xp) / gxp[e.rarity];
+        } else c.bcxGoldExist = 0, c.gBCXBurn = 0;
+
         c.bcxExist = c.bcxNormExist + c.bcxGoldExist;
-        c.nBCXBurn = parseInt(e.distribution[0].total_burned_xp) / xp[e.rarity] + parseInt(e.distribution[0]
-            .num_burned);
-        c.gBCXBurn = parseInt(e.distribution[1].total_burned_xp) / gxp[e.rarity];
         c.bcxBurn = c.nBCXBurn + c.gBCXBurn;
         c.bcxTotal = e.total_printed;
         c.yBCXTotal = c.bcxExist + c.bcxBurn;
         c.bcxPercent = parseFloat(e.total_printed / cardCap[e.rarity] * 100).toFixed(2) + "%";
-        c.price = prices[i].low_price;
+
+        if (prices[i].low_price) c.price = prices[i].low_price;
+        else c.price = 0;
 
         //CSS Requirements
         c.color = e.color;
@@ -150,7 +163,7 @@ function makeTable(data) {
             e.bcxTotal + "</td><td>" + e.bcxPercent + "</td><td> $" + e.price.toFixed(3); + "</td></tr>";
 
         if (hidden.complete && e.bcxPercent.slice(0, -1) >= 100) rowData = "", hidden.length++, hiddenString += " | " + e.card;
-        
+
         rows += rowData;
     }
 
