@@ -131,7 +131,7 @@ function makeTable(data) {
         let backgroundColor = {
             Red: "#FF3333",
             Green: "#00CC66",
-            White: "#E8E8E8",
+            White: "#F5F5F5",
             Gray: "#BEBEBE",
             Gold: "#FFCC33",
             Blue: "#00CCFF",
