@@ -60,7 +60,7 @@ function calculations() {
     let cardCap = [0, 400000, 100000, 40000, 10000]
     let betaxp = [0, 15, 75, 175, 750];
     let betagxp = [0, 200, 400, 800, 2000];
-    let untamedxp = [1,1,1,1];
+    let untamedxp = [0, 1, 1, 1, 1];
     let rarities = {
         1: "Common",
         2: "Rare",
@@ -81,10 +81,15 @@ function calculations() {
         c.rarity = rarities[e.rarity];
 
         if (e.distribution[0]) {
-            c.bcxNormExist = parseInt(e.distribution[0].total_xp) / xp[e.rarity] + parseInt(e.distribution[0]
-                .num_cards);
-            c.nBCXBurn = parseInt(e.distribution[0].total_burned_xp) / xp[e.rarity] + parseInt(e.distribution[0]
-                .num_burned);
+            //Add number of number of cards if Beta Edition; base card not included in total_xp before this edition.
+            let addBurntNum = 0;
+            let addCardNum = 0;
+            if (e.id <= 223) {
+                addBurntNum = parseInt(e.distribution[0].num_burned);
+                addCardNum = parseInt(e.distribution[0].num_cards);
+            }
+            c.bcxNormExist = parseInt(e.distribution[0].total_xp) / xp[e.rarity] + addCardNum;
+            c.nBCXBurn = parseInt(e.distribution[0].total_burned_xp) / xp[e.rarity] + addBurntNum;
         } else c.bcxNormExist = 0, c.nBCXBurn = 0;
         if (e.distribution[1]) {
             c.bcxGoldExist = parseInt(e.distribution[1].total_xp) / gxp[e.rarity];
