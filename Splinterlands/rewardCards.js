@@ -9,9 +9,24 @@ var body2 =
 document.getElementById("body2").innerHTML = body2;
 
 let data = [];
+let global = {
+    totalNormalBCX: 0,
+    totalGoldBCX: 0,
+    totalBCX: 0,
+    totalNormalBurnt: 0,
+    totalGoldBurnt: 0,
+    totalBurnt: 0,
+    avgPrintRate: [],
+    avgBurnRate: [],
+    numCardsPrinting: 0,
+    numCardsFinished: 0,
+    maxNormalSetPrice: 0,
+    maxGoldSetPrice: 0
+};
 let sorted = {};
 let rewardCards = [];
-let prices = [];
+let normalPrices = [];
+let goldPrices = [];
 let hidden = {
     complete: true,
     length: 0
@@ -39,22 +54,25 @@ function getPrices() {
         console.log(data);
         if (data) {
             rewardCards.forEach((e) => {
-                let temp = {};
+                let nTemp = {};
+                let gTemp = {};
                 data.forEach(ex => {
                     if (e.id === ex.card_detail_id && ex.gold === false) {
-                        temp.low_price = ex.low_price;
-                        temp.low_price_bcx = ex.low_price_bcx;
+                        nTemp.low_price = ex.low_price;
+                        nTemp.low_price_bcx = ex.low_price_bcx;
+                    } else if (e.id === ex.card_detail_id && ex.gold === true) {
+                        gTemp.low_price = ex.low_price;
+                        gTemp.low_price_bcx = ex.low_price_bcx;
                     }
                 });
-                prices.push(temp);
+                normalPrices.push(nTemp);
+                goldPrices.push(gTemp);
             });
-            console.log(prices);
+            console.log(normalPrices);
         }
         calculations();
     });
 }
-
-
 
 function calculations() {
     let cardCap = [0, 400000, 100000, 40000, 10000]
@@ -67,9 +85,11 @@ function calculations() {
         3: "Epic",
         4: "Legendary"
     }
+    let betaCardsToMax = [0, 505, 115, 46, 11];
+    let untamedCardsToMax = [0, 400, 115, 46, 11];
 
+    //Card Statistic data
     for (let i = 0; i < rewardCards.length; i++) {
-        //Statistic data
         let c = {}
         let e = rewardCards[i];
 
@@ -80,6 +100,7 @@ function calculations() {
         c.card = e.name;
         c.rarity = rarities[e.rarity];
 
+        //BCX
         if (e.distribution[0]) {
             //Add number of number of cards if Beta Edition; base card not included in total_xp before this edition.
             let addBurntNum = 0;
@@ -100,22 +121,67 @@ function calculations() {
         c.bcxBurn = c.nBCXBurn + c.gBCXBurn;
         c.bcxTotal = e.total_printed;
         c.yBCXTotal = c.bcxExist + c.bcxBurn;
+        c.complete = e.total_printed / cardCap[e.rarity] >= 1;
         c.bcxPercent = parseFloat(e.total_printed / cardCap[e.rarity] * 100).toFixed(2) + "%";
 
-        if (prices[i].low_price) c.price = prices[i].low_price;
+        if (c.bcxTotal !== c.yBCXTotal) console.log(c.card + " statistics incorrect. API delay possible. Discrepency = " + (c.bcxTotal - c.yBCXTotal));
+
+        //Prices
+        if (normalPrices[i].low_price) c.price = normalPrices[i].low_price;
         else c.price = 0;
+        if (normalPrices[i].low_price_bcx) c.price_bcx = normalPrices[i].low_price_bcx;
+        else c.price_bcx = 0;
+
+        if (goldPrices[i].low_price) c.goldPrice = goldPrices[i].low_price;
+        else c.goldPrice = 0;
+        if (goldPrices[i].low_price_bcx) c.goldPrice_bcx = goldPrices[i].low_price_bcx;
+        else c.goldPrice_bcx = 0;
 
         //CSS Requirements
         c.color = e.color;
 
         data.push(c);
+
+        //Global Stats
+        global.totalNormalBCX += c.bcxNormExist;
+        global.totalGoldBCX += c.bcxGoldExist;
+        global.totalBCX += c.bcxTotal;
+        global.totalNormalBurnt += c.nBCXBurn;
+        global.totalGoldBurnt += c.gBCXBurn;
+        global.avgBurnRate.push(c.bcxBurn / c.bcxTotal);
+        if (!c.complete) global.avgPrintRate.push(e.total_printed / cardCap[e.rarity]);
+        if (c.complete) global.numCardsFinished++;
+        else global.numCardsPrinting++;
+        if (e.id <= 223) parseFloat(global.maxNormalSetPrice += c.price_bcx * betaCardsToMax[e.rarity]);
+        else global.maxNormalSetPrice += parseFloat(c.price_bcx * untamedCardsToMax[e.rarity]);
+        if (e.id <= 223) parseFloat(global.maxGoldSetPrice += c.goldPrice_bcx * betaCardsToMax[e.rarity]);
+        else global.maxGoldSetPrice += parseFloat(c.goldPrice_bcx * untamedCardsToMax[e.rarity]);
     }
+
+    //Global Stats Continued...
+    function avgRate(arr) {
+        let temp = 0;
+        arr.forEach(b => {
+            temp += b;
+        });
+        temp = temp / arr.length;
+        return (temp * 100).toFixed(2) + "%";
+    }
+
+    global.avgPrintRate = avgRate(global.avgPrintRate);
+    global.avgBurnRate = avgRate(global.avgBurnRate);
+    global.totalBurnt = global.totalNormalBurnt + global.totalGoldBurnt;
+    global.normalPrinted = global.totalNormalBCX + global.totalNormalBurnt;
+    global.goldPrinted = global.totalGoldBCX + global.totalGoldBurnt;
+
 
     makeTable(data);
 }
 
 function makeTable(data) {
     hidden.length = 0;
+
+    //Header
     let header =
         "<table><tr><th><button id=\"card_btn\" class=\"btn\">Card</button><button id=\"color_btn\" class=\"btn\">🌈</button></th>" +
         "<th><button id=\"rarity_btn\" class=\"btn\">Rarity</button></th>" +
@@ -126,6 +192,7 @@ function makeTable(data) {
         "<th><button id=\"percent_btn\" class=\"btn\">% Printed</button></th>" +
         "<th><button id=\"price_btn\" class=\"btn\">💰</button></th></tr>";
 
+    //Card Rows
     let rows = "";
     let hiddenString = "";
 
@@ -172,11 +239,28 @@ function makeTable(data) {
         rows += rowData;
     }
 
+    //Footer
     let footer = "";
     if (hidden.complete) footer = "<tr><td colspan=\"8\"><button id=\"toggleReveal_btn\" class=\"btnBordered\">Hide / Reveal Complete</button> ... " + hidden.length + " hidden " + hiddenString + "</td></tr>";
     else footer = "<tr><td colspan=\"8\"><button id=\"toggleReveal_btn\" class=\"btnBordered\">Hide / Reveal Complete</button> ... All shown.</td></tr>";
 
-    table = header + rows + footer + "</table>";
+    //Global Stats
+    let stats =
+        "<table>" +
+        "<th>Global Rewards Stats 'Beta'</th><th>Normal</th><th>Gold</th><th>Total</th>" +
+        "<tr><td>BCX Existing</td><td>" + global.totalNormalBCX + "</td><td>" + global.totalGoldBCX + "</td><td><b>" + (global.totalNormalBCX + global.totalGoldBCX) + "</b></td></tr>" +
+        "<tr><td>BCX Burnt</td><td>" + global.totalNormalBurnt + "</td><td>" + global.totalGoldBurnt + "</td><td><b>" + (global.totalNormalBurnt + global.totalGoldBurnt) + "</b></td></tr>" +
+        "<tr><td>Total BCX Printed</td><td>" + global.normalPrinted + "</td><td>" + global.goldPrinted + "</td><td><b>" + global.totalBCX + "</b></td></tr>" +
+        "<tr><td>Average % Printed (still printing)</td><td>" + "-" + "</td><td>" + "-" + "</td><td>" + global.avgPrintRate + "</td></tr>" +
+        "<tr><td>Average % Burnt</td><td>" + (global.totalNormalBurnt / global.normalPrinted * 100).toFixed(2) + "%</td><td>" + (global.totalGoldBurnt / global.goldPrinted * 100).toFixed(2) 
+        + "%</td><td><b>" + global.avgBurnRate + "</b></td></tr>" +
+        "<tr><td># Cards Still Printing</td><td>" + "-" + "</td><td>" + "-" + "</td><td>" + global.numCardsPrinting + "</td></tr>" +
+        "<tr><td># Cards Out of Print</td><td>" + "-" + "</td><td>" + "-" + "</td><td>" + global.numCardsFinished + "</td></tr>" +
+        "<tr><td>Approximate Cost of Max Rewards Set</td><td>$" + global.maxNormalSetPrice.toFixed(2) + "</td><td>$" + global.maxGoldSetPrice.toFixed(2) 
+        + "</td><td><b>$" + (global.maxNormalSetPrice + global.maxGoldSetPrice).toFixed(2) + "</b></td></tr>" +
+        "</table>";
+
+    table = header + rows + footer + "</table><br>" + stats;
 
     createHTMLPage(table);
 }
