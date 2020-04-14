@@ -168,12 +168,14 @@ function calculations() {
         return (temp * 100).toFixed(2) + "%";
     }
 
-    global.avgPrintRate = avgRate(global.avgPrintRate);
-    global.avgBurnRate = avgRate(global.avgBurnRate);
-    global.totalBurnt = global.totalNormalBurnt + global.totalGoldBurnt;
     global.normalPrinted = global.totalNormalBCX + global.totalNormalBurnt;
     global.goldPrinted = global.totalGoldBCX + global.totalGoldBurnt;
-
+    global.avgPrintRate = avgRate(global.avgPrintRate);
+    global.avgBurnRate = avgRate(global.avgBurnRate);
+    global.normalPercentageBurnt = (global.totalNormalBurnt / global.normalPrinted* 100).toFixed(2);
+    global.goldPercentageBurnt = (global.totalGoldBurnt / global.goldPrinted * 100).toFixed(2);
+    global.totalBurnt = global.totalNormalBurnt + global.totalGoldBurnt;
+    global.totalPercentageBurnt = ((global.totalBurnt / (global.normalPrinted + global.goldPrinted)) * 100).toFixed(2);
 
     makeTable(data);
 }
@@ -252,8 +254,7 @@ function makeTable(data) {
         "<tr><td>BCX Burnt</td><td>" + global.totalNormalBurnt + "</td><td>" + global.totalGoldBurnt + "</td><td><b>" + (global.totalNormalBurnt + global.totalGoldBurnt) + "</b></td></tr>" +
         "<tr><td>Total BCX Printed</td><td>" + global.normalPrinted + "</td><td>" + global.goldPrinted + "</td><td><b>" + global.totalBCX + "</b></td></tr>" +
         "<tr><td>Average % Printed (still printing)</td><td>" + "-" + "</td><td>" + "-" + "</td><td>" + global.avgPrintRate + "</td></tr>" +
-        "<tr><td>Average % Burnt</td><td>" + (global.totalNormalBurnt / global.normalPrinted * 100).toFixed(2) + "%</td><td>" + (global.totalGoldBurnt / global.goldPrinted * 100).toFixed(2) 
-        + "%</td><td><b>" + global.avgBurnRate + "</b></td></tr>" +
+        "<tr><td>Total % Burnt</td><td>" + global.normalPercentageBurnt + "%</td><td>" + global.goldPercentageBurnt + "%</td><td><b>" + global.totalPercentageBurnt + "%</b></td></tr>" +
         "<tr><td># Cards Still Printing</td><td>" + "-" + "</td><td>" + "-" + "</td><td>" + global.numCardsPrinting + "</td></tr>" +
         "<tr><td># Cards Out of Print</td><td>" + "-" + "</td><td>" + "-" + "</td><td>" + global.numCardsFinished + "</td></tr>" +
         "<tr><td>Approximate Cost of Max Rewards Set</td><td>$" + global.maxNormalSetPrice.toFixed(2) + "</td><td>$" + global.maxGoldSetPrice.toFixed(2) 
