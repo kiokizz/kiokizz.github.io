@@ -99,6 +99,7 @@ function calculations() {
 
         c.card = e.name;
         c.rarity = rarities[e.rarity];
+        c.id = e.id;
 
         //BCX
         if (e.distribution[0]) {
@@ -172,7 +173,7 @@ function calculations() {
     global.goldPrinted = global.totalGoldBCX + global.totalGoldBurnt;
     global.avgPrintRate = avgRate(global.avgPrintRate);
     global.avgBurnRate = avgRate(global.avgBurnRate);
-    global.normalPercentageBurnt = (global.totalNormalBurnt / global.normalPrinted* 100).toFixed(2);
+    global.normalPercentageBurnt = (global.totalNormalBurnt / global.normalPrinted * 100).toFixed(2);
     global.goldPercentageBurnt = (global.totalGoldBurnt / global.goldPrinted * 100).toFixed(2);
     global.totalBurnt = global.totalNormalBurnt + global.totalGoldBurnt;
     global.totalPercentageBurnt = ((global.totalBurnt / (global.normalPrinted + global.goldPrinted)) * 100).toFixed(2);
@@ -230,11 +231,12 @@ function makeTable(data) {
         let cardToolTip = "<a class=\"tooltip\">" + e.card + "<span><img style=\"max-width:100%;height:auto;\" src=\"" + imageLink +
             "\"><h3></h3></span></a>";
 
+        let priceLink = "<a href=\"https://peakmonsters.com/market?card=" + data[i].id + "&edition=reward\"  target=\"_blank\">" + e.price.toFixed(3) + "</a>"
         let rowData =
             "<tr class=\"trcard\"><td " + cardCss + ">" + cardToolTip + "</td><td>" + e.rarity +
             "</td><td>" + e.bcxNormExist + "</td><td>" + e.bcxGoldExist + "</td><td>" + e.bcxBurn +
             "</td><td>" +
-            e.bcxTotal + "</td><td>" + e.bcxPercent + "</td><td> $" + e.price.toFixed(3); + "</td></tr>";
+            e.bcxTotal + "</td><td>" + e.bcxPercent + "</td><td> $" + priceLink + "</td></tr>";
 
         if (hidden.complete && e.bcxPercent.slice(0, -1) >= 100) rowData = "", hidden.length++, hiddenString += " | " + e.card;
 
@@ -257,8 +259,8 @@ function makeTable(data) {
         "<tr><td>Total % Burnt</td><td>" + global.normalPercentageBurnt + "%</td><td>" + global.goldPercentageBurnt + "%</td><td><b>" + global.totalPercentageBurnt + "%</b></td></tr>" +
         "<tr><td># Cards Still Printing</td><td>" + "-" + "</td><td>" + "-" + "</td><td>" + global.numCardsPrinting + "</td></tr>" +
         "<tr><td># Cards Out of Print</td><td>" + "-" + "</td><td>" + "-" + "</td><td>" + global.numCardsFinished + "</td></tr>" +
-        "<tr><td>Approximate Cost of Max Rewards Set</td><td>$" + global.maxNormalSetPrice.toFixed(2) + "</td><td>$" + global.maxGoldSetPrice.toFixed(2) 
-        + "</td><td><b>$" + (global.maxNormalSetPrice + global.maxGoldSetPrice).toFixed(2) + "</b></td></tr>" +
+        "<tr><td>Approximate Cost of Max Rewards Set</td><td>$" + global.maxNormalSetPrice.toFixed(2) + "</td><td>$" + global.maxGoldSetPrice.toFixed(2) +
+        "</td><td><b>$" + (global.maxNormalSetPrice + global.maxGoldSetPrice).toFixed(2) + "</b></td></tr>" +
         "</table>";
 
     table = header + rows + footer + "</table><br>" + stats;
