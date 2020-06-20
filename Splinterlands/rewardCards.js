@@ -3,7 +3,7 @@ var body1 = "Data regarding the remaining reward edition cards for Splinterlands
 document.getElementById("body1").innerHTML = body1;
 
 var body2 =
-    "Disclaimer: Human error could result in mistakes in the representation of the above data. Extracted from https://steemmonsters.com/cards/get_details.<br>" +
+    "Disclaimer: Human error could result in mistakes in the representation of the above data. Extracted from https://game-api.splinterlands.com/cards/get_details.<br>" +
     "<br><a href=\"https://github.com/kiokizz\">GitHub</a> | Check out my Steem blogs <a href=\"https://www.steemit.com/@kiokizz\">@kiokizz</a> & <a href=\"https://www.steemit.com/@kiobot\">@kiobot</a>"
 
 document.getElementById("body2").innerHTML = body2;
@@ -35,7 +35,7 @@ let hidden = {
 getRewardCards();
 
 function getRewardCards() {
-    let url = "https://steemmonsters.com/cards/get_details";
+    let url = "https://game-api.splinterlands.com/cards/get_details";
     $.get(url, url, function (data) {
         console.log(data);
         if (data) {
@@ -49,7 +49,7 @@ function getRewardCards() {
 }
 
 function getPrices() {
-    let url = "https://steemmonsters.com/market/for_sale_grouped";
+    let url = "https://game-api.splinterlands.com/market/for_sale_grouped";
     $.get(url, url, function (data) {
         console.log(data);
         if (data) {
@@ -231,10 +231,12 @@ function makeTable(data) {
         let cardToolTip = "<a class=\"tooltip\">" + e.card + "<span><img style=\"max-width:100%;height:auto;\" src=\"" + imageLink +
             "\"><h3></h3></span></a>";
 
+        let burnedToolTip = "<a class=\"tooltip\">" + e.bcxBurn + "<span  style=\"color:white;width: 205px\">Normal: " + e.nBCXBurn + " | Gold: " + e.gBCXBurn; + "<h3></h3></span></a>";
+
         let priceLink = "<a href=\"https://peakmonsters.com/market?card=" + data[i].id + "&edition=reward\"  target=\"_blank\">" + e.price.toFixed(3) + "</a>"
         let rowData =
             "<tr class=\"trcard\"><td " + cardCss + ">" + cardToolTip + "</td><td>" + e.rarity +
-            "</td><td>" + e.bcxNormExist + "</td><td>" + e.bcxGoldExist + "</td><td>" + e.bcxBurn +
+            "</td><td>" + e.bcxNormExist + "</td><td>" + e.bcxGoldExist + "</td><td>" + burnedToolTip +
             "</td><td>" +
             e.bcxTotal + "</td><td>" + e.bcxPercent + "</td><td> $" + priceLink + "</td></tr>";
 
