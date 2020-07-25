@@ -232,13 +232,13 @@ function makeTable(data) {
             "\"><h3></h3></span></a>";
 
         let burnedToolTip = "<a class=\"tooltip\">" + e.bcxBurn + "<span  style=\"color:white;width: 205px\">Normal: " + e.nBCXBurn + " | Gold: " + e.gBCXBurn; + "<h3></h3></span></a>";
+        let priceToolTip = "<a href=\"https://peakmonsters.com/market?card=" + data[i].id + "&edition=reward\"  target=\"_blank\" class=\"tooltip\">" + e.price.toFixed(3) + "<span  style=\"color:white;width: 310px\">Low_BCX: Normal $" + e.price_bcx.toFixed(3) + " | Gold: $" + e.goldPrice_bcx.toFixed(3); + "<h3></h3></span></a>";
 
-        let priceLink = "<a href=\"https://peakmonsters.com/market?card=" + data[i].id + "&edition=reward\"  target=\"_blank\">" + e.price.toFixed(3) + "</a>"
         let rowData =
             "<tr class=\"trcard\"><td " + cardCss + ">" + cardToolTip + "</td><td>" + e.rarity +
             "</td><td>" + e.bcxNormExist + "</td><td>" + e.bcxGoldExist + "</td><td>" + burnedToolTip +
             "</td><td>" +
-            e.bcxTotal + "</td><td>" + e.bcxPercent + "</td><td> $" + priceLink + "</td></tr>";
+            e.bcxTotal + "</td><td>" + e.bcxPercent + "</td><td> $" + priceToolTip + "</td></tr>";
 
         if (hidden.complete && e.bcxPercent.slice(0, -1) >= 100) rowData = "", hidden.length++, hiddenString += " | " + e.card;
 
