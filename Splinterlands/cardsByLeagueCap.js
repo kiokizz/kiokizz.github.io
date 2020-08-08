@@ -4,7 +4,7 @@ document.getElementById("body1").innerHTML = body1;
 
 var body2 =
     "Disclaimer: Human error could result in mistakes in the representation of the above data. Extracted from https://game-api.splinterlands.com/cards/get_details.<br>" +
-    "<br><a href=\"https://github.com/kiokizz\">GitHub</a> | Check out my Steem blogs <a href=\"https://www.steemit.com/@kiokizz\">@kiokizz</a> & <a href=\"https://www.steemit.com/@kiobot\">@kiobot</a>"
+    "<br><a href=\"https://github.com/kiokizz\">GitHub</a> | Check out my blogs <a href=\"https://hive.blog/@kiokizz\">@kiokizz</a> & <a href=\"https://hive.blog/@splinterstats\">@splinterstats</a>"
 
 document.getElementById("body2").innerHTML = body2;
 
