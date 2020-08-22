@@ -344,9 +344,9 @@ function sortTable(column) {
 }
 
 function download() {
-    let dataCSV = "";
+    let dataCSV = `Card,Rarity,Normal BCX Existing,Gold BCX Existing,Normal BCX Burnt,Gold BCX Burnt,Total BCX Burnt,Total BCX,Percentage Printed,Low Price,Low_BCX: Normal,Low_BCX: Gold\n`;
     data.forEach(e => {
-        let line = e.card + "," + e.rarity + "," + e.bcxNormExist + "," + e.bcxGoldExist + "," + e.bcxBurn + "," + e.bcxPercent + "," + e.price + "\n";
+        let line = `${e.card},${e.rarity},${e.bcxNormExist},${e.bcxGoldExist},${e.nBCXBurn},${e.gBCXBurn},${e.bcxBurn},${e.bcxTotal},${e.bcxPercent},${e.price},${ e.price_bcx.toFixed(3)},${e.goldPrice_bcx.toFixed(3)}\n`;
         dataCSV += line;
     });
 
