@@ -4,33 +4,52 @@
 <head>
     <meta charset="UTF-8">
     <title>Splinterlands Cards By League Cap</title>
-    <link rel="shortcut icon" href="../resources/rose.jpg"/>
-    <script src=" https://cdn.jsdelivr.net/npm/steem/dist/steem.min.js"> </script> <script
-        src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js">
-    </script>
+    <link rel="shortcut icon" href="../resources/rose.jpg" />
+    <script src=" https://cdn.jsdelivr.net/npm/steem/dist/steem.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script defer src="cardsByLeagueCap.js"></script>
 </head>
 
 <body>
     <p id="body1"></p>
-    <section>
+    <div class="dotted">
         Summoner Rarity:
         <select class="selectors" id="Summoner" style="display: none;">
             <option value="1">Common</option>
-            <option value="2">Rare</option>
+            <option selected value="2">Rare</option>
             <option value="3">Epic</option>
             <option value="4">Legendary</option>
         </select>
         League:
         <select class="selectors" id="League" style="display: none;">
             <option value="novice">Novice</option>
-            <option value="bronze">Bronze</option>
+            <option selected value="bronze">Bronze</option>
             <option value="silver">Silver</option>
             <option value="gold">Gold</option>
             <option value="diamond">Diamond+</option>
         </select>
+        <br><br>
+        Edition:
+        <input type="checkbox" name="beta" id="beta" value="0,1">Beta</input>
+        <input type="checkbox" name="promo" id="promo" value="2">Promo</input>
+        <input type="checkbox" name="reward" id="reward" value="3">Reward</input>
+        <input type="checkbox" name="Untamed" id="untamed" value="4">Untamed</input>
+        <input type="checkbox" name="dice" id="dice" value="5">Dice</input>
+        <br><br>
+        Abilities:
+        <input list="abilities" name="ability1" id="ability1">
+        <datalist id="abilities">
+        </datalist>
+        <input list="abilities" name="ability2" id="ability2">
+        <datalist id="abilities">
+        </datalist>
+        <input list="abilities" name="ability3" id="ability3">
+        <datalist id="abilities">
+        </datalist>
+        <br><br>
         <button class="selectors" id="selectorsFilter" style="display: none;">Reload</button>
-    </section>
+    </div>
+
     <br>
 
     <button class="CSV" style="display: none;" onclick="download()">Download CSV</button>
@@ -40,63 +59,70 @@
     <button class="CSV" style="display: none;" onclick="download()">Download CSV</button>
 
     <p id="body2"></p>
+
+    <hr />
+
     <br><br><br><br>
 
     <style>
-            body {
-                width: 100%;
-                max-width: 800px;
-                font-size: 12pt;
-            }
-    
-            table {
-                width: 100%;
-            }
-    
-            table,
-            td,
-            th {
-                border: 1px solid black;
-                border-collapse: collapse;
-            }
-    
-            .btn {
-                border: none;
-                background-color: inherit;
-                cursor: pointer;
-                font-weight: bold;
-            }
-    
-            .btn:hover {
-                background: rgb(202, 189, 189);
-            }
-    
-            .tooltip {
-                position: relative;
-            }
-    
-            .tooltip span {
-                display: none;
-                color: black;
-                background: rgba(46, 46, 46, 0.774);
-            }
-    
-            .tooltip span img {
-                float: left;
-            }
-    
-            .tooltip:hover span {
-                display: block;
-                position: absolute;
-                z-index: 1000;
-                width: 150px;
-                border: 1px solid black;
-                margin-top: 12px;
-                margin-left: 12px;
-                overflow: hidden;
-                padding: 4px;
-            }
-        </style>
+        body {
+            width: 100%;
+            max-width: 1000px;
+            font-size: 13pt;
+        }
+
+        div.dotted {
+            border-style: dotted;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        table,
+        td,
+        th {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        .btn {
+            border: none;
+            background-color: inherit;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: rgb(202, 189, 189);
+        }
+
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip span {
+            display: none;
+            color: black;
+            background: rgba(46, 46, 46, 0.774);
+        }
+
+        .tooltip span img {
+            float: left;
+        }
+
+        .tooltip:hover span {
+            display: block;
+            position: absolute;
+            z-index: 1000;
+            width: 150px;
+            border: 1px solid black;
+            margin-top: 12px;
+            margin-left: 12px;
+            overflow: hidden;
+            padding: 4px;
+        }
+    </style>
 </body>
 
 </html>

@@ -12,8 +12,11 @@ let data = [];
 let cards = [];
 let sorted = {};
 
-let league = "novice";
-let summoner = 1;
+let league = "bronze";
+let summoner = 2;
+let abilitiesList = [];
+let editionsToFilter = [];
+let abilitiesToFilter = [];
 
 let rarities = {
     1: "Common",
@@ -116,50 +119,93 @@ function calculations() {
             c.abilities = "";
             for (let ii = 0; ii <= c.level; ii++) {
                 if (e.stats.abilities[ii].length > 0) {
-                    if (c.abilities.length > 0) c.abilities += ","
+                    if (c.abilities.length > 0) c.abilities += ",";
                     c.abilities += e.stats.abilities[ii];
                 }
             }
-            if (e.editions === "0,1" || "1") c.edition = "beta"
-            if (e.editions === "2") c.edition = "promo"
-            if (e.editions === "3") c.edition = "reward"
-            if (e.editions === "4") c.edition = "untamed"
+            c.abilitiesArray = c.abilities.split(",");
+            c.abilitiesArray.forEach(e => {
+                if (!abilitiesList.includes(e)) abilitiesList.push(e);
+            });
+            c.abilities = c.abilities.replace(",", ", ")
+            if (e.editions === "0,1" || "1") c.edition = "beta";
+            if (e.editions === "2") c.edition = "promo";
+            if (e.editions === "3") c.edition = "reward";
+            if (e.editions === "4") c.edition = "untamed";
+            if (e.editions === "5") c.edition = "dice";
             //CSS Requirements
             c.color = e.color;
         } else if (e.type === "Summoner") {
             continue;
         } else throw "error";
 
-        if (c.level >= 0) data.push(c);
-    }
+        //ToList Abilities
+        let toList = true;
+        if (c.level < 0) toList = false, console.log(`Level Error`);
+        if (abilitiesToFilter.length === 1) {
+            toList = false;
+            if (c.abilitiesArray.includes(abilitiesToFilter[0])) toList = true;
+        } else if (abilitiesToFilter.length === 2) {
+            toList = false;
+            let a0 = (c.abilitiesArray.includes(abilitiesToFilter[0]));
+            let a1 = (c.abilitiesArray.includes(abilitiesToFilter[1]));
+            if (a0 && a1) toList = true;
+        } else if (abilitiesToFilter.length === 3) {
+            toList = false;
+            let a0 = (c.abilitiesArray.includes(abilitiesToFilter[0]));
+            let a1 = (c.abilitiesArray.includes(abilitiesToFilter[1]));
+            let a2 = (c.abilitiesArray.includes(abilitiesToFilter[2]));
+            if (a0 && a1 && a2) toList = true;
+        }
 
+        //ToList Edition
+        if (editionsToFilter.length >= 1 && !editionsToFilter.includes(c.edition)) toList = false;
+        
+        if (toList) data.push(c);
+    }
     makeTable();
 }
 
 function makeTable() {
     let header =
         //mana | health | armor | speed| attack | ranged | magic | abilities
-        "<table><tr><th><button id=\"card_btn\" class=\"btn\">" + league + "|" + rarities[summoner] + "</button><button id=\"color_btn\" class=\"btn\">(color)</button>" +
-        "<th><button id=\"mana_btn\" class=\"btn\">Mana</button></th>" +
-        "<th><button id=\"health_btn\" class=\"btn\">Health</button></th>" +
-        "<th><button id=\"armor_btn\" class=\"btn\">Armor</button></th>" +
-        "<th><button id=\"speed_btn\" class=\"btn\">Speed</button></th>" +
-        "<th><button id=\"attack_btn\" class=\"btn\">Melee</button></th>" +
-        "<th><button id=\"ranged_btn\" class=\"btn\">Ranged</button></th>" +
-        "<th><button id=\"magic_btn\" class=\"btn\">Magic</button></th>" +
+        "<table><tr><th><button id=\"card_btn\" class=\"btn\">" + league + "|" + rarities[summoner] + "</button><button id=\"color_btn\" class=\"btn\">🌈</button>" +
+        "<th><button id=\"mana_btn\" class=\"btn\">🔮 Mana</button></th>" +
+        "<th><button id=\"health_btn\" class=\"btn\">💗 Health</button></th>" +
+        "<th><button id=\"armor_btn\" class=\"btn\">🛡️ Armor</button></th>" +
+        "<th><button id=\"speed_btn\" class=\"btn\">⏩ Speed</button></th>" +
+        "<th><button id=\"attack_btn\" class=\"btn\">🗡️ Melee</button></th>" +
+        "<th><button id=\"ranged_btn\" class=\"btn\">🏹 Ranged</button></th>" +
+        "<th><button id=\"magic_btn\" class=\"btn\">✨ Magic</button></th>" +
         "<th>Abilities</th></tr>";
 
     let rows = "";
+
+    let backgroundColor = {
+        Red: "#FF3333",
+        Green: "#00CC66",
+        White: "#F5F5F5",
+        Gray: "#BEBEBE",
+        Gold: "#FFCC33",
+        Blue: "#00CCFF",
+        Black: "#663399"
+    }
+
+    let textColor = {
+        Red: "black",
+        Green: "black",
+        White: "black",
+        Grey: "black",
+        Gold: "black",
+        Blue: "black",
+        Black: "white"
+    }
 
     for (let i = 0; i < data.length; i++) {
         const e = data[i];
 
         //Style
-        let cardCss;
-        if (e.color === "Black") cardCss = "style=\"background-color:" + e.color + ";color:rgb(201, 201, 201)" +
-            "\"";
-        else if (e.color === "Blue") cardCss = "style=\"background-color:" + e.color + ";color:white" + "\"";
-        else cardCss = "style=\"background-color:" + e.color + "\"";
+        let cardCss = "style=\"background-color:" + backgroundColor[e.color] + ";" + +textColor[e.color] + "\"";
 
         let level = (e.level + 1);
 
@@ -180,6 +226,12 @@ function makeTable() {
 
     let footer = "</table>";
     table = header + rows + footer;
+
+    let options = "";
+    abilitiesList.forEach(e => {
+        options += `<option value="${e}">`;
+    });
+    document.getElementById('abilities').innerHTML = options;
 
     createHTMLPage(table);
 }
@@ -224,7 +276,33 @@ function createHTMLPage(table) {
 
         summoner = parseInt(b);
         league = d;
-        console.log("reload: ", summoner, league);
+
+        let betaSelector = document.getElementById("beta").checked;
+        let promoSelector = document.getElementById("promo").checked;
+        let rewardSelector = document.getElementById("reward").checked;
+        let untamedSelector = document.getElementById("untamed").checked;
+        let diceSelector = document.getElementById("dice").checked;
+
+        editionsToFilter = [];
+
+        if (betaSelector) editionsToFilter.push('beta');
+        if (promoSelector) editionsToFilter.push('promo');
+        if (rewardSelector) editionsToFilter.push('reward');
+        if (untamedSelector) editionsToFilter.push('untamed');
+        if (diceSelector) editionsToFilter.push('dice');
+
+        let a1 = document.getElementById("ability1");
+        let ability1 = a1.value;
+        let a2 = document.getElementById("ability2");
+        let ability2 = a2.value;
+        let a3 = document.getElementById("ability3");
+        let ability3 = a3.value;
+
+        abilitiesToFilter = [];
+
+        if (ability1 != "" && abilitiesList.includes(ability1)) abilitiesToFilter.push(ability1);
+        if (ability2 != "" && abilitiesList.includes(ability2)) abilitiesToFilter.push(ability2);
+        if (ability3 != "" && abilitiesList.includes(ability3)) abilitiesToFilter.push(ability3);
 
         calculations();
     };
