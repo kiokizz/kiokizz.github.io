@@ -11,17 +11,17 @@
 </head>
 
 <body>
-    <p id="body1"></p>
-    <div class="dotted">
+    <p>Splinterlands Cards</p>
+    <div class="selectors" style="display: none;">
         Summoner Rarity:
-        <select class="selectors" id="Summoner" style="display: none;">
+        <select id="Summoner">
             <option value="1">Common</option>
             <option selected value="2">Rare</option>
             <option value="3">Epic</option>
             <option value="4">Legendary</option>
         </select>
         League:
-        <select class="selectors" id="League" style="display: none;">
+        <select id="League">
             <option value="novice">Novice</option>
             <option selected value="bronze">Bronze</option>
             <option value="silver">Silver</option>
@@ -47,10 +47,28 @@
         <datalist id="abilities">
         </datalist>
         <br><br>
-        <button class="selectors" id="selectorsFilter" style="display: none;">Reload</button>
+        Stat Filter:
+        <select id="stat">
+            <option value="none">-</option>
+            <option value="mana">Mana</option>
+            <option value="health">Health</option>
+            <option value="armor">Armor</option>
+            <option value="speed">Speed</option>
+            <option value="attack">Melee</option>
+            <option value="ranged">Ranged</option>
+            <option value="magic">Magic</option>
+        </select>
+        <select id="operator">
+            <option value="<">
+            <</option> <option value=">">>
+            </option>
+            <option value="=">=</option>
+        </select>
+        <input type="text" id="statvalue" maxlength="2" size="1" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+        <br><br>
+        <button id="selectorsFilter">Reload</button>
+        <br><br>
     </div>
-
-    <br>
 
     <button class="CSV" style="display: none;" onclick="download()">Download CSV</button>
 
@@ -71,8 +89,11 @@
             font-size: 13pt;
         }
 
-        div.dotted {
+        div.selectors {
             border-style: dotted;
+            width: 100%;
+            max-width: 1000px;
+            font-size: 13pt;
         }
 
         table {

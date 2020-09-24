@@ -1,9 +1,4 @@
-var body1 = "Splinterlands Cards.<br>"
-
-document.getElementById("body1").innerHTML = body1;
-
-var body2 =
-    "Disclaimer: Human error could result in mistakes in the representation of the above data. Extracted from https://game-api.splinterlands.com/cards/get_details.<br>" +
+var body2 = "Disclaimer: Human error could result in mistakes in the representation of the above data. Extracted from https://game-api.splinterlands.com/cards/get_details.<br>" +
     "<br><a href=\"https://github.com/kiokizz\">GitHub</a> | Check out my blogs <a href=\"https://hive.blog/@kiokizz\">@kiokizz</a> & <a href=\"https://hive.blog/@splinterstats\">@splinterstats</a>"
 
 document.getElementById("body2").innerHTML = body2;
@@ -17,6 +12,7 @@ let summoner = 2;
 let abilitiesList = [];
 let editionsToFilter = [];
 let abilitiesToFilter = [];
+let statFilter = ["none"]
 
 let rarities = {
     1: "Common",
@@ -160,7 +156,15 @@ function calculations() {
 
         //ToList Edition
         if (editionsToFilter.length >= 1 && !editionsToFilter.includes(c.edition)) toList = false;
-        
+
+        //ToList Stat
+        let statFilterCheck;
+        if (statFilter[1] === "<") statFilterCheck = (c[statFilter[0]] < statFilter[2]);
+        else if (statFilter[1] === ">") statFilterCheck = (c[statFilter[0]] > statFilter[2]);
+        else if (statFilter[1] === "=") statFilterCheck = (c[statFilter[0]] == statFilter[2]);
+
+        if (statFilter[0] !== "none" && !statFilterCheck) toList = false;
+
         if (toList) data.push(c);
     }
     makeTable();
@@ -216,7 +220,7 @@ function makeTable() {
             "\"><h3></h3></span></a>";
 
         let rowData =
-            "<tr><td " + cardCss + ">" + cardToolTip + " LVL " + level + "</td><td>" + e.mana +
+            "<tr><td " + cardCss + "> ⭐<b>" + level + "</b> | " + cardToolTip + "</td><td>" + e.mana +
             "</td><td>" + e.health + "</td><td>" + e.armor + "</td><td>" + e.speed +
             "</td><td>" +
             e.attack + "</td><td>" + e.ranged + "</td><td>" + e.magic + "</td><td>" + e.abilities + "</td></tr>";
@@ -303,6 +307,12 @@ function createHTMLPage(table) {
         if (ability1 != "" && abilitiesList.includes(ability1)) abilitiesToFilter.push(ability1);
         if (ability2 != "" && abilitiesList.includes(ability2)) abilitiesToFilter.push(ability2);
         if (ability3 != "" && abilitiesList.includes(ability3)) abilitiesToFilter.push(ability3);
+
+        let stat = document.getElementById("stat").value;
+        let operator = document.getElementById("operator").value;
+        let text = document.getElementById("statvalue").value;
+
+        statFilter = [stat, operator, text]
 
         calculations();
     };
