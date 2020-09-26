@@ -9,81 +9,6 @@ let editionsToFilter = [];
 let abilitiesToFilter = [];
 let statFilter = ["none"];
 
-const rarities = {
-  1: "Common",
-  2: "Rare",
-  3: "Epic",
-  4: "Legendary"
-};
-
-const leageCaps = {
-  novice: [1, 1, 1, 1],
-  bronze: [3, 2, 2, 1],
-  silver: [5, 4, 3, 2],
-  gold: [8, 6, 5, 3],
-  diamond: [10, 8, 6, 4],
-  champion: this.diamond
-};
-
-const summonerCaps = {
-  Common: {
-    1: [1, 1, 1, 0],
-    2: [2, 2, 1, 1],
-    3: [3, 2, 2, 1],
-    4: [4, 3, 2, 2],
-    5: [5, 4, 3, 2],
-    6: [6, 5, 4, 2],
-    7: [7, 6, 4, 3],
-    8: [8, 6, 5, 3],
-    9: [9, 7, 5, 4],
-    10: [10, 8, 6, 4]
-  },
-  Rare: {
-    1: [1, 1, 1, 1],
-    2: [3, 2, 2, 1],
-    3: [4, 3, 2, 2],
-    4: [5, 4, 3, 2],
-    5: [6, 5, 4, 3],
-    6: [8, 6, 5, 3],
-    7: [9, 7, 5, 4],
-    8: [10, 8, 6, 4]
-  },
-  Epic: {
-    1: [2, 1, 1, 1],
-    2: [3, 3, 2, 1],
-    3: [5, 4, 3, 2],
-    4: [7, 5, 4, 3],
-    5: [8, 7, 5, 3],
-    6: [10, 8, 6, 4]
-  },
-  Legendary: {
-    1: [3, 2, 2, 1],
-    2: [5, 4, 3, 2],
-    3: [8, 6, 5, 3],
-    4: [10, 8, 6, 4]
-  }
-};
-
-const backgroundColor = {
-  Red: "#FF3333",
-  Green: "#00CC66",
-  White: "#F5F5F5",
-  Gray: "#BEBEBE",
-  Gold: "#FFCC33",
-  Blue: "#00CCFF",
-  Black: "#663399"
-};
-
-const textColor = {
-  Red: "black",
-  Green: "black",
-  White: "black",
-  Grey: "black",
-  Gold: "black",
-  Blue: "black",
-  Black: "white"
-};
-
 function getCards() {
   let url = "https://game-api.splinterlands.com/cards/get_details";
 
@@ -97,6 +22,61 @@ function getCards() {
 function calculations() {
   data.length = 0;
   sorted = "";
+
+  const rarities = {
+    1: "Common",
+    2: "Rare",
+    3: "Epic",
+    4: "Legendary"
+  };
+
+  const leageCaps = {
+    novice: [1, 1, 1, 1],
+    bronze: [3, 2, 2, 1],
+    silver: [5, 4, 3, 2],
+    gold: [8, 6, 5, 3],
+    diamond: [10, 8, 6, 4],
+    champion: this.diamond
+  };
+
+  const summonerCaps = {
+    Common: {
+      1: [1, 1, 1, 0],
+      2: [2, 2, 1, 1],
+      3: [3, 2, 2, 1],
+      4: [4, 3, 2, 2],
+      5: [5, 4, 3, 2],
+      6: [6, 5, 4, 2],
+      7: [7, 6, 4, 3],
+      8: [8, 6, 5, 3],
+      9: [9, 7, 5, 4],
+      10: [10, 8, 6, 4]
+    },
+    Rare: {
+      1: [1, 1, 1, 1],
+      2: [3, 2, 2, 1],
+      3: [4, 3, 2, 2],
+      4: [5, 4, 3, 2],
+      5: [6, 5, 4, 3],
+      6: [8, 6, 5, 3],
+      7: [9, 7, 5, 4],
+      8: [10, 8, 6, 4]
+    },
+    Epic: {
+      1: [2, 1, 1, 1],
+      2: [3, 3, 2, 1],
+      3: [5, 4, 3, 2],
+      4: [7, 5, 4, 3],
+      5: [8, 7, 5, 3],
+      6: [10, 8, 6, 4]
+    },
+    Legendary: {
+      1: [3, 2, 2, 1],
+      2: [5, 4, 3, 2],
+      3: [8, 6, 5, 3],
+      4: [10, 8, 6, 4]
+    }
+  };
 
   // League && Rarity --> Summoner Level --> Monster Level
   let thisLeague = leageCaps[league];
@@ -173,8 +153,28 @@ function calculations() {
 }
 
 function makeTable() {
+  const backgroundColor = {
+    Red: "#FF3333",
+    Green: "#00CC66",
+    White: "#F5F5F5",
+    Gray: "#BEBEBE",
+    Gold: "#FFCC33",
+    Blue: "#00CCFF",
+    Black: "#663399"
+  };
+
+  const textColor = {
+    Red: "black",
+    Green: "black",
+    White: "black",
+    Grey: "black",
+    Gold: "black",
+    Blue: "black",
+    Black: "white"
+  };
+
   let rows = data.reduce((p, c) => {
-      let style = `style="background-color:${backgroundColor[c.color]};${+textColor[c.color]}"`;
+      let style = `style="background-color:${backgroundColor[c.color]};${textColor[c.color]}"`;
 
       //https://d36mxiodymuqjm.cloudfront.net/cards_by_level/reward/Creeping%20Ooze_lv1.png
       let urlName = c.card.replace(/\s/g, "%20");
