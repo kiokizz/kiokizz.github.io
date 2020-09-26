@@ -9,6 +9,61 @@ let editionsToFilter = [];
 let abilitiesToFilter = [];
 let statFilter = ["none"];
 
+const leageCaps = {
+  novice: [1, 1, 1, 1],
+  bronze: [3, 2, 2, 1],
+  silver: [5, 4, 3, 2],
+  gold: [8, 6, 5, 3],
+  diamond: [10, 8, 6, 4],
+  champion: this.diamond
+};
+
+const summonerCaps = {
+  Common: {
+    1: [1, 1, 1, 0],
+    2: [2, 2, 1, 1],
+    3: [3, 2, 2, 1],
+    4: [4, 3, 2, 2],
+    5: [5, 4, 3, 2],
+    6: [6, 5, 4, 2],
+    7: [7, 6, 4, 3],
+    8: [8, 6, 5, 3],
+    9: [9, 7, 5, 4],
+    10: [10, 8, 6, 4]
+  },
+  Rare: {
+    1: [1, 1, 1, 1],
+    2: [3, 2, 2, 1],
+    3: [4, 3, 2, 2],
+    4: [5, 4, 3, 2],
+    5: [6, 5, 4, 3],
+    6: [8, 6, 5, 3],
+    7: [9, 7, 5, 4],
+    8: [10, 8, 6, 4]
+  },
+  Epic: {
+    1: [2, 1, 1, 1],
+    2: [3, 3, 2, 1],
+    3: [5, 4, 3, 2],
+    4: [7, 5, 4, 3],
+    5: [8, 7, 5, 3],
+    6: [10, 8, 6, 4]
+  },
+  Legendary: {
+    1: [3, 2, 2, 1],
+    2: [5, 4, 3, 2],
+    3: [8, 6, 5, 3],
+    4: [10, 8, 6, 4]
+  }
+};
+
+const rarities = {
+  1: "Common",
+  2: "Rare",
+  3: "Epic",
+  4: "Legendary"
+};
+
 function getCards() {
   let url = "https://game-api.splinterlands.com/cards/get_details";
 
@@ -23,60 +78,6 @@ function calculations() {
   data.length = 0;
   sorted = "";
 
-  const rarities = {
-    1: "Common",
-    2: "Rare",
-    3: "Epic",
-    4: "Legendary"
-  };
-
-  const leageCaps = {
-    novice: [1, 1, 1, 1],
-    bronze: [3, 2, 2, 1],
-    silver: [5, 4, 3, 2],
-    gold: [8, 6, 5, 3],
-    diamond: [10, 8, 6, 4],
-    champion: this.diamond
-  };
-
-  const summonerCaps = {
-    Common: {
-      1: [1, 1, 1, 0],
-      2: [2, 2, 1, 1],
-      3: [3, 2, 2, 1],
-      4: [4, 3, 2, 2],
-      5: [5, 4, 3, 2],
-      6: [6, 5, 4, 2],
-      7: [7, 6, 4, 3],
-      8: [8, 6, 5, 3],
-      9: [9, 7, 5, 4],
-      10: [10, 8, 6, 4]
-    },
-    Rare: {
-      1: [1, 1, 1, 1],
-      2: [3, 2, 2, 1],
-      3: [4, 3, 2, 2],
-      4: [5, 4, 3, 2],
-      5: [6, 5, 4, 3],
-      6: [8, 6, 5, 3],
-      7: [9, 7, 5, 4],
-      8: [10, 8, 6, 4]
-    },
-    Epic: {
-      1: [2, 1, 1, 1],
-      2: [3, 3, 2, 1],
-      3: [5, 4, 3, 2],
-      4: [7, 5, 4, 3],
-      5: [8, 7, 5, 3],
-      6: [10, 8, 6, 4]
-    },
-    Legendary: {
-      1: [3, 2, 2, 1],
-      2: [5, 4, 3, 2],
-      3: [8, 6, 5, 3],
-      4: [10, 8, 6, 4]
-    }
-  };
 
   // League && Rarity --> Summoner Level --> Monster Level
   let thisLeague = leageCaps[league];
