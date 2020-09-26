@@ -2,148 +2,102 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Splinterlands Cards By League Cap</title>
-    <link rel="shortcut icon" href="../resources/rose.jpg" />
-    <script src=" https://cdn.jsdelivr.net/npm/steem/dist/steem.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script defer src="cardsByLeagueCap.js"></script>
+  <meta charset="UTF-8">
+  <title>Splinterlands Cards By League Cap</title>
+  <link rel="shortcut icon" href="../resources/rose.jpg"/>
+  <link rel="stylesheet" type="text/css"
+        href="cardsByLeague/cardsByLeagueCap.css">
+  <script src=" https://cdn.jsdelivr.net/npm/steem/dist/steem.min.js"></script>
+  <script
+    src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="cardsByLeague/utils.js"></script>
+  <script src="cardsByLeague/cardsByLeagueCap.js"></script>
 </head>
 
 <body>
-    <p>Splinterlands Cards</p>
-    <div class="selectors" style="display: none;">
-        Summoner Rarity:
-        <select id="Summoner">
-            <option value="1">Common</option>
-            <option selected value="2">Rare</option>
-            <option value="3">Epic</option>
-            <option value="4">Legendary</option>
-        </select>
-        League:
-        <select id="League">
-            <option value="novice">Novice</option>
-            <option selected value="bronze">Bronze</option>
-            <option value="silver">Silver</option>
-            <option value="gold">Gold</option>
-            <option value="diamond">Diamond+</option>
-        </select>
-        <br><br>
-        Edition:
-        <input type="checkbox" name="beta" id="beta" value="0,1">Beta</input>
-        <input type="checkbox" name="promo" id="promo" value="2">Promo</input>
-        <input type="checkbox" name="reward" id="reward" value="3">Reward</input>
-        <input type="checkbox" name="Untamed" id="untamed" value="4">Untamed</input>
-        <input type="checkbox" name="dice" id="dice" value="5">Dice</input>
-        <br><br>
-        Abilities:
-        <input list="abilities" name="ability1" id="ability1">
-        <datalist id="abilities">
-        </datalist>
-        <input list="abilities" name="ability2" id="ability2">
-        <datalist id="abilities">
-        </datalist>
-        <input list="abilities" name="ability3" id="ability3">
-        <datalist id="abilities">
-        </datalist>
-        <br><br>
-        Stat Filter:
-        <select id="stat">
-            <option value="none">-</option>
-            <option value="mana">Mana</option>
-            <option value="health">Health</option>
-            <option value="armor">Armor</option>
-            <option value="speed">Speed</option>
-            <option value="attack">Melee</option>
-            <option value="ranged">Ranged</option>
-            <option value="magic">Magic</option>
-        </select>
-        <select id="operator">
-            <option value="<">
-            <</option> <option value=">">>
-            </option>
-            <option value="=">=</option>
-        </select>
-        <input type="text" id="statvalue" maxlength="2" size="1" onkeyup="this.value=this.value.replace(/[^\d]/,'')">
-        <br><br>
-        <button id="selectorsFilter">Reload</button>
-        <br><br>
-    </div>
+<p>Splinterlands Cards</p>
+<div id="selectors" style="display: none;">
+  Summoner Rarity:
+  <select id="Summoner">
+    <option value="1">Common</option>
+    <option selected value="2">Rare</option>
+    <option value="3">Epic</option>
+    <option value="4">Legendary</option>
+  </select>
+  League:
+  <select id="League">
+    <option value="novice">Novice</option>
+    <option selected value="bronze">Bronze</option>
+    <option value="silver">Silver</option>
+    <option value="gold">Gold</option>
+    <option value="diamond">Diamond+</option>
+  </select>
+  <br><br>
+  Edition:
+  <input type="checkbox" name="beta" id="beta" value="0,1">Beta</input>
+  <input type="checkbox" name="promo" id="promo" value="2">Promo</input>
+  <input type="checkbox" name="reward" id="reward" value="3">Reward</input>
+  <input type="checkbox" name="Untamed" id="untamed" value="4">Untamed</input>
+  <input type="checkbox" name="dice" id="dice" value="5">Dice</input>
+  <br><br>
+  Abilities:
+  <input list="abilities" name="ability1" id="ability1">
+  <input list="abilities" name="ability2" id="ability2">
+  <input list="abilities" name="ability3" id="ability3">
+  <datalist id="abilities">
+  </datalist>
+  <br><br>
+  Stat Filter:
+  <select id="stat">
+    <option value="none">-</option>
+    <option value="mana">Mana</option>
+    <option value="health">Health</option>
+    <option value="armor">Armor</option>
+    <option value="speed">Speed</option>
+    <option value="attack">Melee</option>
+    <option value="ranged">Ranged</option>
+    <option value="magic">Magic</option>
+  </select>
+  <select id="operator">
+    <option value="<">
+      <
+    </option>
+    <option value=">">>
+    </option>
+    <option value="=">=</option>
+  </select>
+  <input type="text" id="statvalue" maxlength="2" size="1"
+         onkeyup="this.value=this.value.replace(/[^\d]/,'')">
+  <br><br>
+  <button id="selectorsFilter">Reload</button>
+  <br><br>
+</div>
 
-    <button class="CSV" style="display: none;" onclick="download()">Download CSV</button>
+<button class="CSV" style="display: none;" onclick="download()">Download CSV
+</button>
 
-    <p id="displayStats">Data Loading...</p>
+<p id="displayStats">Data Loading...</p>
 
-    <button class="CSV" style="display: none;" onclick="download()">Download CSV</button>
+<button class="CSV" style="display: none;" onclick="download()">Download CSV
+</button>
 
-    <p id="body2"></p>
+<p>Disclaimer: Human error could result in mistakes in the representation of the
+  above data. Extracted from
+  https://game-api.splinterlands.com/cards/get_details.
+  <br>
+  <br>
+  <a href=\"https://github.com/kiokizz\">GitHub</a>
+  | Check out my blogs <a href=\"https://hive.blog/@kiokizz\">@kiokizz</a>
+  & <a href=\"https://hive.blog/@splinterstats\">@splinterstats</a>
+</p>
 
-    <hr />
+<hr/>
 
-    <br><br><br><br>
+<br><br><br><br>
 
-    <style>
-        body {
-            width: 100%;
-            max-width: 1000px;
-            font-size: 13pt;
-        }
+<script>
+  getCards();
+</script>
 
-        div.selectors {
-            border-style: dotted;
-            width: 100%;
-            max-width: 1000px;
-            font-size: 13pt;
-        }
-
-        table {
-            width: 100%;
-        }
-
-        table,
-        td,
-        th {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
-
-        .btn {
-            border: none;
-            background-color: inherit;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btn:hover {
-            background: rgb(202, 189, 189);
-        }
-
-        .tooltip {
-            position: relative;
-        }
-
-        .tooltip span {
-            display: none;
-            color: black;
-            background: rgba(46, 46, 46, 0.774);
-        }
-
-        .tooltip span img {
-            float: left;
-        }
-
-        .tooltip:hover span {
-            display: block;
-            position: absolute;
-            z-index: 1000;
-            width: 150px;
-            border: 1px solid black;
-            margin-top: 12px;
-            margin-left: 12px;
-            overflow: hidden;
-            padding: 4px;
-        }
-    </style>
 </body>
-
 </html>
