@@ -11,6 +11,10 @@ body {
     font-size: 13pt;
 }
 
+#displayGallery img {
+        max-width: 19.5%;
+      }
+
 table {
     width: 100%;
 }

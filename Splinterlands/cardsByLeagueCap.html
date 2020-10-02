@@ -69,6 +69,8 @@
   <input type="text" id="statvalue" maxlength="2" size="1"
          onkeyup="this.value=this.value.replace(/[^\d]/,'')">
   <br><br>
+  <input type="checkbox" id="galleryCheckbox">Gallery View (below table)</input>
+  <br><br>
   <button id="selectorsFilter">Reload</button>
   <br><br>
 </div>
@@ -76,7 +78,9 @@
 <button class="CSV" style="display: none;" onclick="download()">Download CSV
 </button>
 
-<p id="displayStats">Data Loading...</p>
+<p id="displayStats">Stats Data Loading...</p>
+
+<p id="displayGallery"></p>
 
 <button class="CSV" style="display: none;" onclick="download()">Download CSV
 </button>

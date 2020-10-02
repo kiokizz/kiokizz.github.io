@@ -8,6 +8,7 @@ let abilitiesList = [];
 let editionsToFilter = [];
 let abilitiesToFilter = [];
 let statFilter = ["none"];
+let galleryImages = [];
 
 const leageCaps = {
   novice: [1, 1, 1, 1],
@@ -174,6 +175,7 @@ function makeTable() {
     Black: "white"
   };
 
+  galleryImages = [];
   let rows = data.reduce((p, c) => {
       let style = `style="background-color:${backgroundColor[c.color]};${textColor[c.color]}"`;
 
@@ -181,6 +183,7 @@ function makeTable() {
       let urlName = c.card.replace(/\s/g, "%20");
       let level = (c.level + 1);
       let imageLink = `https://d36mxiodymuqjm.cloudfront.net/cards_by_level/${c.edition}/${urlName}_lv${level}.png`;
+      galleryImages.push(imageLink);
       let tool_tip = `
 <a class="tooltip">${c.card}<span>
    <img style="max-width:100%;height:auto;" src="${imageLink}" alt="">
@@ -223,7 +226,8 @@ function makeTable() {
 
 function createHTMLPage(table) {
   el("displayStats").innerHTML = table;
-
+  if (el("galleryCheckbox").checked) galleryView();
+  else el("displayGallery").innerHTML = "";
   const sort_buttons = [
     {id: 'color_btn', column: 'color'},
     {id: 'card_btn', column: 'card'},
@@ -264,6 +268,14 @@ function createHTMLPage(table) {
 
     calculations();
   };
+}
+
+function galleryView() {
+ let gallery = galleryImages.reduce((p,c) => {
+   return `${p}
+   <img src="${c}" alt="">`
+ }, "")
+ el("displayGallery").innerHTML = gallery;
 }
 
 function sortTable(column) {
