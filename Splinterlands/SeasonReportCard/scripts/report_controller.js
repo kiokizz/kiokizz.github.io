@@ -615,7 +615,9 @@ function report_controller() {
         }
       });
 
-      report_array.matches.total_matches = report_array.matches.wins + report_array.matches.loss + report_array.matches.draws;
+      report_array.matches.Ranked.total_matches = report_array.matches.Ranked.wins + report_array.matches.Ranked.loss + report_array.matches.Ranked.draws;
+      report_array.matches.Tournament.total_matches = report_array.matches.Tournament.wins + report_array.matches.Tournament.loss + report_array.matches.Tournament.draws;
+      report_array.matches.total_matches = report_array.matches.Ranked.total_matches + report_array.matches.Tournament.total_matches;
       report_array.summoner_data = generatePublicDetails(report_array.matches.cards.summoners);
       report_array.monster_data = generatePublicDetails(report_array.matches.cards.monsters);
       //Make percentages.. Top 15 Sums, Top 100 Mons
