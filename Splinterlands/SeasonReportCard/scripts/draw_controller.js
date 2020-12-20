@@ -26,7 +26,8 @@ ${divider_images.splinterlands}
 |Rating|${report_array.matches.rating}|
 |Rating High|${report_array.matches.highRating} - ${report_array.matches.league}|
 |Total Rating Movements (+-)|${report_array.matches.ratingMovement}|
-|Win Ratio (Win/Loss+Draw)|${(report_array.matches.wins / report_array.matches.loss).toFixed(2)} (${report_array.matches.wins}/${report_array.matches.loss}/${report_array.matches.draws})|
+|Ranked Ratio (Win/Loss+Draw)|${(report_array.matches.Ranked.wins / report_array.matches.Ranked.loss).toFixed(2)} (${report_array.matches.Ranked.wins}/${report_array.matches.Ranked.loss}/${report_array.matches.Ranked.draws})|
+|Tournament Ratio (Win/Loss+Draw)|${(report_array.matches.Tournament.wins / report_array.matches.Tournament.loss).toFixed(2)} (${report_array.matches.Tournament.wins}/${report_array.matches.Tournament.loss}/${report_array.matches.Tournament.draws})|
 |Longest Streak|${report_array.matches.longestStreak}|
 |Highest Rated Win *vs*|${report_array.matches.higestRatedOpp.name} (${report_array.matches.higestRatedOpp.rating})|
 

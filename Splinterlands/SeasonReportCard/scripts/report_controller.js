@@ -201,15 +201,22 @@ function report_controller() {
         switch (tx.type) {
           case "sm_battle":
             //console.log(tx);
-            //do somethings
             let json = JSON.parse(tx.result);
             let match_type = json.match_type;
             let win = (json.winner === report_array.player);
-            if (win && match_type === `Ranked`) {
-              report_array.matches.wins++;
-              report_array.earnings.matches += json.dec_info.reward;
-            } else if (json.winner === "DRAW") report_array.matches.draws++;
-            else report_array.matches.loss++;
+            if (match_type === `Ranked`) tally_wdl(match_type);
+            else if (match_type === `Tournament`) tally_wdl(match_type);
+            else if (match_type === `Practice`) {
+              console.log(`Practice Match`);
+            } else console.log("unknown match type")
+
+            function tally_wdl(match_type) {
+              if (win) {
+                report_array.matches[match_type].wins++;
+                if (match_type === `Ranked`) report_array.earnings.matches += json.dec_info.reward;
+              } else if (json.winner === "DRAW") report_array.matches[match_type].draws++;
+              else report_array.matches[match_type].loss++;
+            }
 
             json.players.forEach(player => {
               if (player.name !== report_array.player) {

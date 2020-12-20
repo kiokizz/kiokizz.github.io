@@ -19,9 +19,16 @@ let report_array = {
     league: `n/a`,
     rank: 0,
     rankMovement: 0,
-    wins: 0,
-    loss: 0,
-    draws: 0,
+    Ranked: {
+      wins: 0,
+      loss: 0,
+      draws: 0,
+    },
+    Tournament: {
+      wins: 0,
+      loss: 0,
+      draws: 0,
+    },
     total_matches: 0,
     longestStreak: 0,
     higestRatedOpp: {
