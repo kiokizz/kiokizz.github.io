@@ -490,7 +490,7 @@ function report_controller() {
 #### Captured DEC (Ranked Rewards)\n
 |Ranked Play Wins|DEC Earned|
 |-|-|
-|${report_array.matches.wins}|${report_array.earnings.matches}|
+|${report_array.matches.Ranked.wins}|${report_array.earnings.matches}|
 
 #### Total Ranked Play Rewards\n
 |Total Ranked Play Earnings|
