@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i&display=swap');
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 95%;
+    margin: 2.5%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+img {
+    max-width: 100%;
+    float: none;
+}
+
+textarea {
+    resize: vertical;
+    width: 95%;
+}
+
+input.fullTXT {
+    width: 95%;
+    max-width: 95%;
+    float: center;
+    overflow: visible;
+}
