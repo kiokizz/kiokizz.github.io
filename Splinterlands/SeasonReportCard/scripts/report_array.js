@@ -31,6 +31,7 @@ let report_array = {
       draws: 0,
     },
     total_matches: 0,
+    teams_fielded: 0,
     longestStreak: 0,
     higestRatedOpp: {
       rating: 0,

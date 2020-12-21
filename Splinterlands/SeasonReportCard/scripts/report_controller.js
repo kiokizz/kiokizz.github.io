@@ -504,6 +504,7 @@ function report_controller() {
     if (!data) {
       report_array.matches.teams.forEach(team => {
         if (Object.keys(team).length !== 0) {
+          report_array.matches.teams_fielded++;
           cardCounter(team.summoner, `summoners`, team.win)
           team.monsters.forEach(monster => {
             cardCounter(monster, `monsters`, team.win)
@@ -637,7 +638,7 @@ function report_controller() {
 
         arrayOfCards.forEach(card => {
           card.percent_total = 100 * card.count / total;
-          card.percent_matches = 100 * card.count / report_array.matches.total_matches;
+          card.percent_matches = 100 * card.count / report_array.matches.teams_fielded;
           card.percent_win = 100 * card.wins / card.count;
         });
 
@@ -645,14 +646,14 @@ function report_controller() {
       }
 
       //Make table
-      report_array.matches.monster_frequency_table = `|Monster|Frequency|Matches|Win Rate|\n|-|-|-|-|`;
+      report_array.matches.monster_frequency_table = `|Monster|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
       report_array.monster_data.forEach((card, i) => {
         if (i < 100) {
           report_array.matches.monster_frequency_table = `${report_array.matches.monster_frequency_table}\n|${card.name}|${card.count}|${card.percent_matches.toFixed(2)}%|${card.percent_win.toFixed(2)}%|`;
         }
       });
 
-      report_array.matches.summoner_frequency_table = `|Summoner|Frequency|Matches|Win Rate|\n|-|-|-|-|`;
+      report_array.matches.summoner_frequency_table = `|Summoner|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
       report_array.summoner_data.forEach((card, i) => {
         if (i < 10) {
           report_array.matches.summoner_frequency_table = `${report_array.matches.summoner_frequency_table}\n|${card.name}|${card.count}|${card.percent_matches.toFixed(2)}%|${card.percent_win.toFixed(2)}%|`;
