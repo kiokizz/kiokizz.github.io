@@ -38,6 +38,10 @@
 
   <div class="w3-panel w3-row">
     <div class="w3-half" style="padding-right: 8px">
+      <div class="w3-margin-top">
+        <label id="other">Opening Comments Comments</label>
+        <textarea disabled="true" id="textOpening" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+      </div>
       <div>
         <label id="matches">Performance</label>
         <textarea disabled="true" id="performance" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
@@ -51,12 +55,15 @@
         </label>
         <textarea disabled="true" id="top100monsters" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
-
-
       <div class="w3-margin-top">
         <label id="rewards">Rewards Cards</label>
         <textarea disabled="true" id="textRewards" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea></textarea>
       </div>
+      <div class="w3-margin-top">
+        <label id="other">Closing Comments</label>
+        <textarea disabled="true" id="textClosing" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+      </div>
+
 
       <div class="w3-margin-top" style="display: none">
         <label id="tournaments">tournaments</label>
@@ -73,10 +80,6 @@
       <div class="w3-margin-top" style="display: none">
         <label id="giveaway">giveaway</label>
         <textarea disabled="true" id="textGiveaways" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
-      </div>
-      <div class="w3-margin-top" style="display: none">
-        <label id="other">Other Comments</label>
-        <textarea disabled="true" id="other" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
       <div>
         <h3>Coming Sometime 'Soon'</h2>

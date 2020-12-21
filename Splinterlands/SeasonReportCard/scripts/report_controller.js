@@ -669,7 +669,7 @@ function report_controller() {
   }
 
   this.enable_text_fields_and_post_button = function () {
-    let text_fields = ["performance", "top10summoners", "top100monsters", "textRewards"];
+    let text_fields = ["textOpening","performance", "top10summoners", "top100monsters", "textRewards", "textClosing"];
     text_fields.forEach(text_field => {
       document.getElementById(text_field).disabled = false;
       //console.log(`Enabling ${text_field}`);

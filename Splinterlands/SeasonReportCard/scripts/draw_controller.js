@@ -16,6 +16,9 @@ function draw_controller() {
 
     let template = `# SplinterStats Season ${report_array.season.nameNum - 1} Report Card
 ## @${report_array.player}
+
+${document.getElementById('textOpening').value}
+
 ${divider_images.splinterlands}
 ### Match Report
 #### Performance
@@ -51,7 +54,10 @@ ${divider}
 ${report_array.earnings.template}
 
 ${document.getElementById('textRewards').value}
-${divider}`;
+
+${divider}
+
+${document.getElementById('textClosing').value}`;
 
     document.getElementById('content').innerHTML = marked(`${template}`);
     report_array.report = template;
