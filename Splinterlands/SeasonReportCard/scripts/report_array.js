@@ -2,6 +2,7 @@
 
 let report_array = {
   report: null,
+  text_fields: ["textOpening", "performance", "top10summoners", "top100monsters", "textRewards", "textClosing"],
   season: {
     nameNum: 0,
     date_start: undefined,

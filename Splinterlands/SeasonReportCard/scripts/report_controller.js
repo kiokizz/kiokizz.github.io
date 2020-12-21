@@ -28,7 +28,7 @@ function report_controller() {
     console.log(`Begin`);
     if (window.hive_keychain) {
       hive_keychain.requestHandshake(function () {
-        context.update_status(`Hive-Keychain Connected`);
+        update_status(`Hive-Keychain Connected`);
         //ToDo Lock search button.
         report_array.player = `${document.getElementById("username").value}`;
 
@@ -39,7 +39,7 @@ function report_controller() {
           `Posting`,
           function (response) {
             if (response.success) {
-              context.update_status(`Account Verified`);
+              update_status(`Account Verified`);
               hive.api.setOptions({
                 url: 'https://anyx.io'
               });
@@ -52,7 +52,7 @@ function report_controller() {
   }
 
   this.getDetails = function () {
-    context.update_status(`Getting Splinterlands settings.`);
+    update_status(`Getting Splinterlands settings.`);
     let url = "https://game-api.splinterlands.com/settings";
     request(url, 0, context.seasonNum);
   }
@@ -73,13 +73,13 @@ function report_controller() {
         if (post.permlink == permlink) context.stop_on_error(`@${report_array.player}'s Season Report has already been posted. Please go to www.splintertalk.io/@${report_array.player}/${permlink}`);
       });
 
-      context.update_status(`Getting all card details.`);
+      update_status(`Getting all card details.`);
       request(`https://game-api.splinterlands.com/cards/get_details`, 0, context.allCardsDetails);
     });
   }
 
   this.allCardsDetails = function (data) {
-    context.update_status(`Sorting card details.`);
+    update_status(`Sorting card details.`);
     report_array.allCards = data;
     report_array.rewardsCards = {};
     console.log(`All cards:`, data);
@@ -118,7 +118,7 @@ function report_controller() {
       prices.cards[e.id] = c;
     });
 
-    context.update_status(`Getting player season records.`);
+    update_status(`Getting player season records.`);
     request(`https://game-api.splinterlands.io/players/season_details?name=${report_array.player}`, 0, context.seasonDetails);
   }
 
@@ -141,7 +141,7 @@ function report_controller() {
         report_array.matches.rating = e.rating;
         report_array.matches.highRating = e.max_rating;
         report_array.matches.longestStreak = e.longest_streak;
-        context.update_status(`Getting player transactions before block: n/a.`);
+        update_status(`Getting player transactions before block: n/a.`);
         request(`https://api.steemmonsters.io/players/history?username=${report_array.player}&from_block=-1&limit=500`, 0, context.playerHistory);
       }
     });
@@ -171,7 +171,7 @@ function report_controller() {
     });
     xx++;
     if (limit === data.length) {
-      context.update_status(`Getting player transactions before block: ${before_block}.`);
+      update_status(`Getting player transactions before block: ${before_block}.`);
       request(
         `https://api.steemmonsters.io/players/history?username=${report_array.player}&from_block=-1&before_block=${before_block}&limit=500`,
         0,
@@ -187,7 +187,7 @@ function report_controller() {
     season_start = Date.parse(report_array.season.season_end_times_manual[report_array.season.id - 2]);
     season_end = Date.parse(report_array.season.season_end_times_manual[report_array.season.id - 1]);
     report_array.txs.forEach((tx, i) => {
-      context.update_status(`Sorting transactions: ${i}/${report_array.txs.length}.`);
+      update_status(`Sorting transactions: ${i}/${report_array.txs.length}.`);
       let created_date = Date.parse(tx.created_date);
       let valid = false;
       if (created_date > season_start && created_date < season_end) valid = true;
@@ -394,7 +394,7 @@ function report_controller() {
         }
       }
     });
-    context.update_status(`Counting Rewards.`);
+    update_status(`Counting Rewards.`);
     context.rewardsData();
   }
 
@@ -496,7 +496,7 @@ function report_controller() {
 |Total Ranked Play Earnings|
 |-|
 |${calc.total_dec} DEC|`;
-    context.update_status(`Generating card usage statistics.`);
+    update_status(`Generating card usage statistics.`);
     context.cardUsageData(false);
   }
 
@@ -669,21 +669,10 @@ function report_controller() {
   }
 
   this.enable_text_fields_and_post_button = function () {
-    let text_fields = ["textOpening","performance", "top10summoners", "top100monsters", "textRewards", "textClosing"];
-    text_fields.forEach(text_field => {
+    report_array.text_fields.forEach(text_field => {
       document.getElementById(text_field).disabled = false;
       //console.log(`Enabling ${text_field}`);
     });
     document.getElementById('post').disabled = false;
-  }
-
-  this.update_status = function (text) {
-    document.getElementById('content').innerHTML = text;
-  }
-
-  this.stop_on_error = function (error_message) {
-    alert(error_message);
-    context.update_status(error_message);
-    throw error_message;
   }
 }

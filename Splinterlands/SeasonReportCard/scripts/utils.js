@@ -31,3 +31,14 @@ function request(url, x, proceedingFunction) {
     }
   });
 }
+
+//Error messages
+function update_status(text) {
+  document.getElementById('content').innerHTML = text;
+}
+
+function stop_on_error(error_message) {
+  alert(error_message);
+  update_status(error_message);
+  throw error_message;
+}

@@ -1,6 +1,20 @@
 function posting_controller() {
   let context = this;
 
+  this.check_details = function () {
+    let count = 0;
+    report_array.text_fields.forEach(field => {
+      document.getElementById(field).style.color = "black";
+      if (document.getElementById(field).value.length < 20) {
+        count++;
+        document.getElementById(field).style.color = "#ff0000";
+      }
+    });
+    if (count > 1) {
+      document.getElementById('post').disabled = false;
+      stop_on_error(`Please include more writing in your post.`)
+    } else context.post_details();
+  }
   this.post_details = function () {
     let tags = document.getElementById("tags").value;
     let tags_array = tags.split(` `).filter(function (el) {
@@ -15,7 +29,7 @@ function posting_controller() {
     let author = report_array.player;
     let permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
     let title = `Splinter Stats Season ${report_array.season.nameNum - 1} Report Card`;
-    let body = report_array.report ;
+    let body = report_array.report;
     let beneficiaries = [];
     beneficiaries.push({
       account: 'splinterstats',
@@ -53,16 +67,19 @@ function posting_controller() {
     ];
 
     console.log(broadcast_ops)
-    
+
     hive_keychain.requestBroadcast(
       author,
       broadcast_ops,
       'posting',
-      function(response) {
+      function (response) {
         console.log(response);
         if (response.success) {
-          context.update_status(`Post Submitted to Hive`);
-        } else context.stop_on_error(`Post failed: ${response.message}`);
+          update_status(`Post Submitted to Hive`);
+        } else {
+          document.getElementById('post').disabled = false;
+          stop_on_error(`Post failed: ${response.message}`);
+        }
       }
     );
   }
