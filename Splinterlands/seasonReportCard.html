@@ -98,7 +98,7 @@
       </div>
       <div class="w3-panel">
         <label>Tags (without #): </label>
-        <input class="w3-input w3-border" type="tags" id="tags" value="splinterstats spt">
+        <input class="w3-input w3-border" type="tags" id="tags" value="splinterstats spt" onkeyup="document.getElementById('tags').value = document.getElementById('tags').value.replace(/[^a-z0-9+- ]+/g, '');">
         <button id='post' disabled='true' class="w3-button w3-theme" onclick="poster.check_details(); document.getElementById('post').disabled = true;">
           Post
         </button>
