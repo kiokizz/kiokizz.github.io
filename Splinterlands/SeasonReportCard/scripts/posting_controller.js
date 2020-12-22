@@ -23,7 +23,7 @@ function posting_controller() {
     console.log(tags_array);
     let unique_tags = [`splinterstats`, `spt`];
     tags_array.forEach(tag => {
-      tag = tag.replace(/[^a-z0-9+- ]+/g, '');
+      tag = tag.replace(/[^a-z0-9-+ ]+/g, '');
       tag = tag.toLowerCase();;
       if (!unique_tags.includes(tag)) unique_tags.push(tag);
     });
