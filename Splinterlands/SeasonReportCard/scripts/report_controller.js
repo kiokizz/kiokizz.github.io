@@ -147,7 +147,7 @@ function report_controller() {
       }
     });
     if (!seasonRecord) {
-      stop_on_error(`No records found for season ${report_array.season.nameNum}. ${errMessage}`);
+      stop_on_error(`No records found for season ${report_array.season.nameNum - 1}. ${errMessage}`);
       //ToDo Reset search button.
     }
   }
