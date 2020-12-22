@@ -44,11 +44,11 @@ function report_controller() {
                 url: 'https://anyx.io'
               });
               context.getDetails();
-            } else context.stop_on_error(`Please ensure you have the Posting Key for @${report_array.player} in Hive Keychain and refresh the page.`);
+            } else stop_on_error(`Please ensure you have the Posting Key for @${report_array.player} in Hive Keychain and refresh the page.`);
           }
         );
       });
-    } else context.stop_on_error(`Please install Hive Keychain`);
+    } else stop_on_error(`Please install Hive Keychain`);
   }
 
   this.getDetails = function () {
@@ -70,7 +70,7 @@ function report_controller() {
       console.log(err, result);
       console.log(permlink);
       result.forEach(post => {
-        if (post.permlink == permlink) context.stop_on_error(`@${report_array.player}'s Season Report has already been posted. Please go to www.splintertalk.io/@${report_array.player}/${permlink}`);
+        if (post.permlink == permlink) stop_on_error(`@${report_array.player}'s Season Report has already been posted. Please go to www.splintertalk.io/@${report_array.player}/${permlink}`);
       });
 
       update_status(`Getting all card details.`);
@@ -126,11 +126,11 @@ function report_controller() {
 
     let seasonRecord = false;
     console.log(data);
-    if (data.error) context.stop_on_error(data.error);
+    if (data.error) stop_on_error(data.error);
     data.forEach(e => {
       if (e.season === report_array.season.id - 1) {
         if (e.reward_claim_tx === null) {
-          context.stop_on_error(`Season rewards have not been claimed. Please claim before proceeding. Please refresh the page before proceeding.`);
+          stop_on_error(`Season rewards have not been claimed. Please claim before proceeding. Please refresh the page before proceeding.`);
         }
         seasonRecord = true;
         console.log(`Season data exists.`);
@@ -147,7 +147,7 @@ function report_controller() {
       }
     });
     if (!seasonRecord) {
-      context.stop_on_error(`No records found for season ${report_array.season.nameNum}. ${errMessage}`);
+      stop_on_error(`No records found for season ${report_array.season.nameNum}. ${errMessage}`);
       //ToDo Reset search button.
     }
   }
