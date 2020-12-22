@@ -57,7 +57,13 @@ ${document.getElementById('textRewards').value}
 
 ${divider}
 
-${document.getElementById('textClosing').value}`;
+${document.getElementById('textClosing').value}
+
+---
+
+Posted using SplinterStats [Season Report Card](https://www.splintertalk.io/hive-13323/@splinterstats/announcing-splinterstats-season-report-card).
+This once a season tool for[Splinterlands](https://splinterlands.com/?ref=splinterstats) players provides a template to reflect on and share their performance, card usage statistics and rewards summary for the season. More features will be released in the future. 
+Follow @splinterstats and come visit us in [Discord](https://discord.com/invite/qFSZX2WGQg) if you have any questions.`;
 
     document.getElementById('content').innerHTML = marked(`${template}`);
     report_array.report = template;
