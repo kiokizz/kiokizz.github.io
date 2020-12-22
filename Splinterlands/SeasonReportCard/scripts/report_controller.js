@@ -137,6 +137,7 @@ function report_controller() {
         //TODO Continue from here.
         report_array.matches.guild = e.guild_name;
         report_array.matches.league = rankings[e.league].name;
+        report_array.matches.league_name = rankings[e.league].group;
         report_array.matches.rank = e.rank;
         report_array.matches.rating = e.rating;
         report_array.matches.highRating = e.max_rating;
