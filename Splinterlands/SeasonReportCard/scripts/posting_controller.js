@@ -77,7 +77,11 @@ function posting_controller() {
       function (response) {
         console.log(response);
         if (response.success) {
-          update_status(`Post Submitted to Hive`);
+          update_status(`Post Submitted to Hive. Opening Splintertalk.io in a few seconds...`);
+          setTimeout(() => {
+            window.open(`splintertalk.io/@${author}/${permlink}/`, '_blank');
+            update_status(`splintertalk.io/@${author}/${permlink}/`);
+          }, 3000);
         } else {
           document.getElementById('post').disabled = false;
           stop_on_error(`Post failed: ${response.message}`);
