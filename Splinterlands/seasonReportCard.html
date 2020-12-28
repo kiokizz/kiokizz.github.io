@@ -27,13 +27,15 @@
   <div class="w3-panel w3-theme" style="margin-top: 0;">
     <h1>SplinterStats Season Report Card</h1>
     <sub>A tool for reflecting on and sharing your Splinterlands season play. Requires Hive Keychain.</sub>
-    <p><a href="https://www.splintertalk.io/hive-13323/@splinterstats/announcing-splinterstats-season-report-card" target="_blank">Click here for more information.</a></p>
+    <p><a href="https://www.splintertalk.io/hive-13323/@splinterstats/announcing-splinterstats-season-report-card"
+        target="_blank">Click here for more information.</a></p>
   </div>
 
   <div class="w3-panel">
     <label>Player (without @): </label>
     <input class="w3-input w3-border" type="text" id="username" value="username">
-    <button id="generate" class="w3-button w3-theme" onclick="reporter.begin(); add_border('viewer_div'); document.getElementById('generate').disabled = true;">
+    <button id="generate" class="w3-button w3-theme"
+      onclick="reporter.begin(); add_border('viewer_div'); document.getElementById('generate').disabled = true;">
       Generate
     </button>
   </div>
@@ -60,7 +62,8 @@
       </div>
       <div class="w3-margin-top">
         <label id="rewards">Rewards Cards</label>
-        <textarea disabled="true" id="textRewards" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea></textarea>
+        <textarea disabled="true" id="textRewards" class="w3-input w3-border"
+          onkeyup="drawer.draw()"></textarea></textarea>
       </div>
       <div class="w3-margin-top">
         <label id="other">Closing Comments</label>
@@ -83,31 +86,35 @@
         <label id="giveaway">giveaway</label>
         <textarea disabled="true" id="textGiveaways" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
-      
+
       <div class="w3-panel">
         <label>Tags (without #): </label>
-        <input class="w3-input w3-border" type="tags" id="tags" value="splinterstats spt" onkeyup="document.getElementById('tags').value = document.getElementById('tags').value.replace(/[^a-z0-9-+ ]+/g, '');">
-        <button id='post' disabled='true' class="w3-button w3-theme" onclick="poster.check_details(); document.getElementById('post').disabled = true;">
+        <input class="w3-input w3-border" type="tags" id="tags" value="splinterstats spt"
+          onkeyup="document.getElementById('tags').value = document.getElementById('tags').value.replace(/[^a-z0-9-+ ]+/g, '');">
+        <button id='post' disabled='true' class="w3-button w3-theme"
+          onclick="poster.check_details(); document.getElementById('post').disabled = true;">
           Post
         </button>
-        <p>Disclaimer:Information is gathered from Splinterlands servers. Human error could result in mistakes in the representation of the presented data.</p>
-        <p>By deafult a 10% beneficiary reward is set in the published post. This supports the developer (@kiokizz) and future development.</p>
+        <p>Disclaimer:Information is gathered from Splinterlands servers. Human error could result in mistakes in the
+          representation of the presented data.</p>
+        <p>By deafult a 10% beneficiary reward is set in the published post. This supports the developer (@kiokizz) and
+          future development.</p>
       </div>
       <hr>
       <div>
         <h4>Coming Sometime 'Soon'</h4>
+        <ul>
+          <li>Mystery Potion Report</li>
+          <li>Tournament Report</li>
+          <li>Cards Report</li>
           <ul>
-            <li>Mystery Potion Report</li>
-            <li>Tournament Report</li>
-            <li>Cards Report</li>
-            <ul>
-              <li>Combines</li>
-              <li>Burns</li>
-              <li>Bought</li>
-              <li>Sold</li>
-            </ul>
-            <li>...</li>
+            <li>Combines</li>
+            <li>Burns</li>
+            <li>Bought</li>
+            <li>Sold</li>
           </ul>
+          <li>...</li>
+        </ul>
       </div>
     </div>
     <div id='viewer_div' class="viewer w3-half" style="padding: 0 8px 0 8px;">

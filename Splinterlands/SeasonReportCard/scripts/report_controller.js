@@ -545,6 +545,8 @@ function report_controller() {
         if (card.substring(0, 7) !== `starter`) {
           cardList += card;
           if (cardList.length > 1 && i !== report_array.matches.cards.array.length - 1) cardList += ",";
+        } else {
+          if (i === report_array.matches.cards.array.length - 1 && cardList.substring(cardList.length - 1) === ",") cardList = cardList.substring(0, cardList.length - 1);
         }
       });
       //console.log(cardList);
