@@ -219,6 +219,25 @@ function report_controller() {
               else report_array.matches[match_type].loss++;
             }
 
+            //console.log(`Battle Result Json`, json);
+            let rulesets = json.ruleset.split("|");
+            rulesets.forEach(ruleset => {
+              if (!report_array.matches.rulesets[ruleset]) {
+                report_array.matches.rulesets[ruleset] = {
+                  name: ruleset,
+                  wins: 0,
+                  loss: 0,
+                  draws: 0,
+                  count: 0
+                }
+              }
+              report_array.matches.rulesets[ruleset].count++;
+              if (win) {
+                report_array.matches.rulesets[ruleset].wins++;
+              } else if (json.winner === "DRAW") report_array.matches.rulesets[ruleset].draws++;
+              else report_array.matches.rulesets[ruleset].loss++;
+            });
+
             json.players.forEach(player => {
               if (player.name !== report_array.player) {
                 report_array.matches.opponents.push(player.name);
@@ -665,11 +684,26 @@ function report_controller() {
       console.log(`Cards Array`, report_array.matches.cards.array)
       console.log(`Summoners`, report_array.matches.cards.summoners)
       console.log(`Monsters`, report_array.matches.cards.monsters)
-      drawer.draw(); // replace with link to drawer element
-      console.log(`Finish`);
 
-      context.enable_text_fields_and_post_button();
+      context.rulesetWinRates();
     }
+  }
+
+  this.rulesetWinRates = function () {
+    let rulesets_array = Object.values(report_array.matches.rulesets);
+    rulesets_array.sort(function (a, b) {
+      return b.count - a.count
+    });
+    console.log(`Rulesets`, rulesets_array);
+    report_array.matches.ruleset_frequency_table = `|Ruleset|Frequency|Win Rate|\n|-|-|-|`;
+    rulesets_array.forEach(ruleset => {
+      let total = ruleset.wins + ruleset.loss + ruleset.draws;
+      report_array.matches.ruleset_frequency_table = `${report_array.matches.ruleset_frequency_table}\n|${ruleset.name}|${total}|${(100 * ruleset.wins / total).toFixed(2)}%|`
+    });
+
+    drawer.draw(); // replace with link to drawer element
+    console.log(`Finish`);
+    context.enable_text_fields_and_post_button();
   }
 
   this.enable_text_fields_and_post_button = function () {

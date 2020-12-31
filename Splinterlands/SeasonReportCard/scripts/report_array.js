@@ -2,7 +2,7 @@
 
 let report_array = {
   report: null,
-  text_fields: ["textOpening", "performance", "top10summoners", "top100monsters", "textRewards", "textClosing"],
+  text_fields: ["textOpening", "performance", "top10summoners", "top100monsters", "winratebyruleset", "textRewards", "textClosing"],
   season: {
     nameNum: 0,
     date_start: undefined,
@@ -10,7 +10,11 @@ let report_array = {
     season_end_times_manual: {
       50: "2020-11-15T20:00:00.000Z",
       51: "2020-11-30T14:00:00.000Z",
-      52: "2020-12-15T20:00:00.000Z"
+      52: "2020-12-15T20:00:00.000Z",
+      53: "2020-12-31 02:00:00.000Z",
+      54: "2021-01-15T08:00:00.000Z",
+      formulaeToImplement: `np, the formula for season ends is it's the 15th and the last day of the month and it changes the time by 6 hours each time
+      so next season end is 2021-01-15 08:00:00Z, then 2021-01-31 14:00:00Z`
     }
   },
   player: ``,
@@ -43,7 +47,9 @@ let report_array = {
       array: [],
       monsters: {},
       summoners: {}
-    }
+    },
+    rulesets: {},
+    ruleset_frequency_table: ``
   },
   tournaments: {
     count: 0,

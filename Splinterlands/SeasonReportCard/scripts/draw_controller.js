@@ -48,6 +48,12 @@ ${report_array.matches.monster_frequency_table}
 
 ${document.getElementById('top100monsters').value}
 
+#### Win Rate by Ruleset
+
+${report_array.matches.ruleset_frequency_table}
+
+${document.getElementById('winratebyruleset').value}
+
 ${divider}
 
 ### Rewards Report
