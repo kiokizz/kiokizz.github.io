@@ -247,10 +247,10 @@ function report_controller() {
                   let oppHighRating = Math.max(player.initial_rating, player.final_rating);
                   if (oppHighRating >= report_array.matches.higestRatedOpp.rating) {
                     if (oppHighRating > report_array.matches.higestRatedOpp.rating) {
-                      report_array.matches.higestRatedOpp.name = `@[${player.name}](splinterlands.com?p=battle&id=${json.id}&ref=splinterstats)`;
+                      report_array.matches.higestRatedOpp.name = `https://@[${player.name}](splinterlands.com?p=battle&id=${json.id}&ref=splinterstats)`;
                       report_array.matches.higestRatedOpp.rating = oppHighRating;
                     } else if (!report_array.matches.higestRatedOpp.name.includes(`@${player.name}`)) {
-                      report_array.matches.higestRatedOpp.name += ` & @[${player.name}](splinterlands.com?p=battle&id=${json.id}&ref=splinterstats)`
+                      report_array.matches.higestRatedOpp.name += ` & @[${player.name}](https://splinterlands.com?p=battle&id=${json.id}&ref=splinterstats)`
                     }
                   }
                 }
