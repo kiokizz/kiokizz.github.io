@@ -72,9 +72,9 @@ Posted using SplinterStats [Season Report Card](https://www.splintertalk.io/hive
 This once a season tool for [Splinterlands](https://splinterlands.com/?ref=splinterstats) players provides a template to reflect on and share their performance, card usage statistics and rewards summary for the season. More features will be released in the future. 
 Follow @splinterstats and come visit us in [Discord](https://discord.com/invite/qFSZX2WGQg) if you have any questions.`;
 
-    report_array.title = `# ${report_array.custom_title}${(report_array.custom_title === ``) ? `` : ` - `}${report_array.static_title}
-    ${template}`;
-    document.getElementById('content').innerHTML = marked(`${report_array.title}`);
+    report_array.title = `# ${report_array.custom_title}${(report_array.custom_title === ``) ? `` : ` - `}${report_array.static_title}`;
+    let post_viewer = `${report_array.title}\n${template}`;
+    document.getElementById('content').innerHTML = marked(`${post_viewer}`);
     report_array.report = template;
     //console.log(`${template}`);
   }
