@@ -5,7 +5,7 @@ function posting_controller() {
     let count = 0;
     report_array.text_fields.forEach(field => {
       document.getElementById(field).style.color = "black";
-      if (document.getElementById(field).value.length < 20) {
+      if (field !== "title" && document.getElementById(field).value.length < 20) {
         count++;
         document.getElementById(field).style.color = "#ff0000";
       }
@@ -29,8 +29,8 @@ function posting_controller() {
     });
 
     let author = report_array.player;
-    let permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
-    let title = `Splinter Stats Season ${report_array.season.nameNum - 1} Report Card`;
+    let permlink = report_array.permlink;
+    let title = report_array.title;
     let body = report_array.report;
     let beneficiaries = [];
     beneficiaries.push({

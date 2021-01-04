@@ -44,7 +44,12 @@
     <div class="w3-half w3-card w3-padding" style="padding-right: 8px">
       <h2>Post <i>Editor</i></h2>
       <div class="w3-margin-top">
-        <label id="other">Opening Comments</label>
+        <label id="matches">Title</label>
+        <input disabled="true" class="w3-input w3-border" type="text" id="title" maxLength="200" value=""
+          onkeyup="drawer.draw()">
+      </div>
+      <div class=" w3-margin-top">
+        <label id="mathces">Opening Comments</label>
         <textarea disabled="true" id="textOpening" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
       <div>

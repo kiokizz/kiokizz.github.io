@@ -63,6 +63,9 @@ function report_controller() {
     report_array.season.name = data.season.name;
     report_array.season.nameNum = data.season.name.substring(data.season.name.length - 2, data.season.name.length);
 
+    report_array.permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
+    report_array.static_title = `Splinter Stats Season ${report_array.season.nameNum - 1} Report Card`;
+
     console.log(`Season: ${report_array.season.nameNum}`);
 
     var permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
