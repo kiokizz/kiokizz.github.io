@@ -92,7 +92,7 @@ function calculations() {
     if (card.type !== "Monster") return;
 
     let level = (league === "novice" && summoner !== 1) ?
-                0 : levelCaps[card.rarity - 1] - 1;
+      0 : levelCaps[card.rarity - 1] - 1;
 
     let obj = {
       level: level,
@@ -136,8 +136,8 @@ function calculations() {
     if (fail) return;
 
     //ToList Edition
-    fail = editionsToFilter.length >= 1
-      && !editionsToFilter.includes(obj.edition);
+    fail = editionsToFilter.length >= 1 &&
+      !editionsToFilter.includes(obj.edition);
     if (fail) return;
 
     //ToList Stat
@@ -177,7 +177,7 @@ function makeTable() {
 
   galleryImages = [];
   let rows = data.reduce((p, c) => {
-      let style = `style="background-color:${backgroundColor[c.color]};${textColor[c.color]}"`;
+      let style = `style="background-color:${backgroundColor[c.color]}; color: ${textColor[c.color]}"`;
 
       //https://d36mxiodymuqjm.cloudfront.net/cards_by_level/reward/Creeping%20Ooze_lv1.png
       let urlName = c.card.replace(/\s/g, "%20");
@@ -203,16 +203,16 @@ function makeTable() {
 <table>
   <tr>
     <th>
-      <button id="card_btn" class="btn">${league}|${rarities[summoner]}</button>
-      <button id="color_btn" class="btn">🌈</button>
+      <button id="card" class="btn">${league}|${rarities[summoner]}</button>
+      <button id="color" class="btn">🌈</button>
     </th>
-    <th><button id="mana_btn" class="btn">🔮 Mana</button></th>
-    <th><button id="health_btn" class="btn">💗 Health</button></th>
-    <th><button id="armor_btn" class="btn">🛡️ Armor</button></th>
-    <th><button id="speed_btn" class="btn">⏩ Speed</button></th>
-    <th><button id="attack_btn" class="btn">🗡️ Melee</button></th>
-    <th><button id="ranged_btn" class="btn">🏹 Ranged</button></th>
-    <th><button id="magic_btn" class="btn">✨ Magic</button></th>
+    <th><button id="mana" class="btn">🔮 Mana</button></th>
+    <th><button id="health" class="btn">💗 Health</button></th>
+    <th><button id="armor" class="btn">🛡️ Armor</button></th>
+    <th><button id="speed" class="btn">⏩ Speed</button></th>
+    <th><button id="attack" class="btn">🗡️ Melee</button></th>
+    <th><button id="ranged" class="btn">🏹 Ranged</button></th>
+    <th><button id="magic" class="btn">✨ Magic</button></th>
     <th>Abilities</th>
   </tr>
   ${rows}
@@ -228,18 +228,8 @@ function createHTMLPage(table) {
   el("displayStats").innerHTML = table;
   if (el("galleryCheckbox").checked) galleryView();
   else el("displayGallery").innerHTML = "";
-  const sort_buttons = [
-    {id: 'color_btn', column: 'color'},
-    {id: 'card_btn', column: 'card'},
-    {id: 'mana_btn', column: 'mana'},
-    {id: 'health_btn', column: 'health'},
-    {id: 'armor_btn', column: 'armor'},
-    {id: 'speed_btn', column: 'speed'},
-    {id: 'attack_btn', column: 'attack'},
-    {id: 'ranged_btn', column: 'ranged'},
-    {id: 'magic_btn', column: 'magic'},
-  ];
-  sort_buttons.map(c => el(c.id).onclick = () => sortTable(c.column));
+  ['color', 'card', 'mana', 'health', 'armor', 'speed', 'attack', 'ranged', 'magic']
+  .forEach(column_name => el(column_name).onclick = () => sortTable(column_name));
 
   el("selectors").style.display = "inline-block";
 
@@ -271,26 +261,30 @@ function createHTMLPage(table) {
 }
 
 function galleryView() {
- let gallery = galleryImages.reduce((p,c) => {
-   return `${p}
+  let gallery = galleryImages.reduce((p, c) => {
+    return `${p}
    <img src="${c}" alt="">`
- }, "")
- el("displayGallery").innerHTML = gallery;
+  }, "")
+  el("displayGallery").innerHTML = gallery;
 }
 
 function sortTable(column) {
   if (sorted === column) makeTable(data.reverse());
   else {
     sorted = column;
-    data.sort((card1, card2) => card1[column] > card2[column]);
+    data.sort((card1, card2) => {
+      if (card1[column] < card2[column]) return -1;
+      if (card1[column] > card2[column]) return 1;
+      return 0;
+    });
     makeTable(data);
   }
 }
 
 function download() {
   let dataCSV = data.reduce(
-    (p, c) => `${p}${c.card},${c.mana},${c.health},${c.armor},${c.speed},`
-      + `${c.attack},${c.ranged},${c.magic},${c.abilities}\n`,
+    (p, c) => `${p}${c.card},${c.mana},${c.health},${c.armor},${c.speed},` +
+    `${c.attack},${c.ranged},${c.magic},${c.abilities}\n`,
     "card,mana,health,armor,speed,attack,ranged,magic,abilities\n"
   );
 
@@ -299,10 +293,10 @@ function download() {
     'data:text/plain;charset=utf-8,' + encodeURIComponent(dataCSV));
 
   let d = new Date();
-  let date_string = d.getFullYear().toString()
-    + d.getDate().toString()
-    + d.getHours().toString()
-    + d.getSeconds().toString();
+  let date_string = d.getFullYear().toString() +
+    d.getDate().toString() +
+    d.getHours().toString() +
+    d.getSeconds().toString();
   let descriptor = league + rarities[summoner] + date_string;
   csv_text.setAttribute('download', `${descriptor}.csv`);
 

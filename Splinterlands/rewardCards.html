@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <title>Splinterlands Reward Cards Stats</title>
     <link rel="shortcut icon" href="../resources/rose.jpg" />
-    <script src=" https://cdn.jsdelivr.net/npm/steem/dist/steem.min.js"> </script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js">
-    </script>
+    <link rel="stylesheet" type="text/css" href="rewardCards/rewardCards.css">
+    <script src=" https://cdn.jsdelivr.net/npm/steem/dist/steem.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script defer src="rewardCards/rewardCards.js"></script>
 </head>
 
@@ -17,105 +17,6 @@
     <button onclick="download()">Download CSV</button>
     <p id="body2"></p>
     <hr />
-    <div>
-        <br><br><br><br>
-    </div>
-
-    <style>
-        body {
-            width: 100%;
-            max-width: 800px;
-            font-size: 13pt;
-        }
-
-        table {
-            width: 100%;
-        }
-
-        table,
-        td,
-        th {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
-
-        td {
-            padding-left: 5px;
-        }
-
-        .btn {
-            border: none;
-            background-color: inherit;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btnBordered {
-            color: white;
-            border: black;
-            background-color: black;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btn:hover {
-            background: rgb(202, 189, 189);
-        }
-
-        .tooltip {
-            position: relative;
-        }
-
-        .tooltip span {
-            display: none;
-            color: black;
-            background: rgba(46, 46, 46, 0.774);
-        }
-
-        .tooltip span img {
-            float: left;
-        }
-
-        .tooltip:hover span {
-            display: block;
-            position: absolute;
-            z-index: 1000;
-            width: 150px;
-            border: 1px solid black;
-            margin-top: 12px;
-            margin-left: 12px;
-            overflow: hidden;
-            padding: 4px;
-        }
-
-        .trcard:hover {
-            background-color: #C0C0C0;
-        }
-
-        a:link {
-            color: black;
-            background-color: transparent;
-            text-decoration: none;
-        }
-
-        a:visited {
-            color: black;
-            background-color: transparent;
-            text-decoration: none;
-        }
-
-        a:hover {
-            color: black;
-            background-color: transparent;
-            text-decoration: underline;
-        }
-
-        a:active {
-            color: black;
-            background-color: transparent;
-            text-decoration: underline;
-        }
-    </style>
 </body>
 
 </html>
