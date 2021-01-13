@@ -86,7 +86,7 @@ function report_controller() {
         update_status(`Posting Key Validated.`);
         context.getDetails();
       } else {
-        stop_on_error('Wrong! Check your Private key.');
+        stop_on_error(`Please ensure you have the Posting Key for @${report_array.player} and refresh the page.`);
       }
     });
   }
