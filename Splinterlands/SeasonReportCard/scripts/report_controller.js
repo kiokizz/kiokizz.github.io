@@ -611,12 +611,14 @@ function report_controller() {
           if (i === report_array.matches.cards.array.length - 1 && cardList.substring(cardList.length - 1) === ",") cardList = cardList.substring(0, cardList.length - 1);
         }
       });
-      //console.log(cardList);
+      console.log(`ios debug a0 ${cardList}`);
       request(`https://api.splinterlands.io/cards/find?ids=${cardList}`,
         0,
         context.cardUsageData);
     } else {
       report_array.matches.cards.used_cards_details = data;
+      console.log(`ios debug a1`);
+      console.log(data.toString());
       //console.log(`Info on used cards`, data);
       console.log("ios debug 0");
       console.log("ios debug 0.1.0 length" + report_array.matches.cards.used_cards_details.length);
