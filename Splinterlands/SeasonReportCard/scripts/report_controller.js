@@ -618,10 +618,14 @@ function report_controller() {
     } else {
       report_array.matches.cards.used_cards_details = data;
       //console.log(`Info on used cards`, data);
-      console.log(`ios debug 0`);
+      console.log("ios debug 0");
+      console.log("ios debug 0.1.0 length" + report_array.matches.cards.used_cards_details.length);
+      console.log("ios debug 0.1.1" + typeof report_array.matches.cards.used_cards_details);
+      console.log("ios debug 0.1.2" + report_array.matches.cards.used_cards_details[0]);
 
       //Assign details
       report_array.matches.cards.used_cards_details.forEach((card, i) => {
+        console.log(`ios debug 0.2`);
         if (i === 0 || i === report_array.matches.cards.used_cards_details.length - 1) console.log(`ios debug 1`);
         let cardType = `${card.details.type.toLowerCase()}s`;
         report_array.matches.cards[cardType][card.uid].name = card.details.name;
