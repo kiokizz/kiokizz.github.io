@@ -557,11 +557,17 @@ function report_controller() {
 |-|
 |${calc.total_dec} DEC|`;
     update_status(`Generating card usage statistics.`);
+    console.log(`ios debug d0 ${report_array.earnings.template}`);
+    console.log(`ios debug d1 ${report_array.earnings.template.length}`);
+    console.log(`ios debug d2 ${typeof report_array.earnings.template}`);
     context.cardUsageData(false);
   }
 
   this.cardUsageData = function (data) {
     if (!data) {
+      console.log(`ios debug c0 ${report_array.matches.teams}`);
+      console.log(`ios debug c1 ${report_array.matches.teams.length}`);
+      console.log(`ios debug c2 ${typeof report_array.matches.teams}`);
       report_array.matches.teams.forEach(team => {
         if (Object.keys(team).length !== 0) {
           report_array.matches.teams_fielded++;
@@ -600,6 +606,9 @@ function report_controller() {
       });
 
       let cardList = "";
+      console.log(`ios debug b0 ${report_array.matches.cards.array}`);
+      console.log(`ios debug b1 ${report_array.matches.cards.array.length}`);
+      console.log(`ios debug b2 ${typeof report_array.matches.cards.array}`);
       report_array.matches.cards.array.forEach((card, i) => {
         if (card.substring(0, 7) !== `starter`) {
           cardList += card;
