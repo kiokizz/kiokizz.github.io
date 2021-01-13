@@ -235,13 +235,15 @@ function report_controller() {
       let created_date = Date.parse(tx.created_date);
       let valid = false;
       if (created_date > season_start && created_date < season_end) valid = true;
+
       if (tx.type === "claim_reward") {
         let json = JSON.parse(tx.data);
         if (json.type === "league_season" && created_date > season_end) valid = true;
         else if (json.type === "league_season") valid = false;
       }
-      if (i < 20) console.log(`ios debug e3: Valid tx: ${valid}`);
+      if (i > 100 || i < 500) console.log(`ios debug e3: Valid tx: ${valid}`);
       if (valid) {
+        console.log(`ios debug e4: Valid! ${tx}`);
         switch (tx.type) {
           case "sm_battle":
             //console.log(tx);
