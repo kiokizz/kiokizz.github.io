@@ -617,7 +617,7 @@ function report_controller() {
         context.cardUsageData);
     } else {
       report_array.matches.cards.used_cards_details = data;
-      console.log(`Info on used cards`, data);
+      //console.log(`Info on used cards`, data);
       console.log(`ios debug 0`);
 
       //Assign details
