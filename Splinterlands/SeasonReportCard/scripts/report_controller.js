@@ -224,6 +224,9 @@ function report_controller() {
   }
 
   this.sortHistory = function () {
+    console.log(`iod debug e0 ${report_array.txs}`);
+    console.log(`iod debug e1 ${report_array.txs.length}`);
+    console.log(`iod debug e2 ${typeof report_array.txs}`);
     //report_array.season.id
     season_start = Date.parse(report_array.season.season_end_times_manual[report_array.season.id - 2]);
     season_end = Date.parse(report_array.season.season_end_times_manual[report_array.season.id - 1]);
@@ -237,7 +240,7 @@ function report_controller() {
         if (json.type === "league_season" && created_date > season_end) valid = true;
         else if (json.type === "league_season") valid = false;
       }
-      //console.log(`Valid tx: ${valid}`);
+      if (i < 20) console.log(`ios debug e3: Valid tx: ${valid}`);
       if (valid) {
         switch (tx.type) {
           case "sm_battle":
