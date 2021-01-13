@@ -58,9 +58,6 @@ function report_controller() {
           function (response) {
             if (response.success) {
               update_status(`Account Verified`);
-              hive.api.setOptions({
-                url: 'https://anyx.io'
-              });
               context.getDetails();
             } else stop_on_error(`Please ensure you have the Posting Key for @${report_array.player} in Hive Keychain and refresh the page.`);
           }
@@ -74,7 +71,7 @@ function report_controller() {
     report_array.posting_key = `${document.getElementById("password").value}`;
     //encode message
     hive.api.getAccounts([report_array.player], function (err, result) {
-      let pubWif = result[0].posting.key_auths[0];
+      let pubWif = result[0].posting.key_auths[0][0];
       let isvalid;
       //console.log(err, result);
       try {

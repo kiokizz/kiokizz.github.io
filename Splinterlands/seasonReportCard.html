@@ -76,8 +76,7 @@
       </div>
       <div class="w3-margin-top">
         <label>Rewards Cards</label>
-        <textarea disabled id="textRewards" class="w3-input w3-border"
-          onkeyup="drawer.draw()"></textarea>
+        <textarea disabled id="textRewards" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
       <div class="w3-margin-top">
         <label id="other">Closing Comments</label>
@@ -141,6 +140,10 @@
   </div>
 
   <script>
+    hive.api.setOptions({
+      url: 'https://anyx.io'
+    });
+
     let drawer = new draw_controller();
     let reporter = new report_controller();
     let poster = new posting_controller();
