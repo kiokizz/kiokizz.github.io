@@ -106,7 +106,7 @@ function posting_controller() {
             }, 3000);
           } else {
             document.getElementById('post').disabled = false;
-            stop_on_error(`Post failed: ${response.message}`);
+            stop_on_error(`Post failed: ${e}`);
           }
         });
     } else throw `Error with logInTpye;`
