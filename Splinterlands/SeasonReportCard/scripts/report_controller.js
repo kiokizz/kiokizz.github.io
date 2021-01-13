@@ -24,14 +24,32 @@ function report_controller() {
     land: 20000
   }
 
-  this.begin = function () {
-    console.log(`Begin`);
+  this.generate = function () {
+    document.getElementById('generate').disabled = true;
+    add_border('viewer_div');
+    report_array.player = `${document.getElementById("username").value}`;
+    if (report_array.logInType === `keychainBegin`) context.keychainBegin();
+    else if (report_array.logInType === `keyBegin`) context.keyBegin();
+    else throw `Error with logInTpye;`
+  }
+
+  this.toggleLogin = function () {
+    var checkBox = document.getElementById("keyType");
+    var passwordField = document.getElementById("password");
+    if (checkBox.checked == false) {
+      passwordField.style.display = "block";
+      report_array.logInType = `keyBegin`;
+    } else {
+      passwordField.style.display = "none";
+      report_array.logInType = `keychainBegin`;
+    }
+  }
+
+  this.keychainBegin = function () {
+    console.log(`Loggin in with Hive Keychain.`);
     if (window.hive_keychain) {
       hive_keychain.requestHandshake(function () {
         update_status(`Hive-Keychain Connected`);
-        //ToDo Lock search button.
-        report_array.player = `${document.getElementById("username").value}`;
-
         hive_keychain.requestEncodeMessage(
           `${report_array.player}`,
           `splinterstats`,
@@ -48,7 +66,29 @@ function report_controller() {
           }
         );
       });
-    } else stop_on_error(`Please install Hive Keychain`);
+    } else stop_on_error(`Please log-in to, or install, Hive Keychain`);
+  }
+
+  this.keyBegin = function () {
+    console.log("Logging in with private key.");
+    report_array.posting_key = `${document.getElementById("password").value}`;
+    //encode message
+    hive.api.getAccounts([report_array.player], function (err, result) {
+      let pubWif = result[0].posting.key_auths[0][0];
+      let isvalid;
+      //console.log(err, result);
+      try {
+        isvalid = hive.auth.wifIsValid(report_array.posting_key, pubWif);
+      } catch (e) {
+        isvalid = 'false';
+      }
+      if (isvalid == true) {
+        update_status(`Posting Key Validated.`);
+        context.getDetails();
+      } else {
+        stop_on_error('Wrong! Check your Private key.');
+      }
+    });
   }
 
   this.getDetails = function () {

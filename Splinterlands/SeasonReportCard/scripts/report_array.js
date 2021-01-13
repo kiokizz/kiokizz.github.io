@@ -2,6 +2,7 @@
 
 let report_array = {
   report: null,
+  logInType: `keychainBegin`,
   text_fields: ["title", "textOpening", "performance", "top10summoners", "top100monsters", "winratebyruleset", "textRewards", "textClosing"],
   season: {
     nameNum: 0,

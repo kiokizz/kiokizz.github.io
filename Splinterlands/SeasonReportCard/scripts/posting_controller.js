@@ -70,23 +70,45 @@ function posting_controller() {
 
     console.log(broadcast_ops)
 
-    hive_keychain.requestBroadcast(
-      author,
-      broadcast_ops,
-      'posting',
-      function (response) {
-        console.log(response);
-        if (response.success) {
-          update_status(`Post Submitted to Hive. Opening Splintertalk.io in a few seconds...`);
-          setTimeout(() => {
-            window.open(`https://splintertalk.io/splinterstats/@${author}/${permlink}/`, '_blank');
-            update_status(`https://splintertalk.io/splinterstats/@${author}/${permlink}/`);
-          }, 3000);
-        } else {
-          document.getElementById('post').disabled = false;
-          stop_on_error(`Post failed: ${response.message}`);
+    if (report_array.logInType === `keychainBegin`) {
+      hive_keychain.requestBroadcast(
+        author,
+        broadcast_ops,
+        'posting',
+        function (response) {
+          console.log(response);
+          if (response.success) {
+            update_status(`Post Submitted to Hive. Opening Splintertalk.io in a few seconds...`);
+            setTimeout(() => {
+              window.open(`https://splintertalk.io/splinterstats/@${author}/${permlink}/`, '_blank');
+              update_status(`https://splintertalk.io/splinterstats/@${author}/${permlink}/`);
+            }, 3000);
+          } else {
+            document.getElementById('post').disabled = false;
+            stop_on_error(`Post failed: ${response.message}`);
+          }
         }
-      }
-    );
+      );
+    } else if (report_array.logInType === `keyBegin`) {
+      hive.broadcast.send({
+          operations: broadcast_ops,
+          extensions: []
+        }, {
+          posting: report_array.posting_key
+        },
+        function (e, r) {
+          console.log(`Error: ${e}`, `Result: ${r}`);
+          if (r && !e) {
+            update_status(`Post Submitted to Hive. Opening Splintertalk.io in a few seconds...`);
+            setTimeout(() => {
+              window.open(`https://splintertalk.io/splinterstats/@${author}/${permlink}/`, '_blank');
+              update_status(`https://splintertalk.io/splinterstats/@${author}/${permlink}/`);
+            }, 3000);
+          } else {
+            document.getElementById('post').disabled = false;
+            stop_on_error(`Post failed: ${response.message}`);
+          }
+        });
+    } else throw `Error with logInTpye;`
   }
 }

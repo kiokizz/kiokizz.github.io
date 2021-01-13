@@ -35,10 +35,13 @@
   <div class="w3-panel">
     <label>Player (without @): </label>
     <input class="w3-input w3-border" type="text" id="username" value="username">
+    <input class="w3-input w3-border" type="text" id="password" value="posting key" style="display: none">
     <button id="generate" class="w3-button w3-theme"
-      onclick="reporter.begin(); add_border('viewer_div'); document.getElementById('generate').disabled = true;">
+      onclick="reporter.generate(); document.getElementById('keyType').disabled">
       Generate
     </button>
+    <label for="keyType">Hive Keychain:</label>
+    <input type="checkbox" id="keyType" checked="true" onclick="reporter.toggleLogin()">
   </div>
 
   <div class="w3-panel w3-row">
