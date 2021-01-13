@@ -618,6 +618,7 @@ function report_controller() {
     } else {
       report_array.matches.cards.used_cards_details = data;
       console.log(`Info on used cards`, data);
+      console.log(`ios debug 0`);
 
       //Assign details
       report_array.matches.cards.used_cards_details.forEach((card, i) => {
