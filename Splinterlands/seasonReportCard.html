@@ -41,71 +41,71 @@
       Generate
     </button>
     <label for="keyType">Hive Keychain:</label>
-    <input type="checkbox" id="keyType" checked="true" onclick="reporter.toggleLogin()">
+    <input type="checkbox" id="keyType" checked onclick="reporter.toggleLogin()">
   </div>
 
   <div class="w3-panel w3-row">
     <div class="w3-half w3-card w3-padding" style="padding-right: 8px">
       <h2>Post <i>Editor</i></h2>
       <div class="w3-margin-top">
-        <label id="matches">Title</label>
-        <input disabled="true" class="w3-input w3-border" type="text" id="title" maxLength="200" value=""
+        <label>Title</label>
+        <input disabled class="w3-input w3-border" type="text" id="title" maxLength="200" value=""
           onkeyup="drawer.draw()">
       </div>
       <div class=" w3-margin-top">
-        <label id="mathces">Opening Comments</label>
-        <textarea disabled="true" id="textOpening" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+        <label>Opening Comments</label>
+        <textarea disabled id="textOpening" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
       <div>
-        <label id="matches">Performance</label>
-        <textarea disabled="true" id="performance" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+        <label>Performance</label>
+        <textarea disabled id="performance" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
       <div>
-        <label id="matches">Top 10 Summoner Usage</label>
-        <textarea disabled="true" id="top10summoners" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+        <label>Top 10 Summoner Usage</label>
+        <textarea disabled id="top10summoners" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
       <div>
-        <label id="matches">Top 100 Monster Usage
+        <label>Top 100 Monster Usage
         </label>
-        <textarea disabled="true" id="top100monsters" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+        <textarea disabled id="top100monsters" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
       <div>
         <label id="matches">Win Rate by Ruleset
         </label>
-        <textarea disabled="true" id="winratebyruleset" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+        <textarea disabled id="winratebyruleset" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
       <div class="w3-margin-top">
-        <label id="rewards">Rewards Cards</label>
-        <textarea disabled="true" id="textRewards" class="w3-input w3-border"
-          onkeyup="drawer.draw()"></textarea></textarea>
+        <label>Rewards Cards</label>
+        <textarea disabled id="textRewards" class="w3-input w3-border"
+          onkeyup="drawer.draw()"></textarea>
       </div>
       <div class="w3-margin-top">
         <label id="other">Closing Comments</label>
-        <textarea disabled="true" id="textClosing" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+        <textarea disabled id="textClosing" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
 
       <div class="w3-margin-top" style="display: none">
         <label id="tournaments">tournaments</label>
-        <textarea disabled="true" id="textTournaments" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+        <textarea disabled id="textTournaments" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
       <div class="w3-margin-top" style="display: none">
         <label id="cardStats">cardStats</label>
-        <textarea disabled="true" id="textCardStats" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+        <textarea disabled id="textCardStats" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
       <div class="w3-margin-top" style="display: none">
-        <label disabled="true" id="mysteryPotions">mysteryPotions</label>
-        <textarea id="textMysteryPotions" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+        <label id="mysteryPotions">mysteryPotions</label>
+        <textarea disabled id="textMysteryPotions" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
       <div class="w3-margin-top" style="display: none">
         <label id="giveaway">giveaway</label>
-        <textarea disabled="true" id="textGiveaways" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+        <textarea disabled id="textGiveaways" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
 
       <div class="w3-panel">
         <label>Tags (without #): </label>
         <input class="w3-input w3-border" type="tags" id="tags" value="splinterstats spt"
           onkeyup="document.getElementById('tags').value = document.getElementById('tags').value.replace(/[^a-z0-9-+ ]+/g, '');">
-        <button id='post' disabled='true' class="w3-button w3-theme"
+        <button id='post' disabled class="w3-button w3-theme"
           onclick="poster.check_details(); document.getElementById('post').disabled = true;">
           Post
         </button>
@@ -131,7 +131,7 @@
         </ul>
       </div>
     </div>
-    <div id='viewer_div' class="viewer w3-half" style="padding: 0 8px 0 8px;">
+    <div id='viewer_div' class="viewer w3-half">
       <h2>Post <i>Viewer</i></h2>
       <div id="content">
         Please enter a username to generate report.

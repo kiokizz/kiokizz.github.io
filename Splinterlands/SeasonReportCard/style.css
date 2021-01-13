@@ -33,3 +33,14 @@ input.fullTXT {
     float: center;
     overflow: visible;
 }
+
+#viewer_div {
+    padding: 0 8px 0 8px;
+}
+
+@media (min-width: 601px) {
+    #viewer_div {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+}
