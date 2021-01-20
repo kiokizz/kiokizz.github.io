@@ -1,0 +1,28 @@
+#menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+#menu div {
+    width: 32%;
+    text-align: center;
+    padding: 8px;
+}
+
+#menu div a {
+    float: end;
+}
+
+@media (max-width: 640px) {
+    #menu {
+        display: block;
+    }
+
+    #menu div {
+        width: 100%;
+        margin-bottom: 8px;
+        text-align: center;
+        padding: 8px;
+    }
+}

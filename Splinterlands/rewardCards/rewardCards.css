@@ -68,26 +68,22 @@ td {
     background-color: #C0C0C0;
 }
 
-a:link {
+a:visited, a:link {
     color: black;
     background-color: transparent;
     text-decoration: none;
 }
 
-a:visited {
-    color: black;
-    background-color: transparent;
-    text-decoration: none;
-}
-
-a:hover {
+a:hover, a:active {
     color: black;
     background-color: transparent;
     text-decoration: underline;
 }
 
-a:active {
-    color: black;
-    background-color: transparent;
+.page_header h1 a:visited,
+.page_header h1 a:link,
+.page_header h1 a:hover,
+.page_header h1 a:active {
+    color: white;
     text-decoration: underline;
 }
