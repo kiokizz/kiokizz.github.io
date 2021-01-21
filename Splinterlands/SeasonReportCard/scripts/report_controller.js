@@ -224,9 +224,6 @@ function report_controller() {
   }
 
   this.sortHistory = function () {
-    console.log(`iod debug e0 ${report_array.txs}`);
-    console.log(`iod debug e1 ${report_array.txs.length}`);
-    console.log(`iod debug e2 ${typeof report_array.txs}`);
     //report_array.season.id
     season_start = Date.parse(report_array.season.season_end_times_manual[report_array.season.id - 2]);
     season_end = Date.parse(report_array.season.season_end_times_manual[report_array.season.id - 1]);
@@ -241,9 +238,7 @@ function report_controller() {
         if (json.type === "league_season" && created_date > season_end) valid = true;
         else if (json.type === "league_season") valid = false;
       }
-      if (i > 100 || i < 500) console.log(`ios debug e3: Valid tx: ${valid}`);
       if (valid) {
-        console.log(`ios debug e4: Valid! ${tx}`);
         switch (tx.type) {
           case "sm_battle":
             //console.log(tx);
@@ -562,17 +557,11 @@ function report_controller() {
 |-|
 |${calc.total_dec} DEC|`;
     update_status(`Generating card usage statistics.`);
-    console.log(`ios debug d0 ${report_array.earnings.template}`);
-    console.log(`ios debug d1 ${report_array.earnings.template.length}`);
-    console.log(`ios debug d2 ${typeof report_array.earnings.template}`);
     context.cardUsageData(false);
   }
 
   this.cardUsageData = function (data) {
     if (!data) {
-      console.log(`ios debug c0 ${report_array.matches.teams}`);
-      console.log(`ios debug c1 ${report_array.matches.teams.length}`);
-      console.log(`ios debug c2 ${typeof report_array.matches.teams}`);
       report_array.matches.teams.forEach(team => {
         if (Object.keys(team).length !== 0) {
           report_array.matches.teams_fielded++;
@@ -611,9 +600,6 @@ function report_controller() {
       });
 
       let cardList = "";
-      console.log(`ios debug b0 ${report_array.matches.cards.array}`);
-      console.log(`ios debug b1 ${report_array.matches.cards.array.length}`);
-      console.log(`ios debug b2 ${typeof report_array.matches.cards.array}`);
       report_array.matches.cards.array.forEach((card, i) => {
         if (card.substring(0, 7) !== `starter`) {
           cardList += card;
@@ -622,24 +608,15 @@ function report_controller() {
           if (i === report_array.matches.cards.array.length - 1 && cardList.substring(cardList.length - 1) === ",") cardList = cardList.substring(0, cardList.length - 1);
         }
       });
-      console.log(`ios debug a0 ${cardList}`);
       request(`https://api.splinterlands.io/cards/find?ids=${cardList}`,
         0,
         context.cardUsageData);
     } else {
       report_array.matches.cards.used_cards_details = data;
-      console.log(`ios debug a1`);
       console.log(data.toString());
       //console.log(`Info on used cards`, data);
-      console.log("ios debug 0");
-      console.log("ios debug 0.1.0 length" + report_array.matches.cards.used_cards_details.length);
-      console.log("ios debug 0.1.1" + typeof report_array.matches.cards.used_cards_details);
-      console.log("ios debug 0.1.2" + report_array.matches.cards.used_cards_details[0]);
-
       //Assign details
       report_array.matches.cards.used_cards_details.forEach((card, i) => {
-        console.log(`ios debug 0.2`);
-        if (i === 0 || i === report_array.matches.cards.used_cards_details.length - 1) console.log(`ios debug 1`);
         let cardType = `${card.details.type.toLowerCase()}s`;
         report_array.matches.cards[cardType][card.uid].name = card.details.name;
         report_array.matches.cards[cardType][card.uid].id = card.details.id;
@@ -653,7 +630,6 @@ function report_controller() {
       function checkDuplicates(array, type) {
         array.forEach(c1 => {
           array.forEach((c2, i) => {
-            if (i === 0 || i === array.length - 1) console.log(`ios debug 2`);
             if (c1 !== c2 && c1.id === c2.id) {
               if (!toDelete[c1.id]) {
                 toDelete[c1.id] = {};
@@ -673,7 +649,6 @@ function report_controller() {
 
       //Combine Duplicates
       Object.values(toDelete).forEach((instructions, i)=> {
-        if (i === 0 || i ===  Object.values(toDelete).length - 1) console.log(`ios debug 3`);
         let count = 0;
         let newIdentifier = ``;
         let newType = ``;
@@ -702,8 +677,6 @@ function report_controller() {
         }
       });
 
-      console.log(`ios debug 4`);
-
       report_array.matches.Ranked.total_matches = report_array.matches.Ranked.wins + report_array.matches.Ranked.loss + report_array.matches.Ranked.draws;
       report_array.matches.Tournament.total_matches = report_array.matches.Tournament.wins + report_array.matches.Tournament.loss + report_array.matches.Tournament.draws;
       report_array.matches.total_matches = report_array.matches.Ranked.total_matches + report_array.matches.Tournament.total_matches;
@@ -729,7 +702,6 @@ function report_controller() {
           card.percent_matches = 100 * card.count / report_array.matches.teams_fielded;
           card.percent_win = 100 * card.wins / card.count;
         });
-        console.log(`ios debug 5`);
         return arrayOfCards;
       }
 
