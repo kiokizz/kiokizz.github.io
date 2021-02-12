@@ -15,7 +15,7 @@ let report_array = {
       53: "2020-12-31T02:00:00.000Z",
       54: "2021-01-15T08:00:00.000Z",
       55: "2021-01-31T14:00:00.000Z",
-      56: "2021-01-15T20:00:00.000Z",
+      56: "2021-02-15T20:00:00.000Z",
       formulaeToImplement: `np, the formula for season ends is it's the 15th and the last day of the month and it changes the time by 6 hours each time
       so next season end is 2021-01-15 08:00:00Z, then 2021-01-31 14:00:00Z`
     }
