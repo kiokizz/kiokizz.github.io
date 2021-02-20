@@ -64,3 +64,25 @@ let rankings = {
     group: "Champion"
   }
 }
+
+let rating_level = {
+  0: `Novice`,
+  1: `Bronze`,
+  2: `Silver`,
+  3: `Gold`,
+  4: `Diamond`,
+  5: `Champion`
+}
+
+let editions = {
+  0: `A`,
+  1: `B`,
+  2: `P`,
+  3: `R`,
+  4: `U`,
+  5: `D`
+}
+
+let card_types = {
+  no_legendaries: `No Legendaries`
+}

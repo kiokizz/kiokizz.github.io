@@ -30,9 +30,8 @@ ${divider_images.splinterlands}
 |Rating|${report_array.matches.rating} - ${report_array.matches.league}|
 |Rating High|${report_array.matches.highRating}|
 |Total Rating Movements (+-)|${report_array.matches.ratingMovement}|
-|Ranked Ratio (Win/Loss+Draw)|${(report_array.matches.Ranked.wins / report_array.matches.Ranked.loss).toFixed(2)} (${report_array.matches.Ranked.wins}/${report_array.matches.Ranked.loss}/${report_array.matches.Ranked.draws})|
-|Tournament Ratio (Win/Loss+Draw)|${(!isNaN(report_array.matches.Tournament.wins / report_array.matches.Tournament.loss) ? (report_array.matches.Tournament.wins / report_array.matches.Tournament.loss).toFixed(2) : 0)} (${report_array.matches.Tournament.wins}/${report_array.matches.Tournament.loss}/${report_array.matches.Tournament.draws})|
-|Longest Streak|${report_array.matches.longestStreak}|
+|Ranked Ratio (Win/Loss+Draw)|${(report_array.matches.Ranked.wins / (report_array.matches.Ranked.loss + report_array.matches.Ranked.draws)).toFixed(2)} (${report_array.matches.Ranked.wins}/${report_array.matches.Ranked.loss}/${report_array.matches.Ranked.draws})|
+${(report_array.matches.Tournament.ids.length > 0) ? `|Tournament Ratio (Win/Loss+Draw)|${(!isNaN(report_array.matches.Tournament.wins / (report_array.matches.Tournament.loss + report_array.matches.Tournament.draws)) ? (report_array.matches.Tournament.wins / (report_array.matches.Tournament.loss + report_array.matches.Tournament.draws)).toFixed(2) : 0)} (${report_array.matches.Tournament.wins}/${report_array.matches.Tournament.loss}/${report_array.matches.Tournament.draws})|\n|Tournament Reward Placements|${report_array.matches.Tournament.prize_list.length}/${report_array.matches.Tournament.ids.length}|\n` : ``}|Longest Streak|${report_array.matches.longestStreak}|
 |Highest Rated Win *vs*|${report_array.matches.higestRatedOpp.name} (${report_array.matches.higestRatedOpp.rating})|
 
 ${document.getElementById('performance').value}
@@ -55,7 +54,7 @@ ${report_array.matches.ruleset_frequency_table}
 
 ${document.getElementById('winratebyruleset').value}
 
-${divider}
+${divider}${(report_array.matches.Tournament.prize_list.length > 0) ? `\n\n### Tournaments Report\n\n${report_array.matches.Tournament.winnings_table}\n\n${report_array.matches.Tournament.prizes_table}\n${document.getElementById('tournamentResults').value}\n${divider}` : ``}
 
 ### Rewards Report
 ${report_array.earnings.template}

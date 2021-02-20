@@ -35,7 +35,8 @@
   <div class="w3-panel">
     <label>Player (without @): </label>
     <input class="w3-input w3-border" type="text" id="username" value="" placeholder="username">
-    <input class="w3-input w3-border" type="text" id="password" value="" placeholder="posting key" style="display: none">
+    <input class="w3-input w3-border" type="text" id="password" value="" placeholder="posting key"
+      style="display: none">
     <button id="generate" class="w3-button w3-theme"
       onclick="reporter.generate(); document.getElementById('keyType').disabled">
       Generate
@@ -74,6 +75,10 @@
         </label>
         <textarea disabled id="winratebyruleset" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
+      <div id="tournament" style="display: none;">
+        <label>Tournament Results</label>
+        <textarea disabled id="tournamentResults" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+      </div>
       <div class="w3-margin-top">
         <label>Rewards Cards</label>
         <textarea disabled id="textRewards" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
@@ -81,23 +86,6 @@
       <div class="w3-margin-top">
         <label id="other">Closing Comments</label>
         <textarea disabled id="textClosing" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
-      </div>
-
-      <div class="w3-margin-top" style="display: none">
-        <label id="tournaments">tournaments</label>
-        <textarea disabled id="textTournaments" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
-      </div>
-      <div class="w3-margin-top" style="display: none">
-        <label id="cardStats">cardStats</label>
-        <textarea disabled id="textCardStats" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
-      </div>
-      <div class="w3-margin-top" style="display: none">
-        <label id="mysteryPotions">mysteryPotions</label>
-        <textarea disabled id="textMysteryPotions" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
-      </div>
-      <div class="w3-margin-top" style="display: none">
-        <label id="giveaway">giveaway</label>
-        <textarea disabled id="textGiveaways" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
 
       <div class="w3-panel">
@@ -118,7 +106,6 @@
         <h4>Coming Sometime 'Soon'</h4>
         <ul>
           <li>Mystery Potion Report</li>
-          <li>Tournament Report</li>
           <li>Cards Report</li>
           <ul>
             <li>Combines</li>

@@ -99,6 +99,8 @@ function report_controller() {
     report_array.season.id = data.season.id;
     report_array.season.name = data.season.name;
     report_array.season.nameNum = data.season.name.substring(data.season.name.length - 2, data.season.name.length);
+    report_array.season_start = Date.parse(report_array.season.season_end_times_manual[report_array.season.id - 2]);
+    report_array.season_end = Date.parse(report_array.season.season_end_times_manual[report_array.season.id - 1]);
 
     report_array.permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
     report_array.static_title = `Splinter Stats Season ${report_array.season.nameNum - 1} Report Card`;
@@ -225,19 +227,17 @@ function report_controller() {
 
   this.sortHistory = function () {
     //report_array.season.id
-    season_start = Date.parse(report_array.season.season_end_times_manual[report_array.season.id - 2]);
-    season_end = Date.parse(report_array.season.season_end_times_manual[report_array.season.id - 1]);
     report_array.txs.forEach((tx, i) => {
       update_status(`Sorting transactions: ${i}/${report_array.txs.length}.`);
       let created_date = Date.parse(tx.created_date);
       let valid = false;
-      if (created_date > season_start && created_date < season_end) valid = true;
+      if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
 
       if (tx.type === "claim_reward") {
         let json = JSON.parse(tx.data);
-        if (json.type === "league_season" && created_date > season_end) valid = true;
+        if (json.type === "league_season" && created_date > report_array.season_end) valid = true;
         else if (json.type === "league_season") valid = false;
-      }
+      } else if (tx.type === `enter_tournament` && created_date < report_array.season_end) valid = true;
       if (valid) {
         switch (tx.type) {
           case "sm_battle":
@@ -249,7 +249,9 @@ function report_controller() {
             else if (match_type === `Tournament`) tally_wdl(match_type);
             else if (match_type === `Practice`) {
               console.log(`Practice Match`);
-            } else console.log("unknown match type")
+            } else {
+              console.log("unknown match type", tx)
+            }
 
             function tally_wdl(match_type) {
               if (win) {
@@ -364,15 +366,24 @@ function report_controller() {
             break;
           case "sm_gift_cards":
             //do somethings
+            //console.log(`sm_gift_cards....`, tx);
             break;
           case "gift_packs":
-            //do somethings
+            //Need to check for end of season league packs
+            //console.log(`gift_packs....`, tx);
             break;
           case "sm_start_quest":
             //do somethings
             break;
           case "enter_tournament":
-            //do somethings
+            //Add to tournament list
+            let enter_result = JSON.parse(tx.data);
+            report_array.matches.Tournament.ids.push(enter_result.tournament_id);
+            break;
+          case "leave_tournament":
+            //Remove from tournaments list
+            let leave_result = JSON.parse(tx.data);
+            report_array.matches.Tournament.ids = report_array.matches.Tournament.ids.filter(t => t !== leave_result.tournament_id);
             break;
           case "open_all":
             //do somethings
@@ -449,16 +460,100 @@ function report_controller() {
           case "mystery_reward":
             //do somethings
             break;
+          case "surrender":
+            //do somethings
+            break;
           default:
-            console.log(`Unidentified case! ${tx.type}`)
+            console.log(`Unidentified case! ${tx.type}`, tx)
         }
       }
     });
-    update_status(`Counting Rewards.`);
-    context.rewardsData();
+    if (report_array.matches.Tournament.ids.length > 0) context.tournamentData(0);
+    else context.rewardsData();
+  }
+
+  this.tournamentData = function (data) {
+    if (data === 0) {
+      update_status(`Tournament Data`);
+      //console.log(`List of tournaments entered by ID:`, report_array.matches.Tournament.ids);
+      report_array.matches.Tournament.searchIndex = 0;
+    } else {
+      report_array.matches.Tournament.data.push(data);
+      report_array.matches.Tournament.searchIndex++;
+    }
+    update_status(`Collecting entered tournament's data.. ${report_array.matches.Tournament.data.length}/${report_array.matches.Tournament.ids.length}`);
+    if (report_array.matches.Tournament.searchIndex < report_array.matches.Tournament.ids.length) {
+      request(`https://api2.splinterlands.com/tournaments/find?id=${report_array.matches.Tournament.ids[report_array.matches.Tournament.searchIndex]}`,
+        0,
+        context.tournamentData);
+    } else {
+      //Sort Data once ready
+      console.log(`Tournament Data: (${report_array.matches.Tournament.data.length}/${report_array.matches.Tournament.ids.length})`, report_array.matches.Tournament.data);
+
+      report_array.matches.Tournament.data.forEach((tournament, i) => {
+        if (tournament.status === 2) {
+          if (report_array.season_end > Date.parse(tournament.rounds[tournament.rounds.length - 1].start_date) + (tournament.data.duration_blocks ? (3000 * tournament.data.duration_blocks) : 0)) {
+            for (let player of tournament.players) {
+              //TODO accumulate entry fees to list on report
+              /* //TODO Add Entry Fees to offset tournament prizes.
+              console.log(`Entry fee... ${player.fee_amount}`);
+              */
+              if (player.player === report_array.player) {
+                //Prizes
+                tournament.data.prizes.payouts.forEach(group => {
+                  if (player.finish >= group.start_place && player.finish <= group.end_place) {
+                    add_to_prizeList(player, tournament, group.items)
+                  };
+                });
+
+                // W/L/D
+                report_array.matches.Tournament.wins += player.wins;
+                report_array.matches.Tournament.loss += player.losses;
+                report_array.matches.Tournament.draws += player.draws;
+                console.log(`---`);
+                break;
+              }
+            }
+          }
+        }
+      });
+
+      function add_to_prizeList(player, tournament, prizeArray) {
+        //Add prize to culmulative earning for tournaments here...
+        let ratio = (!isNaN(player.wins / (player.losses + player.draws)) ? (player.wins / (player.losses + player.draws)).toFixed(2) : 0);
+        report_array.matches.Tournament.prize_list.push({
+          Prize: prizeArray.reduce((string, prize, i) => string += `${(prize.type === `CUSTOM`) ? prize.text : `${prize.qty} ${prize.type}`}${(prizeArray.length > 1 && i < prizeArray.length - 1) ? ` + ` : ``}`, ``),
+          Tournament: `${tournament.name}`,
+          num_players: `${tournament.num_players}`,
+          League: `${rating_level[tournament.data.rating_level]}`,
+          Editions: `${(tournament.data.allowed_cards.editions.length === 0 || tournament.data.allowed_cards.editions.length ===  6) ? `Open` : `${tournament.data.allowed_cards.editions.reduce((list, ed) => list += editions[ed], ``)}`}`,
+          Gold: ``,
+          Card_Limits: ``,
+          Placement: `${player.finish}`,
+          Ratio: `${(ratio.toString() !== `Infinity`) ? ratio : player.wins} (${player.wins}/${player.losses}/${player.draws})`
+        });
+        // Tally identical prizes:
+        prizeArray.forEach(prize => {
+          if (prize.type !== `CUSTOM`) report_array.matches.Tournament.prize_tally[prize.type].quantity += prize.qty;
+          report_array.matches.Tournament.prize_tally[prize.type].count++;
+        });
+      }
+      console.log(`Prize List`, report_array.matches.Tournament.prize_list);
+
+      let tournament_winnings_table_body = report_array.matches.Tournament.prize_list.reduce((body, row) => body += `|${row.Tournament}|${row.League}|${row.Editions}|${row.Placement}/${row.num_players}|${row.Ratio}|${row.Prize}|\n`, ``)
+      report_array.matches.Tournament.winnings_table =
+        `### Prizes\n|Tournament|League|Editions|Placement/#entrants|Ratio (Win/Loss+Draw)|Prize|\n|-|-|-|-|-|-|\n${tournament_winnings_table_body}`
+
+      let tournament_winnings_prize_summary_table_body = Object.values(report_array.matches.Tournament.prize_tally).reduce((body, row) => body += `${(row.count > 0) ? `${`|${row.name}|${row.count}|${row.quantity}|\n`}` : ``}`, ``)
+      report_array.matches.Tournament.prizes_table =
+        `### Summary\n|Reward|Count|Quantity|\n|-|-|-|\n${tournament_winnings_prize_summary_table_body}`
+
+      context.rewardsData();
+    }
   }
 
   this.rewardsData = function () {
+    update_status(`Counting Rewards.`);
     let xyz = `xyz`;
     let calc = {};
     //Calculations for Rewards Cards
@@ -613,7 +708,6 @@ function report_controller() {
         context.cardUsageData);
     } else {
       report_array.matches.cards.used_cards_details = data;
-      console.log(data.toString());
       //console.log(`Info on used cards`, data);
       //Assign details
       report_array.matches.cards.used_cards_details.forEach((card, i) => {
@@ -648,7 +742,7 @@ function report_controller() {
       }
 
       //Combine Duplicates
-      Object.values(toDelete).forEach((instructions, i)=> {
+      Object.values(toDelete).forEach((instructions, i) => {
         let count = 0;
         let newIdentifier = ``;
         let newType = ``;
@@ -749,6 +843,10 @@ function report_controller() {
       document.getElementById(text_field).disabled = false;
       //console.log(`Enabling ${text_field}`);
     });
+    if (report_array.matches.Tournament.ids.length > 0) {
+      document.getElementById(`tournamentResults`).disabled = false;
+      document.getElementById(`tournament`).style.display = "inline";
+    }
     document.getElementById('post').disabled = false;
   }
 }

@@ -9,13 +9,10 @@ let report_array = {
     date_start: undefined,
     date_end: undefined,
     season_end_times_manual: {
-      50: "2020-11-15T20:00:00.000Z",
-      51: "2020-11-30T14:00:00.000Z",
-      52: "2020-12-15T20:00:00.000Z",
-      53: "2020-12-31T02:00:00.000Z",
-      54: "2021-01-15T08:00:00.000Z",
       55: "2021-01-31T14:00:00.000Z",
       56: "2021-02-15T20:00:00.000Z",
+      57: "2021-02-28T02:00:00.000Z",
+      58: "2021-03-15T08:00:00.000Z",
       formulaeToImplement: `np, the formula for season ends is it's the 15th and the last day of the month and it changes the time by 6 hours each time
       so next season end is 2021-01-15 08:00:00Z, then 2021-01-31 14:00:00Z`
     }
@@ -33,9 +30,48 @@ let report_array = {
       draws: 0,
     },
     Tournament: {
+      ids: [],
+      data: [],
+      prizes: {},
+      prize_list: [],
+      prize_tally: {
+        DEC: {
+          name: `DEC`,
+          count: 0,
+          quantity: 0
+        },
+        HIVE: {
+          name: `Hive`,
+          count: 0,
+          quantity: 0
+        },
+        HBD: {
+          name: `Hive Backed Dollars`,
+          count: 0,
+          quantity: 0
+        },
+        SIM: {
+          name: `Sim City SIM`,
+          count: 0,
+          quantity: 0
+        },
+        ENTRY: {
+          name: `Sim City ENTRY`,
+          count: 0,
+          quantity: 0
+        },
+        CUSTOM: {
+          name: `Custom Prizes`,
+          count: 0,
+          quantity: `n/a`
+        }
+      },
       wins: 0,
       loss: 0,
       draws: 0,
+      win_rates: {
+        0: 0
+      }
     },
     total_matches: 0,
     teams_fielded: 0,
@@ -56,7 +92,7 @@ let report_array = {
   },
   tournaments: {
     count: 0,
-    prizes: [],
+    prizes: []
   },
   earnings: {
     template: ``,
