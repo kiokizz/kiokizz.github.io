@@ -80,8 +80,8 @@ function posting_controller() {
           if (response.success) {
             update_status(`Post Submitted to Hive. Opening Splintertalk.io in a few seconds...`);
             setTimeout(() => {
-              window.open(`https://splintertalk.io/splinterstats/@${author}/${permlink}/`, '_blank');
-              update_status(`https://splintertalk.io/splinterstats/@${author}/${permlink}/`);
+              window.open(`https://www.splintertalk.io/splinterstats/@${author}/${permlink}/`, '_blank');
+              update_status(`https://www.splintertalk.io/splinterstats/@${author}/${permlink}/`);
             }, 3000);
           } else {
             document.getElementById('post').disabled = false;
@@ -101,8 +101,8 @@ function posting_controller() {
           if (r && !e) {
             update_status(`Post Submitted to Hive. Opening Splintertalk.io in a few seconds...`);
             setTimeout(() => {
-              window.open(`https://splintertalk.io/splinterstats/@${author}/${permlink}/`, '_blank');
-              update_status(`https://splintertalk.io/splinterstats/@${author}/${permlink}/`);
+              window.open(`https://www.splintertalk.io/splinterstats/@${author}/${permlink}/`, '_blank');
+              update_status(`https://www.splintertalk.io/splinterstats/@${author}/${permlink}/`);
             }, 3000);
           } else {
             document.getElementById('post').disabled = false;
