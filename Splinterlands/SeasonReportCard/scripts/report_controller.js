@@ -725,16 +725,14 @@ function report_controller() {
         array.forEach(c1 => {
           array.forEach((c2, i) => {
             if (c1 !== c2 && c1.id === c2.id) {
-              if (!toDelete[c1.id]) {
-                toDelete[c1.id] = {};
-                if (!toDelete[c1.id][c1.identifier]) {
-                  toDelete[c1.id][c1.identifier] = c1;
-                  toDelete[c1.id][c1.identifier].type = type;
-                }
-                if (!toDelete[c2.id][c2.identifier]) {
-                  toDelete[c2.id][c2.identifier] = c2;
-                  toDelete[c2.id][c2.identifier].type = type;
-                }
+              if (!toDelete[c1.id]) toDelete[c1.id] = {};
+              if (!toDelete[c1.id][c1.identifier]) {
+                toDelete[c1.id][c1.identifier] = c1;
+                toDelete[c1.id][c1.identifier].type = type;
+              }
+              if (!toDelete[c2.id][c2.identifier]) {
+                toDelete[c2.id][c2.identifier] = c2;
+                toDelete[c2.id][c2.identifier].type = type;
               }
             }
           });
