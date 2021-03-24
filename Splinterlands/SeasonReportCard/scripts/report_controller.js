@@ -99,8 +99,8 @@ function report_controller() {
     report_array.season.id = data.season.id;
     report_array.season.name = data.season.name;
     report_array.season.nameNum = data.season.name.substring(data.season.name.length - 2, data.season.name.length);
-    report_array.season_start = Date.parse(report_array.season.season_end_times_manual[report_array.season.id - 2]);
-    report_array.season_end = Date.parse(report_array.season.season_end_times_manual[report_array.season.id - 1]);
+    report_array.season_start = Date.parse(report_array.season.season_end_times[report_array.season.id - 2]);
+    report_array.season_end = Date.parse(report_array.season.season_end_times[report_array.season.id - 1]);
 
     report_array.permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
     report_array.static_title = `Splinter Stats Season ${report_array.season.nameNum - 1} Report Card`;

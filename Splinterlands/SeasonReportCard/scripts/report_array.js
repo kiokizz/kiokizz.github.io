@@ -8,14 +8,7 @@ let report_array = {
     nameNum: 0,
     date_start: undefined,
     date_end: undefined,
-    season_end_times_manual: {
-      55: "2021-01-31T14:00:00.000Z",
-      56: "2021-02-15T20:00:00.000Z",
-      57: "2021-02-28T02:00:00.000Z",
-      58: "2021-03-15T08:00:00.000Z",
-      formulaeToImplement: `np, the formula for season ends is it's the 15th and the last day of the month and it changes the time by 6 hours each time
-      so next season end is 2021-01-15 08:00:00Z, then 2021-01-31 14:00:00Z`
-    }
+    season_end_times: {}
   },
   player: ``,
   matches: {
@@ -227,4 +220,36 @@ let report_array = {
   tx_ids: [],
   txs: [],
   allCards: []
+}
+
+generateSeasonEndTimes();
+
+function generateSeasonEndTimes(params) {
+  // season origin
+  let x = {
+    id: 55,
+    YYYY: 2021,
+    MM: 1,
+    DD: 31,
+    HH: `14`
+  }
+
+  let hours = [`02`, `08`, `14`, `20`];
+
+  for (let i = 0; i < 240; i++) {
+    report_array.season.season_end_times[x.id + i] = `${x.YYYY}-${(x.MM.toString().length == 1) ? `0${x.MM}` : x.MM}-${(x.DD.toString().length == 1) ? `0${x.DD}` : x.DD}T${x.HH}:00:00.000Z`;
+    //YYYY MM DD
+    if (x.DD == 15) {
+      //next half of month
+      x.DD = new Date(x.YYYY, x.MM, 0).getDate()
+    } else {
+      //next month
+      x.DD = 15;
+      if (x.MM == 12) x.YYYY++, x.MM = 1;
+      else x.MM++;
+    }
+    //HH
+    let cycle = hours.indexOf(x.HH);
+    x.HH = (cycle == 3) ? hours[0] : hours[cycle + 1];
+  }
 }
