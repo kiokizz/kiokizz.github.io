@@ -5,12 +5,12 @@ function posting_controller() {
     let count = 0;
     report_array.text_fields.forEach(field => {
       document.getElementById(field).style.color = "black";
-      if (field !== "title" && document.getElementById(field).value.length < 20) {
+      if (field !== "title" && document.getElementById(field).value.length < 25) {
         count++;
         document.getElementById(field).style.color = "#ff0000";
       }
     });
-    if (count > 1) {
+    if (count > 3) {
       document.getElementById('post').disabled = false;
       stop_on_error(`Please include more writing in your post.`)
     } else context.post_details();
