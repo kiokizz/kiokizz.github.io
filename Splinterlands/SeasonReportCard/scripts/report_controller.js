@@ -161,7 +161,7 @@ function report_controller() {
     });
 
     update_status(`Getting player season records.`);
-    request(`https://game-api.splinterlands.io/players/season_details?name=${report_array.player}`, 0, context.seasonDetails);
+    request(`https://api2.splinterlands.com/players/season_details?name=${report_array.player}`, 0, context.seasonDetails);
   }
 
   this.seasonDetails = function (data) {
