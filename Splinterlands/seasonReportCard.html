@@ -8,12 +8,16 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@hiveio/hive-js/dist/hive.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="SeasonReportCard/scripts/report_array.js"></script>
+  <script src="SeasonReportCard/modules/utils.js"></script>
+  <script src="SeasonReportCard/modules/player.js"></script>
+  <script src="SeasonReportCard/modules/poster.js"></script>
+  <script src="SeasonReportCard/modules/splinterlands.js"></script>
+  <!-- <script src="SeasonReportCard/scripts/report_array.js"></script>
   <script src="SeasonReportCard/scripts/report_controller.js"></script>
   <script src="SeasonReportCard/scripts/draw_controller.js"></script>
   <script src="SeasonReportCard/scripts/posting_controller.js"></script>
   <script src="SeasonReportCard/scripts/static_variables.js"></script>
-  <script src="SeasonReportCard/scripts/utils.js"></script>
+  <script src="SeasonReportCard/scripts/utils.js"></script> -->
 
   <link rel="shortcut icon" href="../resources/rose.jpg" />
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -28,8 +32,10 @@
   <div class="w3-panel w3-theme" style="margin-top: 0;">
     <h1><a href='index.html'>SplinterStats</a> - Season Report Card</h1>
     <sub>A tool for reflecting on and sharing your Splinterlands season play. Requires Hive Keychain.</sub>
-    <p><a href="https://www.splintertalk.io/splinterlands/@splinterstats/splinterstats-season-report-card-update-and-tutorial"
+    <p><a
+        href="https://www.splintertalk.io/splinterlands/@splinterstats/splinterstats-season-report-card-update-and-tutorial"
         target="_blank">Click here for more information.</a></p>
+    <p id='season_details'></p>
   </div>
 
   <div class="w3-panel">
@@ -126,20 +132,35 @@
 
   </div>
 
-  <script>
-    hive.api.setOptions({
-      url: 'https://anyx.io'
-    });
+  <script defer>
+    // hive.api.setOptions({
+    //   url: 'https://anyx.io'
+    // });
 
-    let drawer = new draw_controller();
-    let reporter = new report_controller();
-    let poster = new posting_controller();
+    // let drawer = new draw_controller();
+    // let reporter = new report_controller();
+    // let poster = new posting_controller();
 
-    function add_border(id) {
-      let el = document.getElementById(id);
-      if (el.className.indexOf('w3-border') === -1)
-        el.className += " w3-border";
-    }
+    // function add_border(id) {
+    //   let el = document.getElementById(id);
+    //   if (el.className.indexOf('w3-border') === -1)
+    //     el.className += " w3-border";
+    // }
+
+
+    (async function () {
+
+      let splinterlands = create_splinterlands();
+
+      let success = await splinterlands.load_settings();
+
+      if (!success); // TODO handle error case where settings doesn't load
+      else {
+        el('season_details').innerText = splinterlands.get_season_string();
+        // TODO Enable generate button
+      }
+
+    })();
   </script>
 
 </body>
