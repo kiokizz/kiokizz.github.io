@@ -1,4 +1,4 @@
-async function attempt_get_request(url, num_attempts) {
+async function attempt_get_request(url, num_attempts = 5) {
   let response = false;
   do {
     response = await get_request(url)
@@ -7,18 +7,15 @@ async function attempt_get_request(url, num_attempts) {
 }
 
 async function get_request(url) {
-  const location = window.location.hostname;
   const settings = {
     method: 'GET',
     headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
+      Accept: 'application/json', 'Content-Type': 'application/json'
     }
   };
   try {
     const fetchResponse = await fetch(url, settings);
-    const data = await fetchResponse.json();
-    return data;
+    return await fetchResponse.json();
   } catch (e) {
     update_status(e);
     return false;
@@ -35,6 +32,11 @@ function stop_on_error(error_message) {
   alert(error_message);
   update_status(error_message);
   throw error_message;
+}
+
+function show_error(error_message) {
+  alert(error_message);
+  console.log(error_message);
 }
 
 function el(id) {

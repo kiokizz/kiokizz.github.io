@@ -11,7 +11,9 @@
   <script src="SeasonReportCard/modules/utils.js"></script>
   <script src="SeasonReportCard/modules/player.js"></script>
   <script src="SeasonReportCard/modules/poster.js"></script>
+  <script src="SeasonReportCard/modules/reporter.js"></script>
   <script src="SeasonReportCard/modules/splinterlands.js"></script>
+  <script src="SeasonReportCard/modules/static_variables.js"></script>
   <!-- <script src="SeasonReportCard/scripts/report_array.js"></script>
   <script src="SeasonReportCard/scripts/report_controller.js"></script>
   <script src="SeasonReportCard/scripts/draw_controller.js"></script>
@@ -19,7 +21,7 @@
   <script src="SeasonReportCard/scripts/static_variables.js"></script>
   <script src="SeasonReportCard/scripts/utils.js"></script> -->
 
-  <link rel="shortcut icon" href="../resources/rose.jpg" />
+  <link rel="shortcut icon" href="../resources/rose.jpg"/>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
   <link rel="stylesheet" type="text/css" href="SeasonReportCard/style.css">
@@ -29,139 +31,164 @@
 
 <body>
 
-  <div class="w3-panel w3-theme" style="margin-top: 0;">
-    <h1><a href='index.html'>SplinterStats</a> - Season Report Card</h1>
-    <sub>A tool for reflecting on and sharing your Splinterlands season play. Requires Hive Keychain.</sub>
-    <p><a
-        href="https://www.splintertalk.io/splinterlands/@splinterstats/splinterstats-season-report-card-update-and-tutorial"
-        target="_blank">Click here for more information.</a></p>
-    <p id='season_details'></p>
-  </div>
+<div class="w3-panel w3-theme" style="margin-top: 0;">
+  <h1><a href='index.html'>SplinterStats</a> - Season Report Card</h1>
+  <sub>A tool for reflecting on and sharing your Splinterlands season play. Requires Hive Keychain.</sub>
+  <p><a
+      href="https://www.splintertalk.io/splinterlands/@splinterstats/splinterstats-season-report-card-update-and-tutorial"
+      target="_blank">Click here for more information.</a></p>
+  <p id='season_details'></p>
+</div>
 
-  <div class="w3-panel">
-    <label>Player (without @): </label>
-    <input class="w3-input w3-border" type="text" id="username" value="" placeholder="username">
-    <input class="w3-input w3-border" type="text" id="password" value="" placeholder="posting key"
-      style="display: none">
-    <button id="generate" class="w3-button w3-theme"
-      onclick="reporter.generate(); document.getElementById('keyType').disabled">
-      Generate
-    </button>
-    <label for="keyType">Hive Keychain:</label>
-    <input type="checkbox" id="keyType" checked onclick="reporter.toggleLogin()">
-  </div>
+<div class="w3-panel">
+  <label>Player (without @): </label>
+  <input class="w3-input w3-border" type="text" id="username" value="" placeholder="username">
+  <button id="generate_report" class="w3-button w3-theme" disabled>
+    Generate
+  </button>
+</div>
 
-  <div class="w3-panel w3-row">
-    <div class="w3-half w3-card w3-padding" style="padding-right: 8px">
-      <h2>Post <i>Editor</i></h2>
-      <div class="w3-margin-top">
-        <label>Title</label>
-        <input disabled class="w3-input w3-border" type="text" id="title" maxLength="200" value=""
-          onkeyup="drawer.draw()">
-      </div>
-      <div class=" w3-margin-top">
-        <label>Opening Comments</label>
-        <textarea disabled id="textOpening" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
-      </div>
-      <div>
-        <label>Performance</label>
-        <textarea disabled id="performance" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
-      </div>
-      <div>
-        <label>Top 10 Summoner Usage</label>
-        <textarea disabled id="top10summoners" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
-      </div>
-      <div>
-        <label>Top 100 Monster Usage
-        </label>
-        <textarea disabled id="top100monsters" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
-      </div>
-      <div>
-        <label id="matches">Win Rate by Ruleset
-        </label>
-        <textarea disabled id="winratebyruleset" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
-      </div>
-      <div id="tournament" style="display: none;">
-        <label>Tournament Results</label>
-        <textarea disabled id="tournamentResults" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
-      </div>
-      <div class="w3-margin-top">
-        <label>Rewards Cards</label>
-        <textarea disabled id="textRewards" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
-      </div>
-      <div class="w3-margin-top">
-        <label id="other">Closing Comments</label>
-        <textarea disabled id="textClosing" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
-      </div>
+<div class="w3-panel w3-row">
+  <div class="w3-half w3-card w3-padding" style="padding-right: 8px">
+    <h2>Post <i>Editor</i></h2>
+    <div class="w3-margin-top">
+      <label>Title</label>
+      <input disabled class="w3-input w3-border" type="text" id="title" maxLength="200" value=""
+             onkeyup="drawer.draw()">
+    </div>
+    <div class=" w3-margin-top">
+      <label>Opening Comments</label>
+      <textarea disabled id="textOpening" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+    </div>
+    <div>
+      <label>Performance</label>
+      <textarea disabled id="performance" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+    </div>
+    <div>
+      <label>Top 10 Summoner Usage</label>
+      <textarea disabled id="top10summoners" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+    </div>
+    <div>
+      <label>Top 100 Monster Usage
+      </label>
+      <textarea disabled id="top100monsters" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+    </div>
+    <div>
+      <label id="matches">Win Rate by Ruleset
+      </label>
+      <textarea disabled id="winratebyruleset" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+    </div>
+    <div id="tournament" style="display: none;">
+      <label>Tournament Results</label>
+      <textarea disabled id="tournamentResults" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+    </div>
+    <div class="w3-margin-top">
+      <label>Rewards Cards</label>
+      <textarea disabled id="textRewards" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+    </div>
+    <div class="w3-margin-top">
+      <label id="other">Closing Comments</label>
+      <textarea disabled id="textClosing" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+    </div>
 
-      <div class="w3-panel">
-        <label>Tags (without #): </label>
-        <input class="w3-input w3-border" type="tags" id="tags" value="splinterstats spt"
-          onkeyup="document.getElementById('tags').value = document.getElementById('tags').value.replace(/[^a-z0-9-+ ]+/g, '');">
-        <button id='post' disabled class="w3-button w3-theme"
-          onclick="poster.check_details(); document.getElementById('post').disabled = true;">
-          Post
-        </button>
-        <p>Disclaimer:Information is gathered from Splinterlands servers. Human error could result in mistakes in the
-          representation of the presented data.</p>
-        <p>By deafult a 10% beneficiary reward is set in the published post. This supports the developer (@kiokizz) and
-          future development.</p>
-      </div>
-      <hr>
-      <div>
-        <h4>Coming Sometime 'Soon'</h4>
+    <div class="w3-panel">
+      <label>Tags (without #): </label>
+      <input class="w3-input w3-border" type="text" id="tags" value="splinterstats spt"
+             onkeyup="document.getElementById('tags').value = document.getElementById('tags').value.replace(/[^a-z0-9-+ ]+/g, '');">
+      <button id='post' disabled class="w3-button w3-theme"
+              onclick="poster.check_details(); document.getElementById('post').disabled = true;">
+        Post
+      </button>
+      <p>Disclaimer:Information is gathered from Splinterlands servers. Human error could result in mistakes in the
+        representation of the presented data.</p>
+      <p>By default a 10% beneficiary reward is set in the published post. This supports the developer (@kiokizz) and
+        future development.</p>
+    </div>
+    <hr>
+    <div>
+      <h4>Coming Sometime 'Soon'</h4>
+      <ul>
+        <li>Mystery Potion Report</li>
+        <li>Cards Report</li>
         <ul>
-          <li>Mystery Potion Report</li>
-          <li>Cards Report</li>
-          <ul>
-            <li>Combines</li>
-            <li>Burns</li>
-            <li>Bought</li>
-            <li>Sold</li>
-          </ul>
-          <li>...</li>
+          <li>Combines</li>
+          <li>Burns</li>
+          <li>Bought</li>
+          <li>Sold</li>
         </ul>
-      </div>
+        <li>...</li>
+      </ul>
     </div>
-    <div id='viewer_div' class="viewer w3-half">
-      <h2>Post <i>Viewer</i></h2>
-      <div id="content">
-        Please enter a username to generate report.
-      </div>
+  </div>
+  <div id='viewer_div' class="viewer w3-half">
+    <h2>Post <i>Viewer</i></h2>
+    <div id="content">
+      Please enter a username to generate report.
     </div>
-
   </div>
 
-  <script defer>
-    // hive.api.setOptions({
-    //   url: 'https://anyx.io'
-    // });
+</div>
 
-    // let drawer = new draw_controller();
-    // let reporter = new report_controller();
-    // let poster = new posting_controller();
+<script defer>
+  // hive.api.setOptions({
+  //   url: 'https://anyx.io'
+  // });
 
-    // function add_border(id) {
-    //   let el = document.getElementById(id);
-    //   if (el.className.indexOf('w3-border') === -1)
-    //     el.className += " w3-border";
-    // }
+  // let drawer = new draw_controller();
+  // let reporter = new report_controller();
+  // let poster = new posting_controller();
+
+  // function add_border(id) {
+  //   let el = document.getElementById(id);
+  //   if (el.className.indexOf('w3-border') === -1)
+  //     el.className += " w3-border";
+  // }
 
 
-    (async function () {
+  (async function () {
 
-      let splinterlands = create_splinterlands();
+    let splinterlands = create_splinterlands();
 
-      let success = await splinterlands.load_settings();
+    if (!await splinterlands.load_settings()) {
+      stop_on_error('Could not lead settings')
+      // TODO handle error case where settings doesn't load
+    } else {
+      set_header_info(splinterlands.get_season_string());
 
-      if (!success); // TODO handle error case where settings doesn't load
-      else {
-        el('season_details').innerText = splinterlands.get_season_string();
-        // TODO Enable generate button
+      let reporter = create_reporter(splinterlands);
+      enable_generate_report_button(reporter, splinterlands);
+    }
+
+  })();
+
+  function set_header_info(text) {
+    el('season_details').innerText = text;
+  }
+
+  function enable_generate_report_button(reporter, splinterlands) {
+    let btn = el('generate_report');
+    btn.disabled = false;
+    btn.onclick = async () => {
+      btn.disabled = true;
+      if (!await set_player(splinterlands)) {
+        return enable_generate_report_button();
       }
+      el('content').innerHTML = await reporter.generate_report();
+    }
 
-    })();
-  </script>
+    el('username').onkeydown = async e => {
+      if (e.key === 'Enter' && !btn.disabled) btn.click();
+    }
+  }
+
+  async function set_player(splinterlands) {
+    let username = el('username').value;
+    if (await splinterlands.set_player(username)) return true;
+    show_error('Unable to load that username. Please try another.');
+    return false;
+  }
+
+</script>
 
 </body>
 
