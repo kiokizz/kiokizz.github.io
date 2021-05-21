@@ -35,7 +35,7 @@ function data_collector() {
   }
 
   this.keychainBegin = function () {
-    console.log(`Loggin in with Hive Keychain.`);
+    console.log(`Logging in with Hive Keychain.`);
     if (window.hive_keychain) {
       hive_keychain.requestHandshake(function () {
         update_status(`Hive-Keychain Connected`);
