@@ -1,4 +1,4 @@
-function create_player(season) {
+function create_player(username, season) {
   let league = rankings[season.league].name;
   let league_name = rankings[season.league].group;
 
@@ -7,8 +7,16 @@ function create_player(season) {
     return false;
   }
 
+  let instantiate_data = async function (input_txs) {
+    let txs = {};
+    input_txs.forEach(tx => (!txs[tx.type]) ? txs[tx.type] = [tx] : txs[tx.type].push(tx));
+    console.log(txs);
+
+    // TODO create any modules/objects
+  }
 
   return {
-    'stand_in': 'stand_in'
+    username,
+    instantiate_data
   };
 }

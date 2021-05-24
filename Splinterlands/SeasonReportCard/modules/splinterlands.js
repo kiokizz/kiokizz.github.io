@@ -3,10 +3,6 @@ function create_splinterlands() {
   let player = null;
   let current_season_id = null;
   let card_details = null;
-  let player_history = null;
-  let tx_types = {};
-  let tx_ids = {};
-  let txs = [];
 
   async function load_settings() {
     update_status(`Getting Splinterlands settings.`);
@@ -41,16 +37,58 @@ function create_splinterlands() {
       return false;
     }
 
-    player = create_player(previous_season);
+    player = create_player(username, previous_season);
     return !!player;
   }
 
+  let load_standard_data = async function () {
+    card_details = attempt_get_request('https://game-api.splinterlands.com/cards/get_details');
+    let player_txs = await get_player_txs();
+    player_txs = remove_duplicate_txs(player_txs);
+    await player.instantiate_data(player_txs);
+    console.log(`Player History`, player_txs);
+  }
+
+  let load_tournament_details = async function (tournament_ids) {
+    // TODO
+  }
+
+  let load_card_identifiers = async function (unique_card_ids) {
+    // TODO
+  }
+
   return {
-    load_settings: load_settings,
-    get_season_string: get_season_string,
-    set_player: set_player,
-    load_standard_data: load_standard_data
+    load_settings,
+    get_season_string,
+    set_player,
+    load_standard_data,
+    load_tournament_details,
+    load_card_identifiers
   };
+
+  async function get_player_txs(txs = [], last_tx_block = '') {
+    let txs_per_request = 500;
+
+    update_status(`Getting player transactions before block: ${last_tx_block}.`);
+    let url = `https://api.steemmonsters.io/players/history?username=${player.username}&from_block=-1&before_block=${last_tx_block}&limit=${txs_per_request}`;
+    let request_txs = await attempt_get_request(url);
+
+    request_txs.forEach(e => txs.push(e));
+    last_tx_block = request_txs[request_txs.length - 1].block_num;
+
+    if (request_txs.length === txs_per_request) txs = await get_player_txs(txs, last_tx_block);
+    return txs;
+  }
+
+  function remove_duplicate_txs(txs) {
+    let ids = [];
+
+    return txs.filter(tx => {
+      if (ids.includes(tx.id)) return false;
+      ids.push(tx.id);
+      return true;
+    })
+  }
 
   function generateSeasonEndTimes() {
     if (!settings) return;

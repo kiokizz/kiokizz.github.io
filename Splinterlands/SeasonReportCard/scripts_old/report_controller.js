@@ -253,13 +253,13 @@ function report_controller() {
               console.log("unknown match type", tx)
             }
 
-            function tally_wdl(match_type) {
-              if (win) {
-                report_array.matches[match_type].wins++;
-                if (match_type === `Ranked`) report_array.earnings.matches += json.dec_info.reward;
-              } else if (json.winner === "DRAW") report_array.matches[match_type].draws++;
-              else report_array.matches[match_type].loss++;
-            }
+          function tally_wdl(match_type) {
+            if (win) {
+              report_array.matches[match_type].wins++;
+              if (match_type === `Ranked`) report_array.earnings.matches += json.dec_info.reward;
+            } else if (json.winner === "DRAW") report_array.matches[match_type].draws++;
+            else report_array.matches[match_type].loss++;
+          }
 
             //console.log(`Battle Result Json`, json);
             let rulesets = json.ruleset.split("|");
@@ -503,7 +503,8 @@ function report_controller() {
                 tournament.data.prizes.payouts.forEach(group => {
                   if (player.finish >= group.start_place && player.finish <= group.end_place) {
                     add_to_prizeList(player, tournament, group.items)
-                  };
+                  }
+                  ;
                 });
 
                 // W/L/D
@@ -526,7 +527,7 @@ function report_controller() {
           Tournament: `${tournament.name}`,
           num_players: `${tournament.num_players}`,
           League: `${rating_level[tournament.data.rating_level]}`,
-          Editions: `${(tournament.data.allowed_cards.editions.length === 0 || tournament.data.allowed_cards.editions.length ===  6) ? `Open` : `${tournament.data.allowed_cards.editions.reduce((list, ed) => list += editions[ed], ``)}`}`,
+          Editions: `${(tournament.data.allowed_cards.editions.length === 0 || tournament.data.allowed_cards.editions.length === 6) ? `Open` : `${tournament.data.allowed_cards.editions.reduce((list, ed) => list += editions[ed], ``)}`}`,
           Gold: ``,
           Card_Limits: ``,
           Placement: `${player.finish}`,
@@ -538,6 +539,7 @@ function report_controller() {
           report_array.matches.Tournament.prize_tally[prize.type].count++;
         });
       }
+
       console.log(`Prize List`, report_array.matches.Tournament.prize_list);
 
       let tournament_winnings_table_body = report_array.matches.Tournament.prize_list.reduce((body, row) => body += `|${row.Tournament}|${row.League}|${row.Editions}|${row.Placement}/${row.num_players}|${row.Ratio}|${row.Prize}|\n`, ``)
@@ -612,7 +614,6 @@ function report_controller() {
     //Calculations for Loot Chest DEC
     calc.total_loot_dec = report_array.earnings.loot_chests.daily.dec + report_array.earnings.loot_chests.season.dec;
     calc.total_dec = calc.total_all_dec + calc.total_untamed_packs_dec + calc.total_legendary_potions_dec + calc.total_alchemy_potions_dec + calc.total_loot_dec + report_array.earnings.matches;
-
 
 
     report_array.earnings.template = `##### Standard Foil Cards\n
@@ -774,6 +775,7 @@ function report_controller() {
       report_array.matches.total_matches = report_array.matches.Ranked.total_matches + report_array.matches.Tournament.total_matches;
       report_array.summoner_data = generatePublicDetails(report_array.matches.cards.summoners);
       report_array.monster_data = generatePublicDetails(report_array.matches.cards.monsters);
+
       //Make percentages.. Top 15 Sums, Top 100 Mons
 
       function generatePublicDetails(input) {
