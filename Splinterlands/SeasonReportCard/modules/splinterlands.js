@@ -82,12 +82,7 @@ function create_splinterlands() {
 
   function remove_duplicate_txs(txs) {
     let ids = [];
-
-    return txs.filter(tx => {
-      if (ids.includes(tx.id)) return false;
-      ids.push(tx.id);
-      return true;
-    })
+    return txs.filter(tx => !ids.includes(tx.id) && ids.push(tx.id));
   }
 
   function generateSeasonEndTimes() {
