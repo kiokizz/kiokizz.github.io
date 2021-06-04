@@ -32,12 +32,14 @@
 <body>
 
 <div class="w3-panel w3-theme" style="margin-top: 0;">
-  <h1><a href='index.html'>SplinterStats</a> - Season Report Card</h1>
-  <sub>A tool for reflecting on and sharing your Splinterlands season play. Requires Hive Keychain.</sub>
-  <p><a
-      href="https://www.splintertalk.io/splinterlands/@splinterstats/splinterstats-season-report-card-update-and-tutorial"
-      target="_blank">Click here for more information.</a></p>
-  <p id='season_details'></p>
+  <div class="w3-left">
+    <h1><a href='index.html'>SplinterStats</a> - Season Report Card</h1>
+    <sub>A tool for reflecting on and sharing your Splinterlands season play. Requires Hive Keychain.</sub>
+    <p><a
+        href="https://www.splintertalk.io/splinterlands/@splinterstats/splinterstats-season-report-card-update-and-tutorial"
+        target="_blank">Click here for more information.</a></p>
+  </div>
+  <p id='season_details' class="w3-right"></p>
 </div>
 
 <div class="w3-panel">
@@ -153,7 +155,7 @@
       stop_on_error('Could not lead settings')
       // TODO handle error case where settings doesn't load
     } else {
-      set_header_info(splinterlands.get_season_string());
+      setInterval(() => set_header_info(splinterlands.get_season_string()));
 
       let reporter = create_reporter(splinterlands);
       enable_generate_report_button(reporter, splinterlands);

@@ -15,13 +15,20 @@ function create_splinterlands() {
   function get_season_string() {
     if (!settings) return '';
 
-    current_season_id = settings.season.id;
     let name = settings.season.name;
     let nameNum = name.substring(name.length - 2, name.length);
-    let season_start = Date.parse(settings.season.season_end_times[current_season_id - 2]);
-    let season_end = Date.parse(settings.season.season_end_times[current_season_id - 1]);
+    current_season_id = settings.season.id;
 
-    return `${current_season_id} ${name} ${nameNum} ${season_start} ${season_end}`;
+    let next_season = Date.parse(settings.season.season_end_times[current_season_id]);
+    let remaining_time = next_season - new Date().getTime();
+    let time = {
+      day: Math.floor(remaining_time / (1000 * 60 * 60 * 24)),
+      hrs: Math.floor((remaining_time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+      min: Math.floor((remaining_time % (1000 * 60 * 60)) / (1000 * 60)),
+      sec: Math.floor((remaining_time % (1000 * 60)) / 1000)
+    };
+
+    return  `Current Season: ${nameNum}. Time to post for Season ${nameNum - 1} - ${time.day} Days ${time.hrs} Hrs ${time.min} Min ${time.sec} Sec.`;
   }
 
   async function set_player(username) {
