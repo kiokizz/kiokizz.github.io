@@ -28,7 +28,7 @@ function create_splinterlands() {
       sec: Math.floor((remaining_time % (1000 * 60)) / 1000)
     };
 
-    return  `Current Season: ${nameNum}. Time to post for Season ${nameNum - 1} - ${time.day} Days ${time.hrs} Hrs ${time.min} Min ${time.sec} Sec.`;
+    return `Current Season: ${nameNum}. Time to post for Season ${nameNum - 1} - ${time.day} Days ${time.hrs} Hrs ${time.min} Min ${time.sec} Sec.`;
   }
 
   async function set_player(username) {
@@ -48,28 +48,29 @@ function create_splinterlands() {
     return !!player;
   }
 
+  let get_player = function () {
+    return player;
+  }
+
   let load_standard_data = async function () {
     card_details = attempt_get_request('https://game-api.splinterlands.com/cards/get_details');
     let player_txs = await get_player_txs();
     player_txs = remove_duplicate_txs(player_txs);
     await player.instantiate_data(player_txs);
+    player.set_tournaments(await load_tournament_details(player.tournament_ids))
     console.log(`Player History`, player_txs);
   }
-
-  let load_tournament_details = async function (tournament_ids) {
-    // TODO
-  }
-
   let load_card_identifiers = async function (unique_card_ids) {
     // TODO
   }
 
   return {
+    player,
     load_settings,
     get_season_string,
     set_player,
+    get_player,
     load_standard_data,
-    load_tournament_details,
     load_card_identifiers
   };
 
@@ -121,5 +122,19 @@ function create_splinterlands() {
       let cycle = hours.indexOf(ref.HH);
       ref.HH = (cycle == 3) ? hours[0] : hours[cycle + 1];
     }
+  }
+
+  async function load_tournament_details(tournament_ids) {
+    let tournaments = {};
+    for (const tx of tournament_ids) {
+      update_status(`Getting data for tournament: ${tx}`)
+      let url = `https://api2.splinterlands.com/tournaments/find?id=${tx}`;
+      let data = await attempt_get_request(url);
+      // todo errors?
+      tournaments[tx] = data;
+    }
+
+    console.log(tournaments)
+    return tournaments;
   }
 }

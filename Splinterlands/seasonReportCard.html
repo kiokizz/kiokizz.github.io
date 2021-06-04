@@ -9,6 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@hiveio/hive-js/dist/hive.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="SeasonReportCard/modules/utils.js"></script>
+  <script src="SeasonReportCard/modules/data_objects/sm_battle.js"></script>
   <script src="SeasonReportCard/modules/player.js"></script>
   <script src="SeasonReportCard/modules/poster.js"></script>
   <script src="SeasonReportCard/modules/reporter.js"></script>
@@ -34,7 +35,8 @@
 <div class="w3-panel w3-theme" style="margin-top: 0;">
   <div class="w3-left">
     <h1><a href='index.html'>SplinterStats</a> - Season Report Card</h1>
-    <sub>A tool for reflecting on and sharing your Splinterlands season play. Requires Hive Keychain.</sub>
+    <sub>A tool for reflecting on and sharing your Splinterlands season play. Requires Hive
+      Keychain.</sub>
     <p><a
         href="https://www.splintertalk.io/splinterlands/@splinterstats/splinterstats-season-report-card-update-and-tutorial"
         target="_blank">Click here for more information.</a></p>
@@ -60,37 +62,45 @@
     </div>
     <div class=" w3-margin-top">
       <label>Opening Comments</label>
-      <textarea disabled id="textOpening" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+      <textarea disabled id="textOpening" class="w3-input w3-border"
+                onkeyup="drawer.draw()"></textarea>
     </div>
     <div>
       <label>Performance</label>
-      <textarea disabled id="performance" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+      <textarea disabled id="performance" class="w3-input w3-border"
+                onkeyup="drawer.draw()"></textarea>
     </div>
     <div>
       <label>Top 10 Summoner Usage</label>
-      <textarea disabled id="top10summoners" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+      <textarea disabled id="top10summoners" class="w3-input w3-border"
+                onkeyup="drawer.draw()"></textarea>
     </div>
     <div>
       <label>Top 100 Monster Usage
       </label>
-      <textarea disabled id="top100monsters" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+      <textarea disabled id="top100monsters" class="w3-input w3-border"
+                onkeyup="drawer.draw()"></textarea>
     </div>
     <div>
       <label id="matches">Win Rate by Ruleset
       </label>
-      <textarea disabled id="winratebyruleset" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+      <textarea disabled id="winratebyruleset" class="w3-input w3-border"
+                onkeyup="drawer.draw()"></textarea>
     </div>
     <div id="tournament" style="display: none;">
       <label>Tournament Results</label>
-      <textarea disabled id="tournamentResults" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+      <textarea disabled id="tournamentResults" class="w3-input w3-border"
+                onkeyup="drawer.draw()"></textarea>
     </div>
     <div class="w3-margin-top">
       <label>Rewards Cards</label>
-      <textarea disabled id="textRewards" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+      <textarea disabled id="textRewards" class="w3-input w3-border"
+                onkeyup="drawer.draw()"></textarea>
     </div>
     <div class="w3-margin-top">
       <label id="other">Closing Comments</label>
-      <textarea disabled id="textClosing" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
+      <textarea disabled id="textClosing" class="w3-input w3-border"
+                onkeyup="drawer.draw()"></textarea>
     </div>
 
     <div class="w3-panel">
@@ -101,9 +111,11 @@
               onclick="poster.check_details(); document.getElementById('post').disabled = true;">
         Post
       </button>
-      <p>Disclaimer:Information is gathered from Splinterlands servers. Human error could result in mistakes in the
+      <p>Disclaimer:Information is gathered from Splinterlands servers. Human error could result in
+        mistakes in the
         representation of the presented data.</p>
-      <p>By default a 10% beneficiary reward is set in the published post. This supports the developer (@kiokizz) and
+      <p>By default a 10% beneficiary reward is set in the published post. This supports the
+        developer (@kiokizz) and
         future development.</p>
     </div>
     <hr>
@@ -132,19 +144,6 @@
 </div>
 
 <script defer>
-  // hive.api.setOptions({
-  //   url: 'https://anyx.io'
-  // });
-
-  // let drawer = new draw_controller();
-  // let reporter = new report_controller();
-  // let poster = new posting_controller();
-
-  // function add_border(id) {
-  //   let el = document.getElementById(id);
-  //   if (el.className.indexOf('w3-border') === -1)
-  //     el.className += " w3-border";
-  // }
 
 
   (async function () {
@@ -175,7 +174,8 @@
       if (!await set_player(splinterlands)) {
         return enable_generate_report_button();
       }
-      el('content').innerHTML = await reporter.generate_report();
+      await splinterlands.load_standard_data();
+      el('content').innerHTML = await reporter.generate_report(splinterlands.get_player());
     }
 
     el('username').onkeydown = async e => {
