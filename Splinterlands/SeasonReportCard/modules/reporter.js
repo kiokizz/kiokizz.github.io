@@ -11,7 +11,6 @@ function create_reporter(splinterlands) {
   async function generate_report(player) {
     let matches = player.matches;
     
-    let report_array = {matches: {}};
     current_report_content = `## @${player.username}
 
 ${el('textOpening').value}
@@ -50,14 +49,14 @@ ${matches.ruleset_frequency_table}
 
 ${el('winratebyruleset').value}
 
-${divider.dec}${(matches.Tournament.prize_list.length > 0) ? `\n\n### Tournaments Report\n\n${matches.Tournament.winnings_table}\n\n${matches.Tournament.prizes_table}\n${document.getElementById('tournamentResults').value}\n${divider}` : ``}
+${divider_images.dec}${(matches.Tournament.prize_list.length > 0) ? `\n\n### Tournaments Report\n\n${matches.Tournament.winnings_table}\n\n${matches.Tournament.prizes_table}\n${document.getElementById('tournamentResults').value}\n${divider_images}` : ``}
 
 ### Rewards Report
-${report_array.earnings.template}
+${`matches.earnings.template`}
 
 ${el('textRewards').value}
 
-${divider.dec}
+${divider_images.dec}
 
 ${el('textClosing').value}
 
@@ -70,16 +69,15 @@ Follow @splinterstats and come visit us in [Discord](https://discord.com/invite/
     current_report_title = get_report_title(player);
     let current_report = `${current_report_title}\n${current_report_content}`;
     el('content').innerHTML = marked(`${current_report}`);
+    throw 'error';
   }
 
   return {
     generate_report
   };
-
-  let get_report_title = function (season_number) {
-    let custom_title = el('title').value.trim() === '' ? el('title').value + ' - ' : '';
-    return `${custom_title} Splinter Stats Season ${season_number} Report Card`
-  }
 }
 
-1
+get_report_title = function (season_number) {
+  let custom_title = el('title').value.trim() === '' ? el('title').value + ' - ' : '';
+  return `${custom_title} Splinter Stats Season ${season_number} Report Card`;
+}

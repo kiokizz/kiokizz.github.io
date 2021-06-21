@@ -151,7 +151,7 @@
     let splinterlands = create_splinterlands();
 
     if (!await splinterlands.load_settings()) {
-      stop_on_error('Could not lead settings')
+      stop_on_error('Could not load settings')
       // TODO handle error case where settings doesn't load
     } else {
       setInterval(() => set_header_info(splinterlands.get_season_string()));

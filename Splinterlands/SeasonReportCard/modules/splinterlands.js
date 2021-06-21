@@ -36,7 +36,7 @@ function create_splinterlands() {
 
     let url = `https://api2.splinterlands.com/players/season_details?name=${username}`;
     let season_records = await attempt_get_request(url);
-    let previous_season = season_records.find(season => season.id = current_season_id - 1);
+    let previous_season = season_records.find(season => season.season == current_season_id - 1);
 
     console.log(previous_season);
     if (!previous_season) {

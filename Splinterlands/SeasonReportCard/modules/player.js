@@ -22,7 +22,7 @@ function create_player(username, season) {
     console.log(sm_battles);
 
     tournament_ids = get_current_tournaments(txs);
-    matches = await compile_match_data(sm_battles);
+    await compile_match_data(sm_battles);
   }
 
   let get_current_tournaments = function (txs) {
@@ -51,18 +51,13 @@ function create_player(username, season) {
   }
 
   let compile_match_data = async function (battles) {
-    let matches = {};
-
+    matches.Ranked = {wins: 0, loss: 0, draws: 0, count: 0}
+    matches.Tournament = {wins: 0, loss: 0, draws: 0, count: 0, ids: [], prize_list: []}
+    matches.rulesets = {};
+    matches.teams = [];
+    matches.opponents = [];
+    matches.higestRatedOpp = {};
     /*
-      Season player data - current rating + league
-
-      matches:
-       rating movemens
-       ranked ratio
-       tournament ratio
-       longest streak
-       highest rated opponent
-
        match data -> team of the player -> card usage data
 
        network request - card details
@@ -72,22 +67,78 @@ function create_player(username, season) {
 
     // TODO
 
-    return matches;
-  }
 
-  let set_tournaments = function (input_tournaments) {
-    tournaments = input_tournaments;
-  }
+    battles.forEach(battle => {
+      let match_type = battle.match_type;
+      let won_battle = (battle.outcome > 1);
 
-  return {
-    username,
-    league,
-    league_name,
-    season,
-    matches,
-    tournament_ids,
-    instantiate_data,
-    set_tournaments
-  };
+      if (match_type !== 'Practice') {
+        if (battle.outcome == 1) matches[match_type].wins++;
+        if (battle.outcome == 0) matches[match_type].draws++;
+        if (battle.outcome == -1) matches[match_type].loss++;
+        if (match_type === `Ranked`) matches.earnings.matches += battle.dec_info.reward;
+      } //TODO Brawl distinction
+
+      //console.log(`Battle Result Json`, json);
+      battle.rulesets.forEach(ruleset => {
+        if (!matches.rulesets[ruleset])
+          matches.rulesets[ruleset] = {name: ruleset, wins: 0, loss: 0, draws: 0, count: 0};
+        matches.rulesets[ruleset].count++;
+        if (battle.outcome == 1) matches.rulesets[ruleset].wins++;
+        if (battle.outcome == 0) matches.rulesets[ruleset].draws++;
+        if (battle.outcome == -1) matches.rulesets[ruleset].loss++;
+      });
+/*
+      cardCount(battle.player, won_battle, battle);
+      cardCount(battle.opponent, won_battle, battle);
+
+      function cardCount(account, won_battle, battle) {
+        matches.opponents.push(battle.opponent.name);
+        if (won_battle) {
+          let oppHighRating = Math.max(account.initial_rating, account.final_rating);
+          if (oppHighRating >= matches.higestRatedOpp.rating) {
+            if (oppHighRating > matches.higestRatedOpp.rating) {
+              matches.higestRatedOpp.name = `@[${account.name}](https://splinterlands.com?p=battle&id=${battle.id}&ref=splinterstats)`;
+              matches.higestRatedOpp.rating = oppHighRating;
+            } else if (!matches.higestRatedOpp.name.includes(`@${account.name}`)) {
+              matches.higestRatedOpp.name += ` & @[${account.name}](https://splinterlands.com?p=battle&id=${battle.id}&ref=splinterstats)`
+            }
+          }
+        }
+
+
+    else
+      {
+        if (Object.keys(account.team).length !== 0) account.team.win = won_battle;
+        matches.teams.push(account.team);
+        matches.ratingMovement += Math.abs((account.initial_rating - account.final_rating));
+      }
+    }
+
+*/ // TODO Ben and Kiran. This is where we're at. Fix this, you morons.
+  }
+);
+
+/* ToDO
+Number of Attacks [melee, ranged, magic], Misses / Reflects
+Total Heals, card: {id: `xx-xx-xxxxxx`, healed: ?}
+Generate usage statistics from team data.
+*/
+}
+
+let set_tournaments = function (input_tournaments) {
+  tournaments = input_tournaments;
+}
+
+return {
+  username,
+  league,
+  league_name,
+  season,
+  matches,
+  tournament_ids,
+  instantiate_data,
+  set_tournaments
+};
 
 }
