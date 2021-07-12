@@ -502,8 +502,6 @@ function report_controller() {
       leaderboard_prize: 0
     };
     report_array.transfers.forEach((tx, i) => {
-      // TODO Filter Dates!!
-
       let created_date = Date.parse(tx.created_date);
       let valid = false;
       if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
@@ -674,7 +672,7 @@ function report_controller() {
     //Calculations for Loot Chest DEC
     calc.total_loot_dec = report_array.earnings.loot_chests.daily.dec + report_array.earnings.loot_chests.season.dec;
     calc.total_dec = calc.total_all_dec + calc.total_untamed_packs_dec + calc.total_legendary_potions_dec + calc.total_alchemy_potions_dec + calc.total_loot_dec + report_array.earnings.matches;
-    
+
     report_array.earnings.template = `##### Standard Foil Cards\n
 |Rarity|Quantiy|🔥DEC🔥|
 |-|-|-|
