@@ -194,11 +194,6 @@ function report_controller() {
     }
   }
 
-  //Check if posted already for the previous season.
-  //ToDo before initial release
-
-  let xx = 0;
-
   //Get player history
   this.playerHistory = function (data) {
     console.log(data);
@@ -212,7 +207,6 @@ function report_controller() {
       } //else console.log(`${i}: ${e.id}`);
       if (i === data.length - 1) before_block = e.block_num;
     });
-    xx++;
     if (limit === data.length) {
       update_status(`Getting player transactions before block: ${before_block}.`);
       request(
@@ -221,6 +215,34 @@ function report_controller() {
         context.playerHistory);
     } else {
       console.log(report_array.tx_types)
+
+      request(`https://api2.splinterlands.com/players/balance_history?token_type=DEC&offset=0&limit=500&username=${report_array.player}&types=rental_payment_fees,market_rental,rental_payment,leaderboard_prizes`, 0, context.playerBalanceHistory);
+    }
+  }
+
+  //Get player history
+  this.playerBalanceHistory = function (data) {
+    //console.log(data);
+    let offset = 0;
+    let limit = 500;
+    data.forEach((e, i) => {
+      if (!report_array.transfer_types.includes(e.type)) report_array.transfer_types.push(e.type);
+      if (!report_array.transfers.includes(e)) {
+        report_array.transfer_ids.push(e.trx_id);
+        report_array.transfers.push(e);
+      } //else console.log(`${i}: ${e.id}`);
+    });
+    //throw 'error';
+    console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.transfers.length}`);
+    if (limit === data.length) {
+      offset = 500 * Math.ceil(report_array.transfers.length / 500);
+      update_status(`Getting player transactions with offset: ${offset}.`);
+      request(
+        `https://api2.splinterlands.com/players/balance_history?token_type=DEC&offset=${offset}&limit=${limit}&username=${report_array.player}&types=rental_payment_fees,market_rental,rental_payment,leaderboard_prizes`,
+        0,
+        context.playerBalanceHistory);
+    } else {
+      console.log(`DEC Transfers`, report_array.transfer_types)
       context.sortHistory();
     }
   }
@@ -253,13 +275,13 @@ function report_controller() {
               console.log("unknown match type", tx)
             }
 
-            function tally_wdl(match_type) {
-              if (win) {
-                report_array.matches[match_type].wins++;
-                if (match_type === `Ranked`) report_array.earnings.matches += json.dec_info.reward;
-              } else if (json.winner === "DRAW") report_array.matches[match_type].draws++;
-              else report_array.matches[match_type].loss++;
-            }
+          function tally_wdl(match_type) {
+            if (win) {
+              report_array.matches[match_type].wins++;
+              if (match_type === `Ranked`) report_array.earnings.matches += json.dec_info.reward;
+            } else if (json.winner === "DRAW") report_array.matches[match_type].draws++;
+            else report_array.matches[match_type].loss++;
+          }
 
             //console.log(`Battle Result Json`, json);
             let rulesets = json.ruleset.split("|");
@@ -414,6 +436,7 @@ function report_controller() {
             break;
           case "token_transfer":
             //do somethings
+            console.log(`VALID token TX`);
             break;
           case "delegate_cards":
             //do somethings
@@ -468,6 +491,45 @@ function report_controller() {
         }
       }
     });
+
+    report_array.dec_balances = {
+      rentals: {
+        in: 0,
+        fees: 0,
+        out: 0,
+        count: 0
+      },
+      leaderboard_prize: 0
+    };
+    report_array.transfers.forEach((tx, i) => {
+      // TODO Filter Dates!!
+
+      let created_date = Date.parse(tx.created_date);
+      let valid = false;
+      if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
+      if (tx.type === "leaderboard_prizes") {
+        valid = (created_date === report_array.season_end);
+        console.log(`LEADERBOARD PRIZE`, tx, valid);
+      }
+      console.log(`valid: ${valid}`);
+      if (valid) {
+        let amount = parseFloat(tx.amount);
+        if (["rental_payment", "rental_payment_fees", "market_rental"].includes(tx.type)) report_array.dec_balances.rentals.count++;
+        if (tx.type === "rental_payment") report_array.dec_balances.rentals.in += amount;
+        else if (tx.type === "rental_payment_fees") report_array.dec_balances.rentals.fees += amount;
+        else if (tx.type === "market_rental") report_array.dec_balances.rentals.out += amount;
+        else if (tx.type === "leaderboard_prizes") report_array.dec_balances.leaderboard_prize += amount;
+        else console.log(`Unexpected: ${tx.type}`);
+      }
+    });
+    console.log(`DEC Transactions to report:`, report_array.dec_balances);
+    if (report_array.dec_balances.rentals.count > 1) {
+      let net_rentals_dec = report_array.dec_balances.rentals.in + report_array.dec_balances.rentals.fees + report_array.dec_balances.rentals.out;
+      let net_rentals = (net_rentals_dec).toFixed(3);
+      if (parseInt(net_rentals) < 0) net_rentals = `(${(net_rentals_dec * -1).toFixed(3)})`;
+      report_array.rentals_table = `|Type|DEC (fees)|\n|-|-|\n|Revenue|${report_array.dec_balances.rentals.in.toFixed(3)} (${(report_array.dec_balances.rentals.fees * -1).toFixed(3)})|\n|Expenses|(${(report_array.dec_balances.rentals.out * -1).toFixed(3)})|\n|NET|${net_rentals}|`;
+    }
+    if (report_array.dec_balances.leaderboard_prize > 0) report_array.leaderboard_table = `|Prize|\n|-|\n|${report_array.dec_balances.leaderboard_prize} DEC|`;
     if (report_array.matches.Tournament.ids.length > 0) context.tournamentData(0);
     else context.rewardsData();
   }
@@ -526,7 +588,7 @@ function report_controller() {
           Tournament: `${tournament.name}`,
           num_players: `${tournament.num_players}`,
           League: `${rating_level[tournament.data.rating_level]}`,
-          Editions: `${(tournament.data.allowed_cards.editions.length === 0 || tournament.data.allowed_cards.editions.length ===  6) ? `Open` : `${tournament.data.allowed_cards.editions.reduce((list, ed) => list += editions[ed], ``)}`}`,
+          Editions: `${(tournament.data.allowed_cards.editions.length === 0 || tournament.data.allowed_cards.editions.length === 6) ? `Open` : `${tournament.data.allowed_cards.editions.reduce((list, ed) => list += editions[ed], ``)}`}`,
           Gold: ``,
           Card_Limits: ``,
           Placement: `${player.finish}`,
@@ -612,9 +674,7 @@ function report_controller() {
     //Calculations for Loot Chest DEC
     calc.total_loot_dec = report_array.earnings.loot_chests.daily.dec + report_array.earnings.loot_chests.season.dec;
     calc.total_dec = calc.total_all_dec + calc.total_untamed_packs_dec + calc.total_legendary_potions_dec + calc.total_alchemy_potions_dec + calc.total_loot_dec + report_array.earnings.matches;
-
-
-
+    
     report_array.earnings.template = `##### Standard Foil Cards\n
 |Rarity|Quantiy|🔥DEC🔥|
 |-|-|-|
@@ -641,7 +701,7 @@ function report_controller() {
 |DEC|${report_array.earnings.loot_chests.daily.dec}|${report_array.earnings.loot_chests.season.dec}|-|${calc.total_loot_dec}|
 |UNTAMED Packs|${report_array.earnings.loot_chests.daily.untamed_packs}|${report_array.earnings.loot_chests.season.untamed_packs}|${calc.total_untamed_packs_count}|${calc.total_untamed_packs_dec}|
 |Cards (Total)|${calc.total_dailies_count}|${calc.total_season_count}|${calc.total_all_count}|${calc.total_all_dec}|
- 
+${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\n\n${report_array.leaderboard_table}\n\n` : `\n`} 
 #### Captured DEC (Ranked Rewards)\n
 |Ranked Play Wins|DEC Earned|
 |-|-|
@@ -650,7 +710,7 @@ function report_controller() {
 #### Total Ranked Play Rewards\n
 |Total Ranked Play Earnings|
 |-|
-|${calc.total_dec} DEC|`;
+|${calc.total_dec + report_array.dec_balances.leaderboard_prize} DEC|`;
     update_status(`Generating card usage statistics.`);
     context.cardUsageData(false);
   }
@@ -774,6 +834,7 @@ function report_controller() {
       report_array.matches.total_matches = report_array.matches.Ranked.total_matches + report_array.matches.Tournament.total_matches;
       report_array.summoner_data = generatePublicDetails(report_array.matches.cards.summoners);
       report_array.monster_data = generatePublicDetails(report_array.matches.cards.monsters);
+
       //Make percentages.. Top 15 Sums, Top 100 Mons
 
       function generatePublicDetails(input) {
@@ -845,6 +906,11 @@ function report_controller() {
       document.getElementById(`tournamentResults`).disabled = false;
       document.getElementById(`tournament`).style.display = "inline";
     }
+    if (report_array.dec_balances.rentals.count > 0) {
+      document.getElementById(`rentals`).disabled = false;
+      document.getElementById(`rental`).style.display = "inline";
+    }
+
     document.getElementById('post').disabled = false;
   }
 }

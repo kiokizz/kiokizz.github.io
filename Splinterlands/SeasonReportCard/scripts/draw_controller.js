@@ -61,7 +61,7 @@ ${report_array.earnings.template}
 
 ${document.getElementById('textRewards').value}
 
-${divider}
+${divider}${(report_array.dec_balances.rentals.count > 0) ? `\n\n### Rental Report\n\n${report_array.rentals_table}\n\n${document.getElementById('rentals').value}\n${divider}` : ``}
 
 ${document.getElementById('textClosing').value}
 

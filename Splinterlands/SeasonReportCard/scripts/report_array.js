@@ -217,8 +217,11 @@ let report_array = {
     prizes: []
   },
   tx_types: [],
+  transfer_types: [],
   tx_ids: [],
+  transfer_ids: [],
   txs: [],
+  transfers: [],
   allCards: []
 }
 
