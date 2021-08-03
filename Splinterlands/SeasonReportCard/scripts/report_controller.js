@@ -45,22 +45,31 @@ function report_controller() {
     }
   }
 
+  this.getTime = function () {
+    return new Date().getTime()
+  }
+
   this.keychainBegin = function () {
     console.log(`Loggin in with Hive Keychain.`);
     if (window.hive_keychain) {
+      report_array.timeString = context.getTime();
+      console.log(report_array.timeString);
       hive_keychain.requestHandshake(function () {
         update_status(`Hive-Keychain Connected`);
-        hive_keychain.requestEncodeMessage(
+        hive_keychain.requestSignBuffer(
           `${report_array.player}`,
-          `splinterstats`,
-          `#SplinterStatsReportCard`,
+          `${report_array.player}${report_array.timeString}`,
           `Posting`,
           function (response) {
+            console.log(response);
+            report_array.signature = response.result;
             if (response.success) {
               update_status(`Account Verified`);
               context.getDetails();
             } else stop_on_error(`Please ensure you have the Posting Key for @${report_array.player} in Hive Keychain and refresh the page.`);
-          }
+          },
+          null,
+          `Splinterlands Login`
         );
       });
     } else stop_on_error(`Please log-in to, or install, Hive Keychain`);
@@ -80,6 +89,8 @@ function report_controller() {
         isvalid = 'false';
       }
       if (isvalid == true) {
+        report_array.timeString = context.getTime();
+        report_array.signature  = eosjs_ecc.sign(report_array.player +  report_array.timeString, report_array.posting_key);
         update_status(`Posting Key Validated.`);
         context.getDetails();
       } else {
@@ -161,36 +172,41 @@ function report_controller() {
     });
 
     update_status(`Getting player season records.`);
-    request(`https://api2.splinterlands.com/players/season_details?name=${report_array.player}`, 0, context.seasonDetails);
+    request(`https://api2.splinterlands.com/players/login?name=${report_array.player}&ts=${report_array.timeString}&sig=${report_array.signature}`, 0, context.logIn);
   }
 
-  this.seasonDetails = function (data) {
+  this.logIn = function (data) {
+    console.log(data);
+    report_array.token = data.token;
 
+    // TODO possibly put this in a different spot. Added while testing for Season Rewards.
+
+    request(`https://api2.splinterlands.com/players/leaderboard_with_player?season=67&token=${report_array.token}&username=${report_array.player}`, 0, context.lastSeason)
+  }
+
+  this.lastSeason = function (data) {
     let seasonRecord = false;
     console.log(data);
     if (data.error) stop_on_error(data.error);
-    data.forEach(e => {
-      if (e.season === report_array.season.id - 1) {
-        if (e.reward_claim_tx === null) {
-          stop_on_error(`Season rewards have not been claimed. Please claim before proceeding. Please refresh the page before proceeding.`);
-        }
-        seasonRecord = true;
-        console.log(`Season data exists.`);
-        //TODO Continue from here.
-        report_array.matches.guild = e.guild_name;
-        report_array.matches.league = rankings[e.league].name;
-        report_array.matches.league_name = rankings[e.league].group;
-        report_array.matches.rank = e.rank;
-        report_array.matches.rating = e.rating;
-        report_array.matches.highRating = e.max_rating;
-        report_array.matches.longestStreak = e.longest_streak;
-        update_status(`Getting player transactions before block: n/a.`);
-        request(`https://api.steemmonsters.io/players/history?username=${report_array.player}&from_block=-1&limit=500`, 0, context.playerHistory);
+
+    if (data.player === null) {
+      stop_on_error(`No player records found for the previous season.`)
+    } else {
+      if (data.player.reward_claim_tx === null) {
+        stop_on_error(`Season rewards have not been claimed. Please claim before proceeding. Please refresh the page before proceeding.`);
       }
-    });
-    if (!seasonRecord) {
-      stop_on_error(`No records found for season ${report_array.season.nameNum - 1}. ${errMessage}`);
-      //ToDo Reset search button.
+      seasonRecord = true;
+      console.log(`Season data exists.`);
+      //TODO Continue from here.
+      report_array.matches.guild = data.player.guild_name;
+      report_array.matches.league = rankings[data.player.league].name;
+      report_array.matches.league_name = rankings[data.player.league].group;
+      report_array.matches.rank = data.player.rank;
+      report_array.matches.rating = data.player.rating;
+      report_array.matches.highRating = data.player.max_rating;
+      report_array.matches.longestStreak = data.player.longest_streak;
+      update_status(`Getting player transactions before block: n/a.`);
+      request(`https://api.steemmonsters.io/players/history?username=${report_array.player}&from_block=-1&limit=500`, 0, context.playerHistory);
     }
   }
 
@@ -563,7 +579,8 @@ function report_controller() {
                 tournament.data.prizes.payouts.forEach(group => {
                   if (player.finish >= group.start_place && player.finish <= group.end_place) {
                     add_to_prizeList(player, tournament, group.items)
-                  };
+                  }
+                  ;
                 });
 
                 // W/L/D
@@ -598,6 +615,7 @@ function report_controller() {
           report_array.matches.Tournament.prize_tally[prize.type].count++;
         });
       }
+
       console.log(`Prize List`, report_array.matches.Tournament.prize_list);
 
       let tournament_winnings_table_body = report_array.matches.Tournament.prize_list.reduce((body, row) => body += `|${row.Tournament}|${row.League}|${row.Editions}|${row.Placement}/${row.num_players}|${row.Ratio}|${row.Prize}|\n`, ``)
