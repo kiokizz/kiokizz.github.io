@@ -3,7 +3,7 @@
 let report_array = {
   report: null,
   logInType: `keychainBegin`,
-  text_fields: ["title", "textOpening", "performance", "top10summoners", "top100monsters", "winratebyruleset", "textRewards", "textClosing"],
+  text_fields: ["title", "textOpening", "performance", "top10summoners", "top100monsters", "winratebyruleset", "textRewards", "rentals", "sps", "textClosing"],
   season: {
     nameNum: 0,
     date_start: undefined,
@@ -217,11 +217,14 @@ let report_array = {
     prizes: []
   },
   tx_types: [],
-  transfer_types: [],
+  dec_transfer_types: [],
+  sps_transfer_types: [],
   tx_ids: [],
-  transfer_ids: [],
+  dec_transfer_ids: [],
+  sps_transfer_ids: [],
   txs: [],
-  transfers: [],
+  dec_transfers: [],
+  sps_transfers: [],
   allCards: []
 }
 
