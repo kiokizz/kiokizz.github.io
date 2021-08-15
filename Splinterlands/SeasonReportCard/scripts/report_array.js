@@ -258,4 +258,8 @@ function generateSeasonEndTimes(params) {
     let cycle = hours.indexOf(x.HH);
     x.HH = (cycle == 3) ? hours[0] : hours[cycle + 1];
   }
+
+  // Manual overrides for adjustments
+  // Season 55, id:68 due to server migration issues https://discord.com/channels/447924793048825866/451123773882499085/876471197708206090
+  report_array.season.season_end_times[68] = "2021-08-16T20:00:00.000Z"
 }
