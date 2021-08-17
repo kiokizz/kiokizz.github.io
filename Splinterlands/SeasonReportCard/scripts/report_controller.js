@@ -491,7 +491,7 @@ function report_controller() {
         if (report_array.sps_balances.airdrop > 0 || report_array.sps_balances.staking > 0) {
             let net_rentals_sps = report_array.sps_balances.airdrop + report_array.sps_balances.staking;
             let net_sps = (net_rentals_sps).toFixed(3);
-            report_array.sps_table = `|Type|Amount Claimed|\n|-|-|\n|Airdrop|${report_array.sps_balances.airdrop.toFixed(3)}|\n|Staking Rewards|${report_array.sps_balances.staking}|\n|NET|${net_sps}|`;
+            report_array.sps_table = `|Type|Amount Claimed|\n|-|-|\n|Airdrop|${report_array.sps_balances.airdrop.toFixed(3)}|\n|Staking Rewards|${report_array.sps_balances.staking.toFixed(3)}|\n|NET|${net_sps}|`;
         }
         if (report_array.matches.Tournament.ids.length > 0) context.tournamentData(0);
         else context.rewardsData();
