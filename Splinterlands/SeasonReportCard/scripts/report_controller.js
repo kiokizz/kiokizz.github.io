@@ -182,7 +182,7 @@ function report_controller() {
 
         // TODO possibly put this in a different spot. Added while testing for Season Rewards.
 
-        request(`https://api2.splinterlands.com/players/leaderboard_with_player?season=67&token=${report_array.token}&username=${report_array.player}`, 0, context.lastSeason)
+        request(`https://api2.splinterlands.com/players/leaderboard_with_player?season=${report_array.season.id-1}&token=${report_array.token}&username=${report_array.player}`, 0, context.lastSeason)
     }
 
     this.lastSeason = function (data) {
