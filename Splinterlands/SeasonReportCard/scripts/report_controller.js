@@ -464,7 +464,7 @@ function report_controller() {
         if (report_array.dec_balances.rentals.count > 0) {
             let net_rentals_dec = report_array.dec_balances.rentals.in + report_array.dec_balances.rentals.fees + report_array.dec_balances.rentals.out + report_array.dec_balances.rentals.refund;
             let net_rentals = (net_rentals_dec).toFixed(3);
-            if (parseInt(net_rentals) < 0) net_rentals = `(${(net_rentals_dec * -1).toFixed(3)})`;
+            if (parseFloat(net_rentals) < 0) net_rentals = `(${(net_rentals_dec * -1).toFixed(3)})`;
             report_array.rentals_table = `|Type|DEC (fees)|\n|-|-|\n|Revenue|${report_array.dec_balances.rentals.in.toFixed(3)} (${(report_array.dec_balances.rentals.fees * -1).toFixed(3)})|\n|Expenses|(${(report_array.dec_balances.rentals.out * -1).toFixed(3)})|\n|Cancellation Refunds|${report_array.dec_balances.rentals.refund.toFixed(3)})|\n|NET|${net_rentals}|`;
         }
         if (report_array.dec_balances.leaderboard_prize > 0) report_array.leaderboard_table = `|Prize|\n|-|\n|${report_array.dec_balances.leaderboard_prize} DEC|`;
