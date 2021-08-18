@@ -24,9 +24,25 @@ function posting_controller() {
     let unique_tags = [`splinterstats`, `spt`];
     tags_array.forEach(tag => {
       tag = tag.replace(/[^a-z0-9-+ ]+/g, '');
-      tag = tag.toLowerCase();;
+      tag = tag.toLowerCase();
       if (!unique_tags.includes(tag)) unique_tags.push(tag);
     });
+
+    // Community tag check.
+    let community_post = document.getElementById(`tagType`).checked;
+    let category = `blog`;
+    if (community_post) {
+      let community_tag = unique_tags.find(tag => tag.startsWith(`hive-`) && tag.length >= 10 && tag.length < 15);
+      if (community_tag !== undefined) {
+        category = community_tag;
+        unique_tags = unique_tags.filter((tag) => !(tag === community_tag));
+        unique_tags.unshift(community_tag);
+      } else {
+        document.getElementById('post').disabled = false;
+        stop_on_error("Please ensure a community tag (hive-xxxxxx) is included in order to post to community.");
+        return;
+      }
+    }
 
     let author = report_array.player;
     let permlink = report_array.permlink;
@@ -44,6 +60,7 @@ function posting_controller() {
           parent_author: '',
           parent_permlink: unique_tags[0],
           author: author,
+          category: category,
           permlink: permlink,
           title: title,
           body: body,
@@ -69,7 +86,7 @@ function posting_controller() {
     ];
 
     console.log(broadcast_ops)
-
+    
     if (report_array.logInType === `keychainBegin`) {
       hive_keychain.requestBroadcast(
         author,

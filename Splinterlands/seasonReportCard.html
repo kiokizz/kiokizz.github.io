@@ -103,6 +103,9 @@
         <label>Tags (without #): </label>
         <input class="w3-input w3-border" type="tags" id="tags" value="splinterstats spt"
           onkeyup="document.getElementById('tags').value = document.getElementById('tags').value.replace(/[^a-z0-9-+ ]+/g, '');">
+        <label for="tagType">Post to community:</label>
+        <input type="checkbox" id="tagType" unchecked>
+        <br>
         <button id='post' disabled class="w3-button w3-theme"
           onclick="poster.check_details(); document.getElementById('post').disabled = true;">
           Post
