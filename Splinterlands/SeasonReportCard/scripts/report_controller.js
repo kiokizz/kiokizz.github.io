@@ -123,8 +123,7 @@ function report_controller() {
             console.log(err, result);
             console.log(permlink);
             result.forEach(post => {
-                if (testing = true) ;
-                else if (post.permlink == permlink) stop_on_error(`@${report_array.player}'s Season Report has already been posted. Please go to www.splintertalk.io/@${report_array.player}/${permlink}`);
+                if (post.permlink == permlink) stop_on_error(`@${report_array.player}'s Season Report has already been posted. Please go to www.splintertalk.io/@${report_array.player}/${permlink}`);
             });
 
             update_status(`Getting all card details.`);
@@ -233,7 +232,7 @@ function report_controller() {
                 context.playerHistory);
         } else {
             console.log(report_array.tx_types)
-            report_array.dec_query_types = `&types=rental_payment_fees,market_rental,rental_payment,rental_refund,leaderboard_prizes`
+            report_array.dec_query_types = `&types=rental_payment_fees,market_rental,rental_payment,rental_refund,leaderboard_prizes,dec_reward`
             request(`https://api2.splinterlands.com/players/balance_history?token_type=DEC&offset=0&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}`, 0, context.playerBalanceHistory);
         }
     }
@@ -431,6 +430,7 @@ function report_controller() {
 
         // DEC History Sorting
         report_array.dec_balances = {
+            dec_reward: 0,
             rentals: {
                 in: 0,
                 fees: 0,
@@ -457,6 +457,7 @@ function report_controller() {
                 else if (tx.type === "market_rental") report_array.dec_balances.rentals.out += amount;
                 else if (tx.type === "rental_refund") report_array.dec_balances.rentals.refund += amount;
                 else if (tx.type === "leaderboard_prizes") report_array.dec_balances.leaderboard_prize += amount;
+                else if (tx.type === "dec_reward") report_array.dec_balances.dec_reward += amount;
                 else console.log(`Unexpected: ${tx.type}`);
             }
         });
@@ -637,7 +638,7 @@ function report_controller() {
 
         //Calculations for Loot Chest DEC
         calc.total_loot_dec = report_array.earnings.loot_chests.daily.dec + report_array.earnings.loot_chests.season.dec;
-        calc.total_dec = calc.total_all_dec + calc.total_untamed_packs_dec + calc.total_legendary_potions_dec + calc.total_alchemy_potions_dec + calc.total_loot_dec + report_array.earnings.matches;
+        calc.total_dec = calc.total_all_dec + calc.total_untamed_packs_dec + calc.total_legendary_potions_dec + calc.total_alchemy_potions_dec + calc.total_loot_dec + report_array.dec_balances.dec_reward/*report_array.earnings.matches*/;
 
         report_array.earnings.template = `##### Standard Foil Cards\n
 |Rarity|Quantiy|🔥DEC🔥|
@@ -669,7 +670,7 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
 #### Captured DEC (Ranked Rewards)\n
 |Ranked Play Wins|DEC Earned|
 |-|-|
-|${report_array.matches.Ranked.wins}|${report_array.earnings.matches}|
+|${report_array.matches.Ranked.wins}|${report_array.dec_balances.dec_reward.toFixed(0)}|
 
 #### Total Ranked Play Rewards\n
 |Total Ranked Play Earnings|
@@ -855,6 +856,9 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
             let total = ruleset.wins + ruleset.loss + ruleset.draws;
             report_array.matches.ruleset_frequency_table = `${report_array.matches.ruleset_frequency_table}\n|${ruleset.name}|${total}|${(100 * ruleset.wins / total).toFixed(2)}%|`
         });
+
+        // For checking:
+        console.log(`DEC sm_battle: ${report_array.earnings.matches}\nDEC balance history: ${report_array.dec_balances.dec_reward.toFixed(3)}`);
 
         drawer.draw(); // replace with link to drawer element
         console.log(`Finish`);
