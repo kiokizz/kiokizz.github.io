@@ -675,7 +675,7 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
 #### Total Ranked Play Rewards\n
 |Total Ranked Play Earnings|
 |-|
-|${calc.total_dec + report_array.dec_balances.leaderboard_prize} DEC|`;
+|${(calc.total_dec + report_array.dec_balances.leaderboard_prize).toFixed(0)} DEC|`;
         update_status(`Generating card usage statistics.`);
         context.cardUsageData(false);
     }
