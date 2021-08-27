@@ -1,0 +1,83 @@
+<!DOCtype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Splinterlands Rich List</title>
+  <link rel="shortcut icon" href="../resources/rose.jpg"/>
+  <link rel="stylesheet" type="text/css" href="richList/richList.css">
+  <script src="https://cdn.jsdelivr.net/npm/@hiveio/hive-js/dist/hive.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="collectionTools/utils.js"></script>
+  <script src="richList/richList.js"></script>
+
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+</head>
+
+<body>
+<div class="page_header w3-panel w3-theme" style="margin-top: 0;">
+  <h1><a href='index.html'>SplinterStats</a> - Rich List</h1>
+  <sub>Splinterlands Rich List tool for assets held in-game.</sub>
+  <p></p>
+</div>
+
+<div class="w3-panel">
+  Assets Type:<br><br>
+  <select id="type">
+    <option value="DEC">DEC</option>
+    <option value="CREDITS">Credits</option>
+    <option value="MERITS">Merits</option>
+    <option value="ALPHA">ALPHA</option>
+    <option value="BETA">BETA</option>
+    <option value="UNTAMED">UNTAMED</option>
+    <option value="ORB">ORB</option>
+    <option value="DICE">DICE</option>
+    <option value="GLADIUS">GLADIUS</option>
+    <option value="PLOT">Plot Claim</option>
+    <option value="TRACT">Tract Claim</option>
+    <option value="REGION">Region Claim</option>
+    <option value="TOTEML">Legendary Totem</option>
+    <option value="TOTEME">Epic Totem</option>
+    <option value="TOTEMR">Rare Totem</option>
+    <option value="TOTEMC">Common Totem</option>
+    <option value="LEGENDARY">Legendary Potion</option>
+    <option value="GOLD">Alchemy Potion</option>
+    <option value="BLDSTONE">Blood Stone</option>
+    <option value="PWRSTONE">Power Stone</option>
+  </select>
+  <br><br>
+  <button id="generate" class="w3-button w3-theme"
+          onclick="data.generate();">
+    Generate
+  </button>
+</div>
+
+<div id="content">
+  Please select asset type and press 'Generate'.
+</div>
+<br>
+<button class="CSV" style="display: none;" onclick="data.download()">Download CSV
+</button>
+
+<p>Disclaimer: Human error could result in mistakes in the representation of the
+  above data. Extracted from
+  https://game-api.splinterlands.com/players/richlist?token_type=REGION.
+  <br>
+  <br>
+  <a href="https://github.com/kiokizz">GitHub</a>
+  | Check out my blogs <a href="https://hive.blog/@kiokizz">@kiokizz</a>
+  & <a href="https://hive.blog/@splinterstats">@splinterstats</a>
+</p>
+
+<hr/>
+
+<br><br><br><br>
+
+<script>
+  let data = new data_collector();
+</script>
+
+</body>
+
+</html>
