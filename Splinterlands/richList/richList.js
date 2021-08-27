@@ -45,11 +45,11 @@ function data_collector() {
   }
 
   this.makeTable = function () {
-    let header = `<th>Player</th><th>${el('type').value} Balance</th>`;
+    let header = `<th>#</th><th>Player</th><th>${el('type').value} Balance</th>`;
     let body = ``;
 
     rowData.forEach((player, i) => {
-      body += `<tr><td>${player.player}</td><td> ${parseFloat(player.balance).toFixed(3)}</td></tr>`;
+      body += `<tr><td>${i+1}</td><td>${player.player}</td><td> ${parseFloat(player.balance).toFixed(3)}</td></tr>`;
     })
 
     el("content").innerHTML =
