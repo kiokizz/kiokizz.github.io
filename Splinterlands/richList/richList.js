@@ -4,6 +4,10 @@ function data_collector() {
 
   let types_names = {
     DEC: "DEC",
+    SPS: "Liquid SPS",
+    SPSP: "Staked SPS",
+    SPSTOTAL: "Total SPS",
+    COLLECTION_POWER: "Collection Power",
     CREDITS: "Credits",
     ALPHA: "ALPHA",
     BETA: "BETA",
