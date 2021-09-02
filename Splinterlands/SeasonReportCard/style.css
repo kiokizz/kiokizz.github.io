@@ -40,7 +40,7 @@ input.fullTXT {
 
 @media (min-width: 601px) {
     #viewer_div {
-        max-height: 80vh;
+        max-height: 98vh;
         overflow-y: auto;
     }
 }

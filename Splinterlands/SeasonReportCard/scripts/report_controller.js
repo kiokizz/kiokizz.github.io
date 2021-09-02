@@ -181,8 +181,8 @@ function report_controller() {
 
     // TODO possibly put this in a different spot. Added while testing for Season Rewards.
     report_array.season_number_count = 0;
-    // https://api2.splinterlands.com/players/details?name=byzantinist&season_details=true&season=69
-//    request(`https://api2.splinterlands.com/players/leaderboard_with_player?season=${report_array.season.id - 1}&token=${report_array.token}&username=${report_array.player}&leaderboard=${report_array.season_number_count++}&season_details=true`, 0, context.lastSeason)
+
+    // request(`https://api2.splinterlands.com/players/leaderboard_with_player?season=${report_array.season.id - 1}&token=${report_array.token}&username=${report_array.player}&leaderboard=${report_array.season_number_count++}&season_details=true`, 0, context.lastSeason)
     request(`https://api2.splinterlands.com/players/details?name=${report_array.player}&season_details=true&season=${report_array.season.id - 1}`, 0, context.lastSeason)
   }
 
