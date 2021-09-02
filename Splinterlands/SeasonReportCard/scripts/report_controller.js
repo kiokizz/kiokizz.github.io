@@ -1,646 +1,651 @@
 function report_controller() {
-    let context = this;
+  let context = this;
 
-    let prices = {
-        LEGENDARY: 40,
-        GOLD: 50,
-        MYSTERY: 1200,
-        QUEST: 750,
-        untamed_pack: 2000,
-        essence_orb: 2500,
-        decNormBetaBurnRates: {
-            1: 15,
-            2: 60,
-            3: 300,
-            4: 1500
-        },
-        decNormUntamedBurnRates: {
-            1: 10,
-            2: 40,
-            3: 200,
-            4: 1000
-        },
-        cards: {},
-        land: 20000
+  let prices = {
+    LEGENDARY: 40,
+    GOLD: 50,
+    MYSTERY: 1200,
+    QUEST: 750,
+    untamed_pack: 2000,
+    essence_orb: 2500,
+    decNormBetaBurnRates: {
+      1: 15,
+      2: 60,
+      3: 300,
+      4: 1500
+    },
+    decNormUntamedBurnRates: {
+      1: 10,
+      2: 40,
+      3: 200,
+      4: 1000
+    },
+    cards: {},
+    land: 20000
+  }
+
+  this.generate = function () {
+    document.getElementById('generate').disabled = true;
+    add_border('viewer_div');
+    report_array.player = `${document.getElementById("username").value}`;
+    if (report_array.logInType === `keychainBegin`) context.keychainBegin();
+    else if (report_array.logInType === `keyBegin`) context.keyBegin();
+    else throw `Error with logInTpye;`
+  }
+
+  this.toggleLogin = function () {
+    var checkBox = document.getElementById("keyType");
+    var passwordField = document.getElementById("password");
+    if (checkBox.checked == false) {
+      passwordField.style.display = "block";
+      report_array.logInType = `keyBegin`;
+    } else {
+      passwordField.style.display = "none";
+      report_array.logInType = `keychainBegin`;
     }
+  }
 
-    this.generate = function () {
-        document.getElementById('generate').disabled = true;
-        add_border('viewer_div');
-        report_array.player = `${document.getElementById("username").value}`;
-        if (report_array.logInType === `keychainBegin`) context.keychainBegin();
-        else if (report_array.logInType === `keyBegin`) context.keyBegin();
-        else throw `Error with logInTpye;`
+  this.getTime = function () {
+    return new Date().getTime()
+  }
+
+  this.keychainBegin = function () {
+    console.log(`Loggin in with Hive Keychain.`);
+    if (window.hive_keychain) {
+      report_array.timeString = context.getTime();
+      console.log(report_array.timeString);
+      hive_keychain.requestHandshake(function () {
+        update_status(`Hive-Keychain Connected`);
+        hive_keychain.requestSignBuffer(
+          `${report_array.player}`,
+          `${report_array.player}${report_array.timeString}`,
+          `Posting`,
+          function (response) {
+            console.log(response);
+            report_array.signature = response.result;
+            if (response.success) {
+              update_status(`Account Verified`);
+              context.getDetails();
+            } else stop_on_error(`Please ensure you have the Posting Key for @${report_array.player} in Hive Keychain and refresh the page.`);
+          },
+          null,
+          `Splinterlands Login`
+        );
+      });
+    } else stop_on_error(`Please log-in to, or install, Hive Keychain`);
+  }
+
+  this.keyBegin = function () {
+    console.log("Logging in with private key.");
+    report_array.posting_key = `${document.getElementById("password").value}`;
+    //encode message
+    hive.api.getAccounts([report_array.player], function (err, result) {
+      let pubWif = result[0].posting.key_auths[0][0];
+      let isvalid;
+      //console.log(err, result);
+      try {
+        isvalid = hive.auth.wifIsValid(report_array.posting_key, pubWif);
+      } catch (e) {
+        isvalid = 'false';
+      }
+      if (isvalid == true) {
+        report_array.timeString = context.getTime();
+        report_array.signature = eosjs_ecc.sign(report_array.player + report_array.timeString, report_array.posting_key);
+        update_status(`Posting Key Validated.`);
+        context.getDetails();
+      } else {
+        stop_on_error(`Please ensure you have the Posting Key for @${report_array.player} and refresh the page.`);
+      }
+    });
+  }
+
+  this.getDetails = function () {
+    update_status(`Getting Splinterlands settings.`);
+    let url = "https://game-api.splinterlands.com/settings";
+    request(url, 0, context.seasonNum);
+  }
+
+  this.seasonNum = function (data) {
+    console.log(data)
+    report_array.season.id = data.season.id;
+    report_array.season.name = data.season.name;
+    report_array.season.nameNum = data.season.name.substring(data.season.name.length - 2, data.season.name.length);
+    report_array.season_start = Date.parse(report_array.season.season_end_times[report_array.season.id - 2]);
+    report_array.season_end = Date.parse(report_array.season.season_end_times[report_array.season.id - 1]);
+
+    report_array.permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
+    report_array.static_title = `Splinter Stats Season ${report_array.season.nameNum - 1} Report Card`;
+
+    console.log(`Season: ${report_array.season.nameNum}`);
+
+    var permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
+    hive.api.getDiscussionsByAuthorBeforeDate(report_array.player, null, new Date().toISOString().split('.')[0], 100, function (err, result) {
+      console.log(err, result);
+      console.log(permlink);
+      result.forEach(post => {
+        if (post.permlink == permlink) stop_on_error(`@${report_array.player}'s Season Report has already been posted. Please go to www.splintertalk.io/@${report_array.player}/${permlink}`);
+      });
+
+      update_status(`Getting all card details.`);
+      request(`https://game-api.splinterlands.com/cards/get_details`, 0, context.allCardsDetails);
+    });
+  }
+
+  this.allCardsDetails = function (data) {
+    update_status(`Sorting card details.`);
+    report_array.allCards = data;
+    report_array.rewardsCards = {};
+    console.log(`All cards:`, data);
+    let rarities = {
+      1: "common",
+      2: "rare",
+      3: "epic",
+      4: "legendary"
     }
-
-    this.toggleLogin = function () {
-        var checkBox = document.getElementById("keyType");
-        var passwordField = document.getElementById("password");
-        if (checkBox.checked == false) {
-            passwordField.style.display = "block";
-            report_array.logInType = `keyBegin`;
-        } else {
-            passwordField.style.display = "none";
-            report_array.logInType = `keychainBegin`;
+    //Card prices....
+    //data = JSON.parse(data);
+    let rewardsCards = [];
+    data.forEach(e => {
+      for (let i = 0; i < data.length; i++) {
+        const card = e
+        if (card.editions === "3") {
+          rewardsCards.push(card);
+          report_array.rewardsCards[data[i].id] = data[i];
         }
-    }
+      }
+    });
+    // Beta or UNTAMED DEC Burn
+    rewardsCards.forEach(e => {
+      let c = {}
+      if (e.id <= 223) {
+        c.edition = "beta"
+        c.dec = prices.decNormBetaBurnRates[e.rarity];
+      } else {
+        c.edition = "untamed";
+        c.dec = prices.decNormUntamedBurnRates[e.rarity];
+      }
+      c.card = e.name;
+      c.rarity = rarities[e.rarity];
+      c.rarityNum = e.rarity;
+      c.id = e.id;
+      prices.cards[e.id] = c;
+    });
 
-    this.getTime = function () {
-        return new Date().getTime()
-    }
+    update_status(`Getting player season records.`);
+    request(`https://api2.splinterlands.com/players/login?name=${report_array.player}&ts=${report_array.timeString}&sig=${report_array.signature}`, 0, context.logIn);
+  }
 
-    this.keychainBegin = function () {
-        console.log(`Loggin in with Hive Keychain.`);
-        if (window.hive_keychain) {
-            report_array.timeString = context.getTime();
-            console.log(report_array.timeString);
-            hive_keychain.requestHandshake(function () {
-                update_status(`Hive-Keychain Connected`);
-                hive_keychain.requestSignBuffer(
-                    `${report_array.player}`,
-                    `${report_array.player}${report_array.timeString}`,
-                    `Posting`,
-                    function (response) {
-                        console.log(response);
-                        report_array.signature = response.result;
-                        if (response.success) {
-                            update_status(`Account Verified`);
-                            context.getDetails();
-                        } else stop_on_error(`Please ensure you have the Posting Key for @${report_array.player} in Hive Keychain and refresh the page.`);
-                    },
-                    null,
-                    `Splinterlands Login`
-                );
-            });
-        } else stop_on_error(`Please log-in to, or install, Hive Keychain`);
-    }
+  this.logIn = function (data) {
+    console.log(data);
+    report_array.token = data.token;
 
-    this.keyBegin = function () {
-        console.log("Logging in with private key.");
-        report_array.posting_key = `${document.getElementById("password").value}`;
-        //encode message
-        hive.api.getAccounts([report_array.player], function (err, result) {
-            let pubWif = result[0].posting.key_auths[0][0];
-            let isvalid;
-            //console.log(err, result);
-            try {
-                isvalid = hive.auth.wifIsValid(report_array.posting_key, pubWif);
-            } catch (e) {
-                isvalid = 'false';
-            }
-            if (isvalid == true) {
-                report_array.timeString = context.getTime();
-                report_array.signature = eosjs_ecc.sign(report_array.player + report_array.timeString, report_array.posting_key);
-                update_status(`Posting Key Validated.`);
-                context.getDetails();
+    // TODO possibly put this in a different spot. Added while testing for Season Rewards.
+    report_array.season_number_count = 0;
+    // https://api2.splinterlands.com/players/details?name=byzantinist&season_details=true&season=69
+//    request(`https://api2.splinterlands.com/players/leaderboard_with_player?season=${report_array.season.id - 1}&token=${report_array.token}&username=${report_array.player}&leaderboard=${report_array.season_number_count++}&season_details=true`, 0, context.lastSeason)
+    request(`https://api2.splinterlands.com/players/details?name=${report_array.player}&season_details=true&season=${report_array.season.id - 1}`, 0, context.lastSeason)
+  }
+
+  this.lastSeason = function (data) {
+    console.log(data);
+    if (data.error) stop_on_error(data.error);
+
+    if (data.season_details === null) {
+      stop_on_error(`No player records found for the previous season.`)
+    } else if (data.season_details.season !== report_array.season.id - 1) {
+      stop_on_error(`Incorrect Season Data.`)
+    } else {
+      if (data.season_details.reward_claim_tx === null) {
+        stop_on_error(`Season rewards have not been claimed. Please claim before proceeding. Please refresh the page before proceeding.`);
+      }
+      console.log(`Season data exists.`);
+      //TODO Continue from here.
+      report_array.matches.guild = data.season_details.guild_name;
+      report_array.matches.league = rankings[data.season_details.league].name;
+      report_array.matches.league_name = rankings[data.season_details.league].group;
+      report_array.matches.rank = data.season_details.rank;
+      report_array.matches.rating = data.season_details.rating;
+      report_array.matches.highRating = data.season_details.max_rating;
+      report_array.matches.longestStreak = data.season_details.longest_streak;
+      report_array.matches.api_battles_count = data.season_details.battles;
+      report_array.matches.api_wins_count = data.season_details.wins;
+      report_array.matches.api_loss_count = report_array.matches.api_battles_count - report_array.matches.api_wins_count;
+      report_array.matches.api_draw_count = `n/a`;
+      update_status(`Getting player transactions before block: n/a.`);
+      report_array.general_query_types = `&types=market_purchase,market_sale,gift_packs,card_award,claim_reward,sm_battle,enter_tournament,leave_tournament`
+      request(`https://api.steemmonsters.io/players/history?username=${report_array.player}&from_block=-1&limit=500${report_array.general_query_types}`, 0, context.playerHistory);
+    }
+  }
+
+  //Get player general Transaction history
+  this.playerHistory = function (data) {
+    console.log(data);
+    let before_block;
+    let limit = 500;
+    data.forEach((e, i) => {
+      if (!report_array.tx_types.includes(e.type)) report_array.tx_types.push(e.type);
+      if (!report_array.tx_ids.includes(e.id)) {
+        report_array.tx_ids.push(e.id);
+        report_array.txs.push(e);
+      } //else console.log(`${i}: ${e.id}`);
+      if (i === data.length - 1) before_block = e.block_num;
+    });
+    if (limit === data.length) {
+      update_status(`Getting player transactions before block: ${before_block}.`);
+      request(
+        `https://api.steemmonsters.io/players/history?username=${report_array.player}&from_block=-1&before_block=${before_block}&limit=500${report_array.general_query_types}`,
+        0,
+        context.playerHistory);
+    } else {
+      console.log(report_array.tx_types)
+      report_array.dec_query_types = `&types=rental_payment_fees,market_rental,rental_payment,rental_refund,leaderboard_prizes,dec_reward`
+      request(`https://api2.splinterlands.com/players/balance_history?token_type=DEC&offset=0&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}`, 0, context.playerBalanceHistory);
+    }
+  }
+
+  //Get player DEC history
+  this.playerBalanceHistory = function (data) {
+    //console.log(data);
+    let offset = 0;
+    let limit = 500;
+    data.forEach((e, i) => {
+      if (!report_array.dec_transfer_types.includes(e.type)) report_array.dec_transfer_types.push(e.type);
+      if (!report_array.dec_transfers.includes(e)) {
+        report_array.dec_transfer_ids.push(e.trx_id);
+        report_array.dec_transfers.push(e);
+      } //else console.log(`${i}: ${e.id}`);
+    });
+    //throw 'error';
+    console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.dec_transfers.length}`);
+    if (limit === data.length) {
+      offset = 500 * Math.ceil(report_array.dec_transfers.length / 500);
+      update_status(`Getting player transactions with offset: ${offset}.`);
+      request(
+        `https://api2.splinterlands.com/players/balance_history?token_type=DEC&offset=${offset}&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}`,
+        0,
+        context.playerBalanceHistory);
+    } else {
+      console.log(`DEC Transfers`, report_array.dec_transfer_types)
+      request(`https://api2.splinterlands.com/players/balance_history?token_type=SPS&offset=0&limit=${limit}&username=${report_array.player}`, 0, context.playerSPSBalanceHistory);
+    }
+  }
+
+  //Get player SPS history
+  this.playerSPSBalanceHistory = function (data) {
+    //console.log(data);
+    let offset = 0;
+    let limit = 500;
+    data.forEach((e, i) => {
+      if (!report_array.sps_transfer_types.includes(e.type)) report_array.sps_transfer_types.push(e.type);
+      if (!report_array.sps_transfers.includes(e)) {
+        report_array.sps_transfer_ids.push(e.trx_id);
+        report_array.sps_transfers.push(e);
+      } //else console.log(`${i}: ${e.id}`);
+    });
+    //throw 'error';
+    console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.sps_transfers.length}`);
+    if (limit === data.length) {
+      offset = 500 * Math.ceil(report_array.sps_transfers.length / 500);
+      update_status(`Getting player transactions with offset: ${offset}.`);
+      request(
+        `https://api2.splinterlands.com/players/balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}`,
+        0,
+        context.playerBalanceHistory);
+    } else {
+      console.log(`SPS Transfers`, report_array.sps_transfer_types)
+      context.sortHistory();
+    }
+  }
+
+  this.sortHistory = function () {
+    //report_array.season.id
+    report_array.txs.forEach((tx, i) => {
+      update_status(`Sorting transactions: ${i}/${report_array.txs.length}.`);
+      let created_date = Date.parse(tx.created_date);
+      let valid = false;
+      if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
+      if (tx.type === "claim_reward") {
+        let json = JSON.parse(tx.data);
+        if (json.type === "league_season" && created_date > report_array.season_end) valid = true;
+        else if (json.type === "league_season") valid = false;
+      } else if (tx.type === `enter_tournament` && created_date < report_array.season_end) valid = true;
+      if (valid) {
+        switch (tx.type) {
+          case "sm_battle":
+            //console.log(tx);
+            let json = JSON.parse(tx.result);
+            let match_type = json.match_type;
+            let win = (json.winner === report_array.player);
+            if (match_type === `Ranked`) tally_wdl(match_type);
+            else if (match_type === `Tournament`) tally_wdl(match_type);
+            else if (match_type === `Practice`) {
+              console.log(`Practice Match`);
             } else {
-                stop_on_error(`Please ensure you have the Posting Key for @${report_array.player} and refresh the page.`);
+              console.log("unknown match type", tx)
             }
-        });
-    }
 
-    this.getDetails = function () {
-        update_status(`Getting Splinterlands settings.`);
-        let url = "https://game-api.splinterlands.com/settings";
-        request(url, 0, context.seasonNum);
-    }
+          function tally_wdl(match_type) {
+            if (win) {
+              report_array.matches[match_type].wins++;
+              if (match_type === `Ranked`) report_array.earnings.matches += json.dec_info.reward;
+            } else if (json.winner === "DRAW") report_array.matches[match_type].draws++;
+            else report_array.matches[match_type].loss++;
+          }
 
-    this.seasonNum = function (data) {
-        console.log(data)
-        report_array.season.id = data.season.id;
-        report_array.season.name = data.season.name;
-        report_array.season.nameNum = data.season.name.substring(data.season.name.length - 2, data.season.name.length);
-        report_array.season_start = Date.parse(report_array.season.season_end_times[report_array.season.id - 2]);
-        report_array.season_end = Date.parse(report_array.season.season_end_times[report_array.season.id - 1]);
-
-        report_array.permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
-        report_array.static_title = `Splinter Stats Season ${report_array.season.nameNum - 1} Report Card`;
-
-        console.log(`Season: ${report_array.season.nameNum}`);
-
-        var permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
-        hive.api.getDiscussionsByAuthorBeforeDate(report_array.player, null, new Date().toISOString().split('.')[0], 100, function (err, result) {
-            console.log(err, result);
-            console.log(permlink);
-            result.forEach(post => {
-                if (post.permlink == permlink) stop_on_error(`@${report_array.player}'s Season Report has already been posted. Please go to www.splintertalk.io/@${report_array.player}/${permlink}`);
+            //console.log(`Battle Result Json`, json);
+            let rulesets = json.ruleset.split("|");
+            rulesets.forEach(ruleset => {
+              if (!report_array.matches.rulesets[ruleset]) {
+                report_array.matches.rulesets[ruleset] = {
+                  name: ruleset,
+                  wins: 0,
+                  loss: 0,
+                  draws: 0,
+                  count: 0
+                }
+              }
+              report_array.matches.rulesets[ruleset].count++;
+              if (win) {
+                report_array.matches.rulesets[ruleset].wins++;
+              } else if (json.winner === "DRAW") report_array.matches.rulesets[ruleset].draws++;
+              else report_array.matches.rulesets[ruleset].loss++;
             });
 
-            update_status(`Getting all card details.`);
-            request(`https://game-api.splinterlands.com/cards/get_details`, 0, context.allCardsDetails);
-        });
-    }
-
-    this.allCardsDetails = function (data) {
-        update_status(`Sorting card details.`);
-        report_array.allCards = data;
-        report_array.rewardsCards = {};
-        console.log(`All cards:`, data);
-        let rarities = {
-            1: "common",
-            2: "rare",
-            3: "epic",
-            4: "legendary"
-        }
-        //Card prices....
-        //data = JSON.parse(data);
-        let rewardsCards = [];
-        data.forEach(e => {
-            for (let i = 0; i < data.length; i++) {
-                const card = e
-                if (card.editions === "3") {
-                    rewardsCards.push(card);
-                    report_array.rewardsCards[data[i].id] = data[i];
-                }
-            }
-        });
-        // Beta or UNTAMED DEC Burn
-        rewardsCards.forEach(e => {
-            let c = {}
-            if (e.id <= 223) {
-                c.edition = "beta"
-                c.dec = prices.decNormBetaBurnRates[e.rarity];
-            } else {
-                c.edition = "untamed";
-                c.dec = prices.decNormUntamedBurnRates[e.rarity];
-            }
-            c.card = e.name;
-            c.rarity = rarities[e.rarity];
-            c.rarityNum = e.rarity;
-            c.id = e.id;
-            prices.cards[e.id] = c;
-        });
-
-        update_status(`Getting player season records.`);
-        request(`https://api2.splinterlands.com/players/login?name=${report_array.player}&ts=${report_array.timeString}&sig=${report_array.signature}`, 0, context.logIn);
-    }
-
-    this.logIn = function (data) {
-        console.log(data);
-        report_array.token = data.token;
-
-        // TODO possibly put this in a different spot. Added while testing for Season Rewards.
-
-        request(`https://api2.splinterlands.com/players/leaderboard_with_player?season=${report_array.season.id-1}&token=${report_array.token}&username=${report_array.player}`, 0, context.lastSeason)
-    }
-
-    this.lastSeason = function (data) {
-        let seasonRecord = false;
-        console.log(data);
-        if (data.error) stop_on_error(data.error);
-
-        if (data.player === null) {
-            stop_on_error(`No player records found for the previous season.`)
-        } else {
-            if (data.player.reward_claim_tx === null) {
-                stop_on_error(`Season rewards have not been claimed. Please claim before proceeding. Please refresh the page before proceeding.`);
-            }
-            seasonRecord = true;
-            console.log(`Season data exists.`);
-            //TODO Continue from here.
-            report_array.matches.guild = data.player.guild_name;
-            report_array.matches.league = rankings[data.player.league].name;
-            report_array.matches.league_name = rankings[data.player.league].group;
-            report_array.matches.rank = data.player.rank;
-            report_array.matches.rating = data.player.rating;
-            report_array.matches.highRating = data.player.max_rating;
-            report_array.matches.longestStreak = data.player.longest_streak;
-            update_status(`Getting player transactions before block: n/a.`);
-            report_array.general_query_types = `&types=market_purchase,market_sale,gift_packs,card_award,claim_reward,sm_battle,enter_tournament,leave_tournament`
-            request(`https://api.steemmonsters.io/players/history?username=${report_array.player}&from_block=-1&limit=500${report_array.general_query_types}`, 0, context.playerHistory);
-        }
-    }
-
-    //Get player general Transaction history
-    this.playerHistory = function (data) {
-        console.log(data);
-        let before_block;
-        let limit = 500;
-        data.forEach((e, i) => {
-            if (!report_array.tx_types.includes(e.type)) report_array.tx_types.push(e.type);
-            if (!report_array.tx_ids.includes(e.id)) {
-                report_array.tx_ids.push(e.id);
-                report_array.txs.push(e);
-            } //else console.log(`${i}: ${e.id}`);
-            if (i === data.length - 1) before_block = e.block_num;
-        });
-        if (limit === data.length) {
-            update_status(`Getting player transactions before block: ${before_block}.`);
-            request(
-                `https://api.steemmonsters.io/players/history?username=${report_array.player}&from_block=-1&before_block=${before_block}&limit=500${report_array.general_query_types}`,
-                0,
-                context.playerHistory);
-        } else {
-            console.log(report_array.tx_types)
-            report_array.dec_query_types = `&types=rental_payment_fees,market_rental,rental_payment,rental_refund,leaderboard_prizes,dec_reward`
-            request(`https://api2.splinterlands.com/players/balance_history?token_type=DEC&offset=0&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}`, 0, context.playerBalanceHistory);
-        }
-    }
-
-    //Get player DEC history
-    this.playerBalanceHistory = function (data) {
-        //console.log(data);
-        let offset = 0;
-        let limit = 500;
-        data.forEach((e, i) => {
-            if (!report_array.dec_transfer_types.includes(e.type)) report_array.dec_transfer_types.push(e.type);
-            if (!report_array.dec_transfers.includes(e)) {
-                report_array.dec_transfer_ids.push(e.trx_id);
-                report_array.dec_transfers.push(e);
-            } //else console.log(`${i}: ${e.id}`);
-        });
-        //throw 'error';
-        console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.dec_transfers.length}`);
-        if (limit === data.length) {
-            offset = 500 * Math.ceil(report_array.dec_transfers.length / 500);
-            update_status(`Getting player transactions with offset: ${offset}.`);
-            request(
-                `https://api2.splinterlands.com/players/balance_history?token_type=DEC&offset=${offset}&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}`,
-                0,
-                context.playerBalanceHistory);
-        } else {
-            console.log(`DEC Transfers`, report_array.dec_transfer_types)
-            request(`https://api2.splinterlands.com/players/balance_history?token_type=SPS&offset=0&limit=${limit}&username=${report_array.player}`, 0, context.playerSPSBalanceHistory);
-        }
-    }
-
-    //Get player SPS history
-    this.playerSPSBalanceHistory = function (data) {
-        //console.log(data);
-        let offset = 0;
-        let limit = 500;
-        data.forEach((e, i) => {
-            if (!report_array.sps_transfer_types.includes(e.type)) report_array.sps_transfer_types.push(e.type);
-            if (!report_array.sps_transfers.includes(e)) {
-                report_array.sps_transfer_ids.push(e.trx_id);
-                report_array.sps_transfers.push(e);
-            } //else console.log(`${i}: ${e.id}`);
-        });
-        //throw 'error';
-        console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.sps_transfers.length}`);
-        if (limit === data.length) {
-            offset = 500 * Math.ceil(report_array.sps_transfers.length / 500);
-            update_status(`Getting player transactions with offset: ${offset}.`);
-            request(
-                `https://api2.splinterlands.com/players/balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}`,
-                0,
-                context.playerBalanceHistory);
-        } else {
-            console.log(`SPS Transfers`, report_array.sps_transfer_types)
-            context.sortHistory();
-        }
-    }
-
-    this.sortHistory = function () {
-        //report_array.season.id
-        report_array.txs.forEach((tx, i) => {
-            update_status(`Sorting transactions: ${i}/${report_array.txs.length}.`);
-            let created_date = Date.parse(tx.created_date);
-            let valid = false;
-            if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
-
-            if (tx.type === "claim_reward") {
-                let json = JSON.parse(tx.data);
-                if (json.type === "league_season" && created_date > report_array.season_end) valid = true;
-                else if (json.type === "league_season") valid = false;
-            } else if (tx.type === `enter_tournament` && created_date < report_array.season_end) valid = true;
-            if (valid) {
-                switch (tx.type) {
-                    case "sm_battle":
-                        //console.log(tx);
-                        let json = JSON.parse(tx.result);
-                        let match_type = json.match_type;
-                        let win = (json.winner === report_array.player);
-                        if (match_type === `Ranked`) tally_wdl(match_type);
-                        else if (match_type === `Tournament`) tally_wdl(match_type);
-                        else if (match_type === `Practice`) {
-                            console.log(`Practice Match`);
-                        } else {
-                            console.log("unknown match type", tx)
-                        }
-
-                    function tally_wdl(match_type) {
-                        if (win) {
-                            report_array.matches[match_type].wins++;
-                            if (match_type === `Ranked`) report_array.earnings.matches += json.dec_info.reward;
-                        } else if (json.winner === "DRAW") report_array.matches[match_type].draws++;
-                        else report_array.matches[match_type].loss++;
+            json.players.forEach(player => {
+              if (player.name !== report_array.player) {
+                report_array.matches.opponents.push(player.name);
+                //Highest Rated Opponent
+                // TODO change to winning matches only
+                if (win) {
+                  let oppHighRating = Math.max(player.initial_rating, player.final_rating);
+                  if (oppHighRating >= report_array.matches.higestRatedOpp.rating) {
+                    if (oppHighRating > report_array.matches.higestRatedOpp.rating) {
+                      report_array.matches.higestRatedOpp.name = `@[${player.name}](https://splinterlands.com?p=battle&id=${json.id}&ref=splinterstats)`;
+                      report_array.matches.higestRatedOpp.rating = oppHighRating;
+                    } else if (!report_array.matches.higestRatedOpp.name.includes(`@${player.name}`)) {
+                      report_array.matches.higestRatedOpp.name += ` & @[${player.name}](https://splinterlands.com?p=battle&id=${json.id}&ref=splinterstats)`
                     }
-
-                        //console.log(`Battle Result Json`, json);
-                        let rulesets = json.ruleset.split("|");
-                        rulesets.forEach(ruleset => {
-                            if (!report_array.matches.rulesets[ruleset]) {
-                                report_array.matches.rulesets[ruleset] = {
-                                    name: ruleset,
-                                    wins: 0,
-                                    loss: 0,
-                                    draws: 0,
-                                    count: 0
-                                }
-                            }
-                            report_array.matches.rulesets[ruleset].count++;
-                            if (win) {
-                                report_array.matches.rulesets[ruleset].wins++;
-                            } else if (json.winner === "DRAW") report_array.matches.rulesets[ruleset].draws++;
-                            else report_array.matches.rulesets[ruleset].loss++;
-                        });
-
-                        json.players.forEach(player => {
-                            if (player.name !== report_array.player) {
-                                report_array.matches.opponents.push(player.name);
-                                //Highest Rated Opponent
-                                // TODO change to winning matches only
-                                if (win) {
-                                    let oppHighRating = Math.max(player.initial_rating, player.final_rating);
-                                    if (oppHighRating >= report_array.matches.higestRatedOpp.rating) {
-                                        if (oppHighRating > report_array.matches.higestRatedOpp.rating) {
-                                            report_array.matches.higestRatedOpp.name = `@[${player.name}](https://splinterlands.com?p=battle&id=${json.id}&ref=splinterstats)`;
-                                            report_array.matches.higestRatedOpp.rating = oppHighRating;
-                                        } else if (!report_array.matches.higestRatedOpp.name.includes(`@${player.name}`)) {
-                                            report_array.matches.higestRatedOpp.name += ` & @[${player.name}](https://splinterlands.com?p=battle&id=${json.id}&ref=splinterstats)`
-                                        }
-                                    }
-                                }
-                            } else {
-                                if (Object.keys(player.team).length !== 0) player.team.win = win;
-                                report_array.matches.teams.push(player.team);
-                                report_array.matches.ratingMovement += Math.abs((player.initial_rating - player.final_rating));
-                            }
-                        });
-                        /* ToDO
-                        Number of Attacks [melee, ranged, magic], Misses / Reflects
-                        Total Heals, card: {id: `xx-xx-xxxxxx`, healed: ?}
-                        Generate usage statistics from team data.
-                        */
-                        break;
-                    case "claim_reward":
-                        //console.log(`Reward Claim: `, tx);
-                        let data = JSON.parse(tx.result);
-
-                        let reward_json = JSON.parse(tx.data);
-                        let dailyOrSeason = (reward_json.type === "league_season") ? `season` : `daily`;
-
-                        if (data !== null) {
-                            data.rewards.forEach(chest => {
-                                report_array.earnings.loot_chests[dailyOrSeason].count++;
-                                if (chest.type === `potion`) {
-                                    //console.log(`Loot: ${chest.potion_type} Potion x ${chest.quantity}`);
-                                    if (chest.potion_type === `legendary`) {
-                                        report_array.earnings.loot_chests[dailyOrSeason].legendary_potion++;
-                                    } else if (chest.potion_type === `gold`) {
-                                        report_array.earnings.loot_chests[dailyOrSeason].alchemy_potion++;
-                                    }
-                                } else if (chest.type === `reward_card`) {
-                                    //console.log(`Loot: ${chest.card.uid} Gold: ${chest.card.gold} x ${chest.quantity}`);
-                                    let gold = chest.card.gold ? 'gold' : 'stand';
-                                    report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].count++;
-                                    report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.count++;
-                                    report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * 50 : prices.cards[chest.card.card_detail_id].dec);
-                                    report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * 50 : prices.cards[chest.card.card_detail_id].dec);
-                                    //Use ID to get DEC from prices array
-                                } else if (chest.type === `dec`) {
-                                    //console.log(`Loot: ${chest.quantity} DEC`);
-                                    report_array.earnings.loot_chests[dailyOrSeason].dec += chest.quantity;
-                                } else if (chest.type === `pack`) {
-                                    //console.log(`Loot: UNTAMED ${chest.quantity}`);
-                                    report_array.earnings.loot_chests[dailyOrSeason].untamed_packs++;
-                                } else {
-                                    console.log(`Unknown reward type: ${chest.type}`);
-                                    alert(`Unknown reward type: ${chest.type}`)
-                                }
-                            });
-                        }
-                        break;
-                    case "enter_tournament":
-                        //Add to tournament list
-                        let enter_result = JSON.parse(tx.data);
-                        report_array.matches.Tournament.ids.push(enter_result.tournament_id);
-                        break;
-                    case "leave_tournament":
-                        //Remove from tournaments list
-                        let leave_result = JSON.parse(tx.data);
-                        report_array.matches.Tournament.ids = report_array.matches.Tournament.ids.filter(t => t !== leave_result.tournament_id);
-                        break;
-                    default:
-                        console.log(`Unidentified case! ${tx.type}`, tx)
+                  }
                 }
-            }
-        });
-
-        // DEC History Sorting
-        report_array.dec_balances = {
-            dec_reward: 0,
-            rentals: {
-                in: 0,
-                fees: 0,
-                out: 0,
-                refund: 0,
-                count: 0
-            },
-            leaderboard_prize: 0
-        };
-        report_array.dec_transfers.forEach((tx, i) => {
-            let created_date = Date.parse(tx.created_date);
-            let valid = false;
-            if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
-            if (tx.type === "leaderboard_prizes") {
-                valid = (created_date === report_array.season_end);
-                console.log(`LEADERBOARD PRIZE`, tx, valid);
-            }
-            if (valid) {
-                // rental_refund
-                let amount = parseFloat(tx.amount);
-                if (["rental_payment", "rental_payment_fees", "market_rental"].includes(tx.type)) report_array.dec_balances.rentals.count++;
-                if (tx.type === "rental_payment") report_array.dec_balances.rentals.in += amount;
-                else if (tx.type === "rental_payment_fees") report_array.dec_balances.rentals.fees += amount;
-                else if (tx.type === "market_rental") report_array.dec_balances.rentals.out += amount;
-                else if (tx.type === "rental_refund") report_array.dec_balances.rentals.refund += amount;
-                else if (tx.type === "leaderboard_prizes") report_array.dec_balances.leaderboard_prize += amount;
-                else if (tx.type === "dec_reward") report_array.dec_balances.dec_reward += amount;
-                else console.log(`Unexpected: ${tx.type}`);
-            }
-        });
-        console.log(`DEC Transactions to report:`, report_array.dec_balances);
-        if (report_array.dec_balances.rentals.count > 0) {
-            let net_rentals_dec = report_array.dec_balances.rentals.in + report_array.dec_balances.rentals.fees + report_array.dec_balances.rentals.out + report_array.dec_balances.rentals.refund;
-            let net_rentals = (net_rentals_dec).toFixed(3);
-            if (parseFloat(net_rentals) < 0) net_rentals = `(${(net_rentals_dec * -1).toFixed(3)})`;
-            report_array.rentals_table = `|Type|DEC (fees)|\n|-|-|\n|Revenue|${report_array.dec_balances.rentals.in.toFixed(3)} (${(report_array.dec_balances.rentals.fees * -1).toFixed(3)})|\n|Expenses|(${(report_array.dec_balances.rentals.out * -1).toFixed(3)})|\n|Cancellation Refunds|${report_array.dec_balances.rentals.refund.toFixed(3)}|\n|NET|${net_rentals}|`;
-        }
-        if (report_array.dec_balances.leaderboard_prize > 0) report_array.leaderboard_table = `|Prize|\n|-|\n|${report_array.dec_balances.leaderboard_prize} DEC|`;
-
-        // SPS History Sorting
-        report_array.sps_balances = {
-            airdrop: 0,
-            staking: 0
-        };
-        console.log(report_array.sps_transfers);
-        report_array.sps_transfers.forEach((tx, i) => {
-            let created_date = Date.parse(tx.created_date);
-            let valid = false;
-            if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
-
-            if (valid) {
-                let amount = parseFloat(tx.amount);
-                if (tx.type === "token_award") report_array.sps_balances.airdrop += amount;
-                else if (tx.type === "claim_staking_rewards") report_array.sps_balances.staking += amount;
-                else console.log(`Unexpected: ${tx.type}`);
-            }
-        });
-        console.log(`SPS Transactions to report:`, report_array.sps_balances);
-        if (report_array.sps_balances.airdrop > 0 || report_array.sps_balances.staking > 0) {
-            let net_rentals_sps = report_array.sps_balances.airdrop + report_array.sps_balances.staking;
-            let net_sps = (net_rentals_sps).toFixed(3);
-            report_array.sps_table = `|Type|Amount Claimed|\n|-|-|\n|Airdrop|${report_array.sps_balances.airdrop.toFixed(3)}|\n|Staking Rewards|${report_array.sps_balances.staking.toFixed(3)}|\n|NET|${net_sps}|`;
-        }
-        if (report_array.matches.Tournament.ids.length > 0) context.tournamentData(0);
-        else context.rewardsData();
-    }
-
-    this.tournamentData = function (data) {
-        if (data === 0) {
-            update_status(`Tournament Data`);
-            //console.log(`List of tournaments entered by ID:`, report_array.matches.Tournament.ids);
-            report_array.matches.Tournament.searchIndex = 0;
-        } else {
-            report_array.matches.Tournament.data.push(data);
-            report_array.matches.Tournament.searchIndex++;
-        }
-        update_status(`Collecting entered tournament's data.. ${report_array.matches.Tournament.data.length}/${report_array.matches.Tournament.ids.length}`);
-        if (report_array.matches.Tournament.searchIndex < report_array.matches.Tournament.ids.length) {
-            request(`https://api2.splinterlands.com/tournaments/find?id=${report_array.matches.Tournament.ids[report_array.matches.Tournament.searchIndex]}`,
-                0,
-                context.tournamentData);
-        } else {
-            //Sort Data once ready
-            console.log(`Tournament Data: (${report_array.matches.Tournament.data.length}/${report_array.matches.Tournament.ids.length})`, report_array.matches.Tournament.data);
-
-            report_array.matches.Tournament.data.forEach((tournament, i) => {
-                if (tournament.status === 2) {
-                    if (report_array.season_end > Date.parse(tournament.rounds[tournament.rounds.length - 1].start_date) + (tournament.data.duration_blocks ? (3000 * tournament.data.duration_blocks) : 0)) {
-                        for (let player of tournament.players) {
-                            //TODO accumulate entry fees to list on report
-                            /* //TODO Add Entry Fees to offset tournament prizes.
-                            console.log(`Entry fee... ${player.fee_amount}`);
-                            */
-                            if (player.player === report_array.player) {
-                                //Prizes
-                                tournament.data.prizes.payouts.forEach(group => {
-                                    if (player.finish >= group.start_place && player.finish <= group.end_place) {
-                                        add_to_prizeList(player, tournament, group.items)
-                                    }
-                                });
-
-                                // W/L/D
-                                report_array.matches.Tournament.wins += player.wins;
-                                report_array.matches.Tournament.loss += player.losses;
-                                report_array.matches.Tournament.draws += player.draws;
-                                console.log(`---`);
-                                break;
-                            }
-                        }
-                    }
-                }
+              } else {
+                if (Object.keys(player.team).length !== 0) player.team.win = win;
+                report_array.matches.teams.push(player.team);
+                report_array.matches.ratingMovement += Math.abs((player.initial_rating - player.final_rating));
+              }
             });
+            /* ToDO
+            Number of Attacks [melee, ranged, magic], Misses / Reflects
+            Total Heals, card: {id: `xx-xx-xxxxxx`, healed: ?}
+            Generate usage statistics from team data.
+            */
+            break;
+          case "claim_reward":
+            //console.log(`Reward Claim: `, tx);
+            let data = JSON.parse(tx.result);
 
-            function add_to_prizeList(player, tournament, prizeArray) {
-                //Add prize to culmulative earning for tournaments here...
-                let ratio = (!isNaN(player.wins / (player.losses + player.draws)) ? (player.wins / (player.losses + player.draws)).toFixed(2) : 0);
-                report_array.matches.Tournament.prize_list.push({
-                    Prize: prizeArray.reduce((string, prize, i) => string += `${(prize.type === `CUSTOM`) ? prize.text : `${prize.qty} ${prize.type}`}${(prizeArray.length > 1 && i < prizeArray.length - 1) ? ` + ` : ``}`, ``),
-                    Tournament: `${tournament.name}`,
-                    num_players: `${tournament.num_players}`,
-                    League: `${rating_level[tournament.data.rating_level]}`,
-                    Editions: `${(tournament.data.allowed_cards.editions.length === 0 || tournament.data.allowed_cards.editions.length === 6) ? `Open` : `${tournament.data.allowed_cards.editions.reduce((list, ed) => list += editions[ed], ``)}`}`,
-                    Gold: ``,
-                    Card_Limits: ``,
-                    Placement: `${player.finish}`,
-                    Ratio: `${(ratio.toString() !== `Infinity`) ? ratio : player.wins} (${player.wins}/${player.losses}/${player.draws})`
-                });
-                // Tally identical prizes:
-                prizeArray.forEach(prize => {
-                    if (prize.type !== `CUSTOM`) report_array.matches.Tournament.prize_tally[prize.type].quantity += prize.qty;
-                    report_array.matches.Tournament.prize_tally[prize.type].count++;
-                });
+            let reward_json = JSON.parse(tx.data);
+            let dailyOrSeason = (reward_json.type === "league_season") ? `season` : `daily`;
+
+            if (data !== null) {
+              data.rewards.forEach(chest => {
+                report_array.earnings.loot_chests[dailyOrSeason].count++;
+                if (chest.type === `potion`) {
+                  //console.log(`Loot: ${chest.potion_type} Potion x ${chest.quantity}`);
+                  if (chest.potion_type === `legendary`) {
+                    report_array.earnings.loot_chests[dailyOrSeason].legendary_potion++;
+                  } else if (chest.potion_type === `gold`) {
+                    report_array.earnings.loot_chests[dailyOrSeason].alchemy_potion++;
+                  }
+                } else if (chest.type === `reward_card`) {
+                  //console.log(`Loot: ${chest.card.uid} Gold: ${chest.card.gold} x ${chest.quantity}`);
+                  let gold = chest.card.gold ? 'gold' : 'stand';
+                  report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].count++;
+                  report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.count++;
+                  report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * 50 : prices.cards[chest.card.card_detail_id].dec);
+                  report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * 50 : prices.cards[chest.card.card_detail_id].dec);
+                  //Use ID to get DEC from prices array
+                } else if (chest.type === `dec`) {
+                  //console.log(`Loot: ${chest.quantity} DEC`);
+                  report_array.earnings.loot_chests[dailyOrSeason].dec += chest.quantity;
+                } else if (chest.type === `pack`) {
+                  //console.log(`Loot: UNTAMED ${chest.quantity}`);
+                  report_array.earnings.loot_chests[dailyOrSeason].untamed_packs++;
+                } else {
+                  console.log(`Unknown reward type: ${chest.type}`);
+                  alert(`Unknown reward type: ${chest.type}`)
+                }
+              });
             }
-
-            console.log(`Prize List`, report_array.matches.Tournament.prize_list);
-
-            let tournament_winnings_table_body = report_array.matches.Tournament.prize_list.reduce((body, row) => body += `|${row.Tournament}|${row.League}|${row.Editions}|${row.Placement}/${row.num_players}|${row.Ratio}|${row.Prize}|\n`, ``)
-            report_array.matches.Tournament.winnings_table =
-                `### Prizes\n|Tournament|League|Editions|Placement/#entrants|Ratio (Win/Loss+Draw)|Prize|\n|-|-|-|-|-|-|\n${tournament_winnings_table_body}`
-
-            let tournament_winnings_prize_summary_table_body = Object.values(report_array.matches.Tournament.prize_tally).reduce((body, row) => body += `${(row.count > 0) ? `${`|${row.name}|${row.count}|${row.quantity}|\n`}` : ``}`, ``)
-            report_array.matches.Tournament.prizes_table =
-                `### Summary\n|Reward|Count|Quantity|\n|-|-|-|\n${tournament_winnings_prize_summary_table_body}`
-
-            context.rewardsData();
+            break;
+          case "enter_tournament":
+            //Add to tournament list
+            let enter_result = JSON.parse(tx.data);
+            report_array.matches.Tournament.ids.push(enter_result.tournament_id);
+            break;
+          case "leave_tournament":
+            //Remove from tournaments list
+            let leave_result = JSON.parse(tx.data);
+            report_array.matches.Tournament.ids = report_array.matches.Tournament.ids.filter(t => t !== leave_result.tournament_id);
+            break;
+          default:
+            console.log(`Unidentified case! ${tx.type}`, tx)
         }
+      }
+    });
+
+    // DEC History Sorting
+    report_array.dec_balances = {
+      dec_reward: 0,
+      rentals: {
+        in: 0,
+        fees: 0,
+        out: 0,
+        refund: 0,
+        count: 0
+      },
+      leaderboard_prize: 0
+    };
+    report_array.dec_transfers.forEach((tx, i) => {
+      let created_date = Date.parse(tx.created_date);
+      let valid = false;
+      if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
+      if (tx.type === "leaderboard_prizes") {
+        valid = (created_date === report_array.season_end);
+        console.log(`LEADERBOARD PRIZE`, tx, valid);
+      }
+      if (valid) {
+        // rental_refund
+        let amount = parseFloat(tx.amount);
+        if (["rental_payment", "rental_payment_fees", "market_rental"].includes(tx.type)) report_array.dec_balances.rentals.count++;
+        if (tx.type === "rental_payment") report_array.dec_balances.rentals.in += amount;
+        else if (tx.type === "rental_payment_fees") report_array.dec_balances.rentals.fees += amount;
+        else if (tx.type === "market_rental") report_array.dec_balances.rentals.out += amount;
+        else if (tx.type === "rental_refund") report_array.dec_balances.rentals.refund += amount;
+        else if (tx.type === "leaderboard_prizes") report_array.dec_balances.leaderboard_prize += amount;
+        else if (tx.type === "dec_reward") report_array.dec_balances.dec_reward += amount;
+        else console.log(`Unexpected: ${tx.type}`);
+      }
+    });
+    console.log(`DEC Transactions to report:`, report_array.dec_balances);
+    if (report_array.dec_balances.rentals.count > 0) {
+      let net_rentals_dec = report_array.dec_balances.rentals.in + report_array.dec_balances.rentals.fees + report_array.dec_balances.rentals.out + report_array.dec_balances.rentals.refund;
+      let net_rentals = (net_rentals_dec).toFixed(3);
+      if (parseFloat(net_rentals) < 0) net_rentals = `(${(net_rentals_dec * -1).toFixed(3)})`;
+      report_array.rentals_table = `|Type|DEC (fees)|\n|-|-|\n|Revenue|${report_array.dec_balances.rentals.in.toFixed(3)} (${(report_array.dec_balances.rentals.fees * -1).toFixed(3)})|\n|Expenses|(${(report_array.dec_balances.rentals.out * -1).toFixed(3)})|\n|Cancellation Refunds|${report_array.dec_balances.rentals.refund.toFixed(3)}|\n|NET|${net_rentals}|`;
     }
+    if (report_array.dec_balances.leaderboard_prize > 0) report_array.leaderboard_table = `|Prize|\n|-|\n|${report_array.dec_balances.leaderboard_prize} DEC|`;
 
-    this.rewardsData = function () {
-        update_status(`Counting Rewards.`);
-        let xyz = `xyz`;
-        let calc = {};
-        //Calculations for Rewards Cards
-        //Standard Cards Counts
-        calc.stand_common_count = report_array.earnings.loot_chests.daily.cards.stand[1].count + report_array.earnings.loot_chests.season.cards.stand[1].count;
-        calc.stand_rare_count = report_array.earnings.loot_chests.daily.cards.stand[2].count + report_array.earnings.loot_chests.season.cards.stand[2].count;
-        calc.stand_epic_count = report_array.earnings.loot_chests.daily.cards.stand[3].count + report_array.earnings.loot_chests.season.cards.stand[3].count;
-        calc.stand_legendary_count = report_array.earnings.loot_chests.daily.cards.stand[4].count + report_array.earnings.loot_chests.season.cards.stand[4].count;
-        //Standard Cards DEC
-        calc.stand_common_dec = report_array.earnings.loot_chests.daily.cards.stand[1].dec + report_array.earnings.loot_chests.season.cards.stand[1].dec;
-        calc.stand_rare_dec = report_array.earnings.loot_chests.daily.cards.stand[2].dec + report_array.earnings.loot_chests.season.cards.stand[2].dec;
-        calc.stand_epic_dec = report_array.earnings.loot_chests.daily.cards.stand[3].dec + report_array.earnings.loot_chests.season.cards.stand[3].dec;
-        calc.stand_legendary_dec = report_array.earnings.loot_chests.daily.cards.stand[4].dec + report_array.earnings.loot_chests.season.cards.stand[4].dec;
-        //Gold Cards Counts
-        calc.gold_common_count = report_array.earnings.loot_chests.daily.cards.gold[1].count + report_array.earnings.loot_chests.season.cards.gold[1].count;
-        calc.gold_rare_count = report_array.earnings.loot_chests.daily.cards.gold[2].count + report_array.earnings.loot_chests.season.cards.gold[2].count;
-        calc.gold_epic_count = report_array.earnings.loot_chests.daily.cards.gold[3].count + report_array.earnings.loot_chests.season.cards.gold[3].count;
-        calc.gold_legendary_count = report_array.earnings.loot_chests.daily.cards.gold[4].count + report_array.earnings.loot_chests.season.cards.gold[4].count;
-        //Gold Cards DEC
-        calc.gold_common_dec = report_array.earnings.loot_chests.daily.cards.gold[1].dec + report_array.earnings.loot_chests.season.cards.gold[1].dec;
-        calc.gold_rare_dec = report_array.earnings.loot_chests.daily.cards.gold[2].dec + report_array.earnings.loot_chests.season.cards.gold[2].dec;
-        calc.gold_epic_dec = report_array.earnings.loot_chests.daily.cards.gold[3].dec + report_array.earnings.loot_chests.season.cards.gold[3].dec;
-        calc.gold_legendary_dec = report_array.earnings.loot_chests.daily.cards.gold[4].dec + report_array.earnings.loot_chests.season.cards.gold[4].dec;
-        //Standard Cards Totals
-        calc.total_stand_count = report_array.earnings.loot_chests.daily.cards.stand.total.count + report_array.earnings.loot_chests.season.cards.stand.total.count;
-        calc.total_stand_dec = report_array.earnings.loot_chests.daily.cards.stand.total.dec + report_array.earnings.loot_chests.season.cards.stand.total.dec;
-        //Gold Cards Totals
-        calc.total_gold_count = report_array.earnings.loot_chests.daily.cards.gold.total.count + report_array.earnings.loot_chests.season.cards.gold.total.count;
-        calc.total_gold_dec = report_array.earnings.loot_chests.daily.cards.gold.total.dec + report_array.earnings.loot_chests.season.cards.gold.total.dec;
-        //Dailies Totals
-        calc.total_dailies_count = report_array.earnings.loot_chests.daily.cards.stand.total.count + report_array.earnings.loot_chests.daily.cards.gold.total.count;
-        calc.total_dailies_dec = report_array.earnings.loot_chests.daily.cards.stand.total.dec + report_array.earnings.loot_chests.daily.cards.gold.total.dec;
-        //Season Totals
-        calc.total_season_count = report_array.earnings.loot_chests.season.cards.stand.total.count + report_array.earnings.loot_chests.season.cards.gold.total.count;
-        calc.total_season_dec = report_array.earnings.loot_chests.season.cards.stand.total.dec + report_array.earnings.loot_chests.season.cards.gold.total.dec;
-        //Cards Total DEC
-        calc.total_all_count = calc.total_dailies_count + calc.total_season_count;
-        calc.total_all_dec = calc.total_dailies_dec + calc.total_season_dec;
+    // SPS History Sorting
+    report_array.sps_balances = {
+      airdrop: 0,
+      staking: 0
+    };
+    console.log(report_array.sps_transfers);
+    report_array.sps_transfers.forEach((tx, i) => {
+      let created_date = Date.parse(tx.created_date);
+      let valid = false;
+      if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
 
-        //Calculations for Packs
-        //UNTAMED Packs
-        calc.total_untamed_packs_count = report_array.earnings.loot_chests.daily.untamed_packs + report_array.earnings.loot_chests.season.untamed_packs;
-        calc.total_untamed_packs_dec = calc.total_untamed_packs_count * prices.untamed_pack;
+      if (valid) {
+        let amount = parseFloat(tx.amount);
+        if (tx.type === "token_award") report_array.sps_balances.airdrop += amount;
+        else if (tx.type === "claim_staking_rewards") report_array.sps_balances.staking += amount;
+        else console.log(`Unexpected: ${tx.type}`);
+      }
+    });
+    console.log(`SPS Transactions to report:`, report_array.sps_balances);
+    if (report_array.sps_balances.airdrop > 0 || report_array.sps_balances.staking > 0) {
+      let net_rentals_sps = report_array.sps_balances.airdrop + report_array.sps_balances.staking;
+      let net_sps = (net_rentals_sps).toFixed(3);
+      report_array.sps_table = `|Type|Amount Claimed|\n|-|-|\n|Airdrop|${report_array.sps_balances.airdrop.toFixed(3)}|\n|Staking Rewards|${report_array.sps_balances.staking.toFixed(3)}|\n|NET|${net_sps}|`;
+    }
+    if (report_array.matches.Tournament.ids.length > 0) context.tournamentData(0);
+    else context.rewardsData();
+  }
 
-        //Calculations for Potions
-        //Legendary
-        calc.total_legendary_potions_count = report_array.earnings.loot_chests.daily.legendary_potion + report_array.earnings.loot_chests.season.legendary_potion;
-        calc.total_legendary_potions_dec = calc.total_legendary_potions_count * prices.LEGENDARY;
-        //Alchemy
-        calc.total_alchemy_potions_count = report_array.earnings.loot_chests.daily.alchemy_potion + report_array.earnings.loot_chests.season.alchemy_potion;
-        calc.total_alchemy_potions_dec = calc.total_alchemy_potions_count * prices.GOLD;
+  this.tournamentData = function (data) {
+    if (data === 0) {
+      update_status(`Tournament Data`);
+      //console.log(`List of tournaments entered by ID:`, report_array.matches.Tournament.ids);
+      report_array.matches.Tournament.searchIndex = 0;
+    } else {
+      report_array.matches.Tournament.data.push(data);
+      report_array.matches.Tournament.searchIndex++;
+    }
+    update_status(`Collecting entered tournament's data.. ${report_array.matches.Tournament.data.length}/${report_array.matches.Tournament.ids.length}`);
+    if (report_array.matches.Tournament.searchIndex < report_array.matches.Tournament.ids.length) {
+      request(`https://api2.splinterlands.com/tournaments/find?id=${report_array.matches.Tournament.ids[report_array.matches.Tournament.searchIndex]}`,
+        0,
+        context.tournamentData);
+    } else {
+      //Sort Data once ready
+      console.log(`Tournament Data: (${report_array.matches.Tournament.data.length}/${report_array.matches.Tournament.ids.length})`, report_array.matches.Tournament.data);
 
-        //Calculations for Capture DEC
-        report_array.earnings.matches = parseInt(report_array.earnings.matches.toFixed(3));
+      report_array.matches.Tournament.data.forEach((tournament, i) => {
+        if (tournament.status === 2) {
+          if (report_array.season_end > Date.parse(tournament.rounds[tournament.rounds.length - 1].start_date) + (tournament.data.duration_blocks ? (3000 * tournament.data.duration_blocks) : 0)) {
+            for (let player of tournament.players) {
+              //TODO accumulate entry fees to list on report
+              /* //TODO Add Entry Fees to offset tournament prizes.
+              console.log(`Entry fee... ${player.fee_amount}`);
+              */
+              if (player.player === report_array.player) {
+                //Prizes
+                tournament.data.prizes.payouts.forEach(group => {
+                  if (player.finish >= group.start_place && player.finish <= group.end_place) {
+                    add_to_prizeList(player, tournament, group.items)
+                  }
+                });
 
-        //Calculations for Loot Chest DEC
-        calc.total_loot_dec = report_array.earnings.loot_chests.daily.dec + report_array.earnings.loot_chests.season.dec;
-        calc.total_dec = calc.total_all_dec + calc.total_untamed_packs_dec + calc.total_legendary_potions_dec + calc.total_alchemy_potions_dec + calc.total_loot_dec + report_array.dec_balances.dec_reward/*report_array.earnings.matches*/;
+                // W/L/D
+                report_array.matches.Tournament.wins += player.wins;
+                report_array.matches.Tournament.loss += player.losses;
+                report_array.matches.Tournament.draws += player.draws;
+                console.log(`---`);
+                break;
+              }
+            }
+          }
+        }
+      });
 
-        report_array.earnings.template = `##### Standard Foil Cards\n
+      function add_to_prizeList(player, tournament, prizeArray) {
+        //Add prize to culmulative earning for tournaments here...
+        let ratio = (!isNaN(player.wins / (player.losses + player.draws)) ? (player.wins / (player.losses + player.draws)).toFixed(2) : 0);
+        report_array.matches.Tournament.prize_list.push({
+          Prize: prizeArray.reduce((string, prize, i) => string += `${(prize.type === `CUSTOM`) ? prize.text : `${prize.qty} ${prize.type}`}${(prizeArray.length > 1 && i < prizeArray.length - 1) ? ` + ` : ``}`, ``),
+          Tournament: `${tournament.name}`,
+          num_players: `${tournament.num_players}`,
+          League: `${rating_level[tournament.data.rating_level]}`,
+          Editions: `${(tournament.data.allowed_cards.editions.length === 0 || tournament.data.allowed_cards.editions.length === 6) ? `Open` : `${tournament.data.allowed_cards.editions.reduce((list, ed) => list += editions[ed], ``)}`}`,
+          Gold: ``,
+          Card_Limits: ``,
+          Placement: `${player.finish}`,
+          Ratio: `${(ratio.toString() !== `Infinity`) ? ratio : player.wins} (${player.wins}/${player.losses}/${player.draws})`
+        });
+        // Tally identical prizes:
+        prizeArray.forEach(prize => {
+          if (prize.type !== `CUSTOM`) report_array.matches.Tournament.prize_tally[prize.type].quantity += prize.qty;
+          report_array.matches.Tournament.prize_tally[prize.type].count++;
+        });
+      }
+
+      console.log(`Prize List`, report_array.matches.Tournament.prize_list);
+
+      let tournament_winnings_table_body = report_array.matches.Tournament.prize_list.reduce((body, row) => body += `|${row.Tournament}|${row.League}|${row.Editions}|${row.Placement}/${row.num_players}|${row.Ratio}|${row.Prize}|\n`, ``)
+      report_array.matches.Tournament.winnings_table =
+        `### Prizes\n|Tournament|League|Editions|Placement/#entrants|Ratio (Win/Loss+Draw)|Prize|\n|-|-|-|-|-|-|\n${tournament_winnings_table_body}`
+
+      let tournament_winnings_prize_summary_table_body = Object.values(report_array.matches.Tournament.prize_tally).reduce((body, row) => body += `${(row.count > 0) ? `${`|${row.name}|${row.count}|${row.quantity}|\n`}` : ``}`, ``)
+      report_array.matches.Tournament.prizes_table =
+        `### Summary\n|Reward|Count|Quantity|\n|-|-|-|\n${tournament_winnings_prize_summary_table_body}`
+
+      context.rewardsData();
+    }
+  }
+
+  this.rewardsData = function () {
+    update_status(`Counting Rewards.`);
+    let xyz = `xyz`;
+    let calc = {};
+    //Calculations for Rewards Cards
+    //Standard Cards Counts
+    calc.stand_common_count = report_array.earnings.loot_chests.daily.cards.stand[1].count + report_array.earnings.loot_chests.season.cards.stand[1].count;
+    calc.stand_rare_count = report_array.earnings.loot_chests.daily.cards.stand[2].count + report_array.earnings.loot_chests.season.cards.stand[2].count;
+    calc.stand_epic_count = report_array.earnings.loot_chests.daily.cards.stand[3].count + report_array.earnings.loot_chests.season.cards.stand[3].count;
+    calc.stand_legendary_count = report_array.earnings.loot_chests.daily.cards.stand[4].count + report_array.earnings.loot_chests.season.cards.stand[4].count;
+    //Standard Cards DEC
+    calc.stand_common_dec = report_array.earnings.loot_chests.daily.cards.stand[1].dec + report_array.earnings.loot_chests.season.cards.stand[1].dec;
+    calc.stand_rare_dec = report_array.earnings.loot_chests.daily.cards.stand[2].dec + report_array.earnings.loot_chests.season.cards.stand[2].dec;
+    calc.stand_epic_dec = report_array.earnings.loot_chests.daily.cards.stand[3].dec + report_array.earnings.loot_chests.season.cards.stand[3].dec;
+    calc.stand_legendary_dec = report_array.earnings.loot_chests.daily.cards.stand[4].dec + report_array.earnings.loot_chests.season.cards.stand[4].dec;
+    //Gold Cards Counts
+    calc.gold_common_count = report_array.earnings.loot_chests.daily.cards.gold[1].count + report_array.earnings.loot_chests.season.cards.gold[1].count;
+    calc.gold_rare_count = report_array.earnings.loot_chests.daily.cards.gold[2].count + report_array.earnings.loot_chests.season.cards.gold[2].count;
+    calc.gold_epic_count = report_array.earnings.loot_chests.daily.cards.gold[3].count + report_array.earnings.loot_chests.season.cards.gold[3].count;
+    calc.gold_legendary_count = report_array.earnings.loot_chests.daily.cards.gold[4].count + report_array.earnings.loot_chests.season.cards.gold[4].count;
+    //Gold Cards DEC
+    calc.gold_common_dec = report_array.earnings.loot_chests.daily.cards.gold[1].dec + report_array.earnings.loot_chests.season.cards.gold[1].dec;
+    calc.gold_rare_dec = report_array.earnings.loot_chests.daily.cards.gold[2].dec + report_array.earnings.loot_chests.season.cards.gold[2].dec;
+    calc.gold_epic_dec = report_array.earnings.loot_chests.daily.cards.gold[3].dec + report_array.earnings.loot_chests.season.cards.gold[3].dec;
+    calc.gold_legendary_dec = report_array.earnings.loot_chests.daily.cards.gold[4].dec + report_array.earnings.loot_chests.season.cards.gold[4].dec;
+    //Standard Cards Totals
+    calc.total_stand_count = report_array.earnings.loot_chests.daily.cards.stand.total.count + report_array.earnings.loot_chests.season.cards.stand.total.count;
+    calc.total_stand_dec = report_array.earnings.loot_chests.daily.cards.stand.total.dec + report_array.earnings.loot_chests.season.cards.stand.total.dec;
+    //Gold Cards Totals
+    calc.total_gold_count = report_array.earnings.loot_chests.daily.cards.gold.total.count + report_array.earnings.loot_chests.season.cards.gold.total.count;
+    calc.total_gold_dec = report_array.earnings.loot_chests.daily.cards.gold.total.dec + report_array.earnings.loot_chests.season.cards.gold.total.dec;
+    //Dailies Totals
+    calc.total_dailies_count = report_array.earnings.loot_chests.daily.cards.stand.total.count + report_array.earnings.loot_chests.daily.cards.gold.total.count;
+    calc.total_dailies_dec = report_array.earnings.loot_chests.daily.cards.stand.total.dec + report_array.earnings.loot_chests.daily.cards.gold.total.dec;
+    //Season Totals
+    calc.total_season_count = report_array.earnings.loot_chests.season.cards.stand.total.count + report_array.earnings.loot_chests.season.cards.gold.total.count;
+    calc.total_season_dec = report_array.earnings.loot_chests.season.cards.stand.total.dec + report_array.earnings.loot_chests.season.cards.gold.total.dec;
+    //Cards Total DEC
+    calc.total_all_count = calc.total_dailies_count + calc.total_season_count;
+    calc.total_all_dec = calc.total_dailies_dec + calc.total_season_dec;
+
+    //Calculations for Packs
+    //UNTAMED Packs
+    calc.total_untamed_packs_count = report_array.earnings.loot_chests.daily.untamed_packs + report_array.earnings.loot_chests.season.untamed_packs;
+    calc.total_untamed_packs_dec = calc.total_untamed_packs_count * prices.untamed_pack;
+
+    //Calculations for Potions
+    //Legendary
+    calc.total_legendary_potions_count = report_array.earnings.loot_chests.daily.legendary_potion + report_array.earnings.loot_chests.season.legendary_potion;
+    calc.total_legendary_potions_dec = calc.total_legendary_potions_count * prices.LEGENDARY;
+    //Alchemy
+    calc.total_alchemy_potions_count = report_array.earnings.loot_chests.daily.alchemy_potion + report_array.earnings.loot_chests.season.alchemy_potion;
+    calc.total_alchemy_potions_dec = calc.total_alchemy_potions_count * prices.GOLD;
+
+    //Calculations for Capture DEC
+    report_array.earnings.matches = parseInt(report_array.earnings.matches.toFixed(3));
+
+    //Calculations for Loot Chest DEC
+    calc.total_loot_dec = report_array.earnings.loot_chests.daily.dec + report_array.earnings.loot_chests.season.dec;
+    calc.total_dec = calc.total_all_dec + calc.total_untamed_packs_dec + calc.total_legendary_potions_dec + calc.total_alchemy_potions_dec + calc.total_loot_dec + report_array.dec_balances.dec_reward/*report_array.earnings.matches*/;
+
+    report_array.earnings.template = `##### Standard Foil Cards\n
 |Rarity|Quantiy|🔥DEC🔥|
 |-|-|-|
 |Common|${calc.stand_common_count}|${calc.stand_common_dec}|
@@ -670,220 +675,225 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
 #### Captured DEC (Ranked Rewards)\n
 |Ranked Play Wins|DEC Earned|
 |-|-|
-|${report_array.matches.Ranked.wins}|${report_array.dec_balances.dec_reward.toFixed(0)}|
+|${report_array.matches.api_wins_count}|${report_array.dec_balances.dec_reward.toFixed(0)}|
 
 #### Total Ranked Play Rewards\n
 |Total Ranked Play Earnings|
 |-|
 |${(calc.total_dec + report_array.dec_balances.leaderboard_prize).toFixed(0)} DEC|`;
-        update_status(`Generating card usage statistics.`);
-        context.cardUsageData(false);
-    }
+    update_status(`Generating card usage statistics.`);
 
-    this.cardUsageData = function (data) {
-        if (!data) {
-            report_array.matches.teams.forEach(team => {
-                if (Object.keys(team).length !== 0) {
-                    report_array.matches.teams_fielded++;
-                    cardCounter(team.summoner, `summoners`, team.win)
-                    team.monsters.forEach(monster => {
-                        cardCounter(monster, `monsters`, team.win)
-                    });
-                }
+    //context.cardUsageData(false);
+    /* Changed for battle data being unavailable */
+    drawer.draw(); // replace with link to drawer element
+    console.log(`Finish`);
+    context.enable_text_fields_and_post_button();
+  }
 
-                function cardCounter(card, type, win) {
-                    let id;
-                    if (card.substring(0, 7) === `starter`) {
-                        id = card.split(`-`)[1];
-                        card = `starter-${id}`;
-                    }
-                    if (!report_array.matches.cards.array.includes(card)) report_array.matches.cards.array.push(card);
-                    if (!report_array.matches.cards[type][card]) {
-                        report_array.matches.cards[type][card] = {};
-                        report_array.matches.cards[type][card].identifier = card;
-                        report_array.matches.cards[type][card].count = 1;
-                        report_array.matches.cards[type][card].wins = 0;
-                        //details for phantom cards
-                        if (card.substring(0, 7) === `starter`) {
-                            report_array.allCards.forEach(c => {
-                                if (c.id == id) {
-                                    report_array.matches.cards[type][card].name = c.name;
-                                }
-                                report_array.matches.cards[type][card].id = parseInt(id);
-                            });
-                        }
-                    } else report_array.matches.cards[type][card].count++;
-                    if (win) {
-                        report_array.matches.cards[type][card].wins++;
-                    }
-                }
-            });
+  this.cardUsageData = function (data) {
+    if (!data) {
+      report_array.matches.teams.forEach(team => {
+        if (Object.keys(team).length !== 0) {
+          report_array.matches.teams_fielded++;
+          cardCounter(team.summoner, `summoners`, team.win)
+          team.monsters.forEach(monster => {
+            cardCounter(monster, `monsters`, team.win)
+          });
+        }
 
-            let cardList = "";
-            report_array.matches.cards.array.forEach((card, i) => {
-                if (card.substring(0, 7) !== `starter`) {
-                    cardList += card;
-                    if (cardList.length > 1 && i !== report_array.matches.cards.array.length - 1) cardList += ",";
-                } else {
-                    if (i === report_array.matches.cards.array.length - 1 && cardList.substring(cardList.length - 1) === ",") cardList = cardList.substring(0, cardList.length - 1);
+        function cardCounter(card, type, win) {
+          let id;
+          if (card.substring(0, 7) === `starter`) {
+            id = card.split(`-`)[1];
+            card = `starter-${id}`;
+          }
+          if (!report_array.matches.cards.array.includes(card)) report_array.matches.cards.array.push(card);
+          if (!report_array.matches.cards[type][card]) {
+            report_array.matches.cards[type][card] = {};
+            report_array.matches.cards[type][card].identifier = card;
+            report_array.matches.cards[type][card].count = 1;
+            report_array.matches.cards[type][card].wins = 0;
+            //details for phantom cards
+            if (card.substring(0, 7) === `starter`) {
+              report_array.allCards.forEach(c => {
+                if (c.id == id) {
+                  report_array.matches.cards[type][card].name = c.name;
                 }
-            });
-            request(`https://api.splinterlands.io/cards/find?ids=${cardList}`,
-                0,
-                context.cardUsageData);
+                report_array.matches.cards[type][card].id = parseInt(id);
+              });
+            }
+          } else report_array.matches.cards[type][card].count++;
+          if (win) {
+            report_array.matches.cards[type][card].wins++;
+          }
+        }
+      });
+
+      let cardList = "";
+      report_array.matches.cards.array.forEach((card, i) => {
+        if (card.substring(0, 7) !== `starter`) {
+          cardList += card;
+          if (cardList.length > 1 && i !== report_array.matches.cards.array.length - 1) cardList += ",";
         } else {
-            report_array.matches.cards.used_cards_details = data;
-            //console.log(`Info on used cards`, data);
-            //Assign details
-            report_array.matches.cards.used_cards_details.forEach((card, i) => {
-                let cardType = `${card.details.type.toLowerCase()}s`;
-                report_array.matches.cards[cardType][card.uid].name = card.details.name;
-                report_array.matches.cards[cardType][card.uid].id = card.details.id;
-            });
+          if (i === report_array.matches.cards.array.length - 1 && cardList.substring(cardList.length - 1) === ",") cardList = cardList.substring(0, cardList.length - 1);
+        }
+      });
+      request(`https://api.splinterlands.io/cards/find?ids=${cardList}`,
+        0,
+        context.cardUsageData);
+    } else {
+      report_array.matches.cards.used_cards_details = data;
+      //console.log(`Info on used cards`, data);
+      //Assign details
+      report_array.matches.cards.used_cards_details.forEach((card, i) => {
+        let cardType = `${card.details.type.toLowerCase()}s`;
+        report_array.matches.cards[cardType][card.uid].name = card.details.name;
+        report_array.matches.cards[cardType][card.uid].id = card.details.id;
+      });
 
-            //Check for duplicates
-            let toDelete = {};
-            checkDuplicates(Object.values(report_array.matches.cards.monsters), `monsters`);
-            checkDuplicates(Object.values(report_array.matches.cards.summoners), `summoners`);
+      //Check for duplicates
+      let toDelete = {};
+      checkDuplicates(Object.values(report_array.matches.cards.monsters), `monsters`);
+      checkDuplicates(Object.values(report_array.matches.cards.summoners), `summoners`);
 
-            function checkDuplicates(array, type) {
-                array.forEach(c1 => {
-                    array.forEach((c2, i) => {
-                        if (c1 !== c2 && c1.id === c2.id) {
-                            if (!toDelete[c1.id]) toDelete[c1.id] = {};
-                            if (!toDelete[c1.id][c1.identifier]) {
-                                toDelete[c1.id][c1.identifier] = c1;
-                                toDelete[c1.id][c1.identifier].type = type;
-                            }
-                            if (!toDelete[c2.id][c2.identifier]) {
-                                toDelete[c2.id][c2.identifier] = c2;
-                                toDelete[c2.id][c2.identifier].type = type;
-                            }
-                        }
-                    });
-                });
+      function checkDuplicates(array, type) {
+        array.forEach(c1 => {
+          array.forEach((c2, i) => {
+            if (c1 !== c2 && c1.id === c2.id) {
+              if (!toDelete[c1.id]) toDelete[c1.id] = {};
+              if (!toDelete[c1.id][c1.identifier]) {
+                toDelete[c1.id][c1.identifier] = c1;
+                toDelete[c1.id][c1.identifier].type = type;
+              }
+              if (!toDelete[c2.id][c2.identifier]) {
+                toDelete[c2.id][c2.identifier] = c2;
+                toDelete[c2.id][c2.identifier].type = type;
+              }
             }
-
-            //Combine Duplicates
-            Object.values(toDelete).forEach((instructions, i) => {
-                let count = 0;
-                let newIdentifier = ``;
-                let newType = ``;
-                let name;
-                let id;
-                let wins = 0;
-                //console.log(`Deletion instructions`, instructions);
-                Object.values(instructions).forEach(instance => {
-                    //console.log(instance);
-                    count += instance.count;
-                    wins += instance.wins;
-                    newIdentifier += `*${instance.identifier}`;
-                    newType = instance.type;
-                    name = report_array.matches.cards[instance.type][instance.identifier].name;
-                    id = report_array.matches.cards[instance.type][instance.identifier].id;
-                    delete report_array.matches.cards[instance.type][instance.identifier];
-                });
-
-                report_array.matches.cards[newType][newIdentifier] = {
-                    identifier: newIdentifier,
-                    count: count,
-                    name: name,
-                    id: id,
-                    type: newType,
-                    wins: wins
-                }
-            });
-
-            report_array.matches.Ranked.total_matches = report_array.matches.Ranked.wins + report_array.matches.Ranked.loss + report_array.matches.Ranked.draws;
-            report_array.matches.Tournament.total_matches = report_array.matches.Tournament.wins + report_array.matches.Tournament.loss + report_array.matches.Tournament.draws;
-            report_array.matches.total_matches = report_array.matches.Ranked.total_matches + report_array.matches.Tournament.total_matches;
-            report_array.summoner_data = generatePublicDetails(report_array.matches.cards.summoners);
-            report_array.monster_data = generatePublicDetails(report_array.matches.cards.monsters);
-
-            //Make percentages.. Top 15 Sums, Top 100 Mons
-
-            function generatePublicDetails(input) {
-                let arrayOfCards = Object.values(input);
-                arrayOfCards.sort(function (a, b) {
-                    return b.count - a.count
-                });
-                console.log(`Sorted Array of Cards: `, arrayOfCards);
-
-                let total = 0;
-                arrayOfCards.forEach(card => {
-                    total += card.count;
-                });
-                console.log(`Total usage: ${total}`);
-
-                arrayOfCards.forEach(card => {
-                    card.percent_total = 100 * card.count / total;
-                    card.percent_matches = 100 * card.count / report_array.matches.teams_fielded;
-                    card.percent_win = 100 * card.wins / card.count;
-                });
-                return arrayOfCards;
-            }
-
-            //Make table
-            report_array.matches.monster_frequency_table = `|Monster|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
-            report_array.monster_data.forEach((card, i) => {
-                if (i < 100) {
-                    report_array.matches.monster_frequency_table = `${report_array.matches.monster_frequency_table}\n|${card.name}|${card.count}|${card.percent_matches.toFixed(2)}%|${card.percent_win.toFixed(2)}%|`;
-                }
-            });
-
-            report_array.matches.summoner_frequency_table = `|Summoner|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
-            report_array.summoner_data.forEach((card, i) => {
-                if (i < 10) {
-                    report_array.matches.summoner_frequency_table = `${report_array.matches.summoner_frequency_table}\n|${card.name}|${card.count}|${card.percent_matches.toFixed(2)}%|${card.percent_win.toFixed(2)}%|`;
-                }
-            });
-            console.log(`Cards Array`, report_array.matches.cards.array)
-            console.log(`Summoners`, report_array.matches.cards.summoners)
-            console.log(`Monsters`, report_array.matches.cards.monsters)
-
-            context.rulesetWinRates();
-        }
-    }
-
-    this.rulesetWinRates = function () {
-        let rulesets_array = Object.values(report_array.matches.rulesets);
-        rulesets_array.sort(function (a, b) {
-            return b.count - a.count
+          });
         });
-        console.log(`Rulesets`, rulesets_array);
-        report_array.matches.ruleset_frequency_table = `|Ruleset|Frequency|Win Rate|\n|-|-|-|`;
-        rulesets_array.forEach(ruleset => {
-            let total = ruleset.wins + ruleset.loss + ruleset.draws;
-            report_array.matches.ruleset_frequency_table = `${report_array.matches.ruleset_frequency_table}\n|${ruleset.name}|${total}|${(100 * ruleset.wins / total).toFixed(2)}%|`
+      }
+
+      //Combine Duplicates
+      Object.values(toDelete).forEach((instructions, i) => {
+        let count = 0;
+        let newIdentifier = ``;
+        let newType = ``;
+        let name;
+        let id;
+        let wins = 0;
+        //console.log(`Deletion instructions`, instructions);
+        Object.values(instructions).forEach(instance => {
+          //console.log(instance);
+          count += instance.count;
+          wins += instance.wins;
+          newIdentifier += `*${instance.identifier}`;
+          newType = instance.type;
+          name = report_array.matches.cards[instance.type][instance.identifier].name;
+          id = report_array.matches.cards[instance.type][instance.identifier].id;
+          delete report_array.matches.cards[instance.type][instance.identifier];
         });
 
-        // For checking:
-        console.log(`DEC sm_battle: ${report_array.earnings.matches}\nDEC balance history: ${report_array.dec_balances.dec_reward.toFixed(3)}`);
+        report_array.matches.cards[newType][newIdentifier] = {
+          identifier: newIdentifier,
+          count: count,
+          name: name,
+          id: id,
+          type: newType,
+          wins: wins
+        }
+      });
 
-        drawer.draw(); // replace with link to drawer element
-        console.log(`Finish`);
-        context.enable_text_fields_and_post_button();
-    }
+      report_array.matches.Ranked.total_matches = report_array.matches.Ranked.wins + report_array.matches.Ranked.loss + report_array.matches.Ranked.draws;
+      report_array.matches.Tournament.total_matches = report_array.matches.Tournament.wins + report_array.matches.Tournament.loss + report_array.matches.Tournament.draws;
+      report_array.matches.total_matches = report_array.matches.Ranked.total_matches + report_array.matches.Tournament.total_matches;
+      report_array.summoner_data = generatePublicDetails(report_array.matches.cards.summoners);
+      report_array.monster_data = generatePublicDetails(report_array.matches.cards.monsters);
 
-    this.enable_text_fields_and_post_button = function () {
-        report_array.text_fields.forEach(text_field => {
-            document.getElementById(text_field).disabled = false;
-            //console.log(`Enabling ${text_field}`);
+      //Make percentages.. Top 15 Sums, Top 100 Mons
+
+      function generatePublicDetails(input) {
+        let arrayOfCards = Object.values(input);
+        arrayOfCards.sort(function (a, b) {
+          return b.count - a.count
         });
-        if (report_array.matches.Tournament.ids.length > 0) {
-            document.getElementById(`tournamentResults`).disabled = false;
-            document.getElementById(`tournament`).style.display = "inline";
-        }
-        if (report_array.dec_balances.rentals.count > 0) {
-            document.getElementById(`rentals`).disabled = false;
-            document.getElementById(`rental`).style.display = "inline";
-        }
+        console.log(`Sorted Array of Cards: `, arrayOfCards);
 
-        if (report_array.sps_balances.airdrop > 0 || report_array.sps_balances.staking > 0) {
-            document.getElementById(`sps`).disabled = false;
-            document.getElementById(`sps_txt`).style.display = "inline";
-        }
+        let total = 0;
+        arrayOfCards.forEach(card => {
+          total += card.count;
+        });
+        console.log(`Total usage: ${total}`);
 
-        document.getElementById('post').disabled = false;
+        arrayOfCards.forEach(card => {
+          card.percent_total = 100 * card.count / total;
+          card.percent_matches = 100 * card.count / report_array.matches.teams_fielded;
+          card.percent_win = 100 * card.wins / card.count;
+        });
+        return arrayOfCards;
+      }
+
+      //Make table
+      report_array.matches.monster_frequency_table = `|Monster|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
+      report_array.monster_data.forEach((card, i) => {
+        if (i < 100) {
+          report_array.matches.monster_frequency_table = `${report_array.matches.monster_frequency_table}\n|${card.name}|${card.count}|${card.percent_matches.toFixed(2)}%|${card.percent_win.toFixed(2)}%|`;
+        }
+      });
+
+      report_array.matches.summoner_frequency_table = `|Summoner|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
+      report_array.summoner_data.forEach((card, i) => {
+        if (i < 10) {
+          report_array.matches.summoner_frequency_table = `${report_array.matches.summoner_frequency_table}\n|${card.name}|${card.count}|${card.percent_matches.toFixed(2)}%|${card.percent_win.toFixed(2)}%|`;
+        }
+      });
+      console.log(`Cards Array`, report_array.matches.cards.array)
+      console.log(`Summoners`, report_array.matches.cards.summoners)
+      console.log(`Monsters`, report_array.matches.cards.monsters)
+
+      context.rulesetWinRates();
     }
+  }
+
+  this.rulesetWinRates = function () {
+    let rulesets_array = Object.values(report_array.matches.rulesets);
+    rulesets_array.sort(function (a, b) {
+      return b.count - a.count
+    });
+    console.log(`Rulesets`, rulesets_array);
+    report_array.matches.ruleset_frequency_table = `|Ruleset|Frequency|Win Rate|\n|-|-|-|`;
+    rulesets_array.forEach(ruleset => {
+      let total = ruleset.wins + ruleset.loss + ruleset.draws;
+      report_array.matches.ruleset_frequency_table = `${report_array.matches.ruleset_frequency_table}\n|${ruleset.name}|${total}|${(100 * ruleset.wins / total).toFixed(2)}%|`
+    });
+
+    // For checking:
+    console.log(`DEC sm_battle: ${report_array.earnings.matches}\nDEC balance history: ${report_array.dec_balances.dec_reward.toFixed(3)}`);
+
+    drawer.draw(); // replace with link to drawer element
+    console.log(`Finish`);
+    context.enable_text_fields_and_post_button();
+  }
+
+  this.enable_text_fields_and_post_button = function () {
+    report_array.text_fields.forEach(text_field => {
+      document.getElementById(text_field).disabled = false;
+      //console.log(`Enabling ${text_field}`);
+    });
+    if (report_array.matches.Tournament.ids.length > 0) {
+      document.getElementById(`tournamentResults`).disabled = false;
+      document.getElementById(`tournament`).style.display = "inline";
+    }
+    if (report_array.dec_balances.rentals.count > 0) {
+      document.getElementById(`rentals`).disabled = false;
+      document.getElementById(`rental`).style.display = "inline";
+    }
+
+    if (report_array.sps_balances.airdrop > 0 || report_array.sps_balances.staking > 0) {
+      document.getElementById(`sps`).disabled = false;
+      document.getElementById(`sps_txt`).style.display = "inline";
+    }
+
+    document.getElementById('post').disabled = false;
+  }
 }

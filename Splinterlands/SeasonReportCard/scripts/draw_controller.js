@@ -16,6 +16,11 @@ function draw_controller() {
 
     report_array.custom_title = `${document.getElementById('title').value}`;
 
+    /* Compare API battle count vs sm_battle count:*/
+    console.log(`API: ${report_array.matches.api_wins_count} sm_battle: ${report_array.matches.Ranked.wins}`);
+    console.log(`API: ${report_array.matches.api_loss_count} sm_battle: ${report_array.matches.Ranked.loss}`);
+    console.log(`API: ${report_array.matches.api_draw_count} sm_battle: ${report_array.matches.Ranked.draws}`);
+
     let template = `## @${report_array.player}
 
 ${document.getElementById('textOpening').value}
@@ -28,9 +33,9 @@ ${divider_images.splinterlands}
 |-|-|
 |${report_array.matches.league_name} Rank|${report_array.matches.rank}|
 |Rating|${report_array.matches.rating} - ${report_array.matches.league}|
-|Rating High|${report_array.matches.highRating}|
-|Total Rating Movements (+-)|${report_array.matches.ratingMovement}|
-|Ranked Ratio (Win/Loss+Draw)|${(report_array.matches.Ranked.wins / (report_array.matches.Ranked.loss + report_array.matches.Ranked.draws)).toFixed(2)} (${report_array.matches.Ranked.wins}/${report_array.matches.Ranked.loss}/${report_array.matches.Ranked.draws})|
+|Rating High|${report_array.matches.highRating}|` +
+      /*|Total Rating Movements (+-)|${report_array.matches.ratingMovement}|*/`
+|Ratio (Win/Loss)|${(report_array.matches.api_wins_count / (report_array.matches.api_loss_count + 0)).toFixed(2)} (${report_array.matches.api_wins_count}/${report_array.matches.api_loss_count})|
 ${(report_array.matches.Tournament.ids.length > 0) ? `|Tournament Ratio (Win/Loss+Draw)|${(!isNaN(report_array.matches.Tournament.wins / (report_array.matches.Tournament.loss + report_array.matches.Tournament.draws)) ? (report_array.matches.Tournament.wins / (report_array.matches.Tournament.loss + report_array.matches.Tournament.draws)).toFixed(2) : 0)} (${report_array.matches.Tournament.wins}/${report_array.matches.Tournament.loss}/${report_array.matches.Tournament.draws})|\n|Tournament Reward Placements|${report_array.matches.Tournament.prize_list.length}/${report_array.matches.Tournament.ids.length}|\n` : ``}|Longest Streak|${report_array.matches.longestStreak}|
 |Highest Rated Win *vs*|${report_array.matches.higestRatedOpp.name} (${report_array.matches.higestRatedOpp.rating})|
 
@@ -38,19 +43,19 @@ ${document.getElementById('performance').value}
 
 #### Top 10 Summoner Usage
 
-${report_array.matches.summoner_frequency_table}
+<b>Offline</b>` + /*${report_array.matches.summoner_frequency_table}*/`
 
 ${document.getElementById('top10summoners').value}
 
 #### Top 100 Monster Usage
 
-${report_array.matches.monster_frequency_table}
+<b>Offline</b>` + /*${report_array.matches.monster_frequency_table}*/`
 
 ${document.getElementById('top100monsters').value}
 
 #### Win Rate by Ruleset
 
-${report_array.matches.ruleset_frequency_table}
+<b>Offline</b>` + /*${report_array.matches.ruleset_frequency_table}*/`
 
 ${document.getElementById('winratebyruleset').value}
 

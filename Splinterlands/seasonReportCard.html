@@ -64,20 +64,23 @@
         <label>Performance</label>
         <textarea disabled id="performance" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
-      <div>
+
+      <!–– display disabled while battle data unavailable>
+      <div style="display: none;">
         <label>Top 10 Summoner Usage</label>
         <textarea disabled id="top10summoners" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
-      <div>
+      <div style="display: none;">
         <label>Top 100 Monster Usage
         </label>
         <textarea disabled id="top100monsters" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
-      <div>
-        <label id="matches">Win Rate by Ruleset
+      <div style="display: none;">
         </label>
         <textarea disabled id="winratebyruleset" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
       </div>
+      <!–– ^^ display disabled while battle data unavailable>
+
       <div id="tournament" style="display: none;">
         <label>Tournament Results</label>
         <textarea disabled id="tournamentResults" class="w3-input w3-border" onkeyup="drawer.draw()"></textarea>
