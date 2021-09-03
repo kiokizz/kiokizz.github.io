@@ -36,8 +36,8 @@ ${divider_images.splinterlands}
 |Rating High|${report_array.matches.highRating}|` +
       /*|Total Rating Movements (+-)|${report_array.matches.ratingMovement}|*/`
 |Ratio (Win/Loss)|${(report_array.matches.api_wins_count / (report_array.matches.api_loss_count + 0)).toFixed(2)} (${report_array.matches.api_wins_count}/${report_array.matches.api_loss_count})|
-${(report_array.matches.Tournament.ids.length > 0) ? `|Tournament Ratio (Win/Loss+Draw)|${(!isNaN(report_array.matches.Tournament.wins / (report_array.matches.Tournament.loss + report_array.matches.Tournament.draws)) ? (report_array.matches.Tournament.wins / (report_array.matches.Tournament.loss + report_array.matches.Tournament.draws)).toFixed(2) : 0)} (${report_array.matches.Tournament.wins}/${report_array.matches.Tournament.loss}/${report_array.matches.Tournament.draws})|\n|Tournament Reward Placements|${report_array.matches.Tournament.prize_list.length}/${report_array.matches.Tournament.ids.length}|\n` : ``}|Longest Streak|${report_array.matches.longestStreak}|` +
-      /*|Highest Rated Win *vs*|${report_array.matches.higestRatedOpp.name} (${report_array.matches.higestRatedOpp.rating})|*/ +`
+${(report_array.matches.Tournament.ids.length > 0) ? `|Tournament Ratio (Win/Loss+Draw)|${(!isNaN(report_array.matches.Tournament.wins / (report_array.matches.Tournament.loss + report_array.matches.Tournament.draws)) ? (report_array.matches.Tournament.wins / (report_array.matches.Tournament.loss + report_array.matches.Tournament.draws)).toFixed(2) : 0)} (${report_array.matches.Tournament.wins}/${report_array.matches.Tournament.loss}/${report_array.matches.Tournament.draws})|\n|Tournament Reward Placements|${report_array.matches.Tournament.prize_list.length}/${report_array.matches.Tournament.ids.length}|\n` : ``}|Longest Streak|${report_array.matches.longestStreak}|`
+      /*|Highest Rated Win *vs*|${report_array.matches.higestRatedOpp.name} (${report_array.matches.higestRatedOpp.rating})|*/ + `
 
 ${document.getElementById('performance').value}
 
