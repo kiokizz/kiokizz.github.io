@@ -239,12 +239,12 @@ function report_controller() {
     } else {
       console.log(report_array.tx_types)
       report_array.dec_query_types = `&types=rental_payment_fees,market_rental,rental_payment,rental_refund,leaderboard_prizes,dec_reward`
-      request(`https://api2.splinterlands.com/players/balance_history?token_type=DEC&offset=0&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}`, 0, context.playerBalanceHistory);
+      request(`https://api2.splinterlands.com/players/balance_history?token_type=DEC&offset=0&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}`, 0, context.playerDECBalanceHistory);
     }
   }
 
   //Get player DEC history
-  this.playerBalanceHistory = function (data) {
+  this.playerDECBalanceHistory = function (data) {
     //console.log(data);
     let offset = 0;
     let limit = 500;
@@ -259,11 +259,11 @@ function report_controller() {
     console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.dec_transfers.length}`);
     if (limit === data.length) {
       offset = 500 * Math.ceil(report_array.dec_transfers.length / 500);
-      update_status(`Getting player transactions with offset: ${offset}.`);
+      update_status(`Getting player DEC transactions with offset: ${offset}.`);
       request(
         `https://api2.splinterlands.com/players/balance_history?token_type=DEC&offset=${offset}&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}`,
         0,
-        context.playerBalanceHistory);
+        context.playerDECBalanceHistory);
     } else {
       console.log(`DEC Transfers`, report_array.dec_transfer_types)
       request(`https://api2.splinterlands.com/players/balance_history?token_type=SPS&offset=0&limit=${limit}&username=${report_array.player}`, 0, context.playerSPSBalanceHistory);
@@ -286,11 +286,11 @@ function report_controller() {
     console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.sps_transfers.length}`);
     if (limit === data.length) {
       offset = 500 * Math.ceil(report_array.sps_transfers.length / 500);
-      update_status(`Getting player transactions with offset: ${offset}.`);
+      update_status(`Getting player SPS transactions with offset: ${offset}.`);
       request(
         `https://api2.splinterlands.com/players/balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}`,
         0,
-        context.playerBalanceHistory);
+        context.playerSPSBalanceHistory);
     } else {
       console.log(`SPS Transfers`, report_array.sps_transfer_types)
       context.sortHistory();
