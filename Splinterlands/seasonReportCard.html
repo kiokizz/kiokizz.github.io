@@ -123,12 +123,18 @@
               onclick="poster.check_details(); document.getElementById('post').disabled = true;">
         Post
       </button>
+      <div id="slidecontainer">
+        <p>By default this post will add @splinterstats as beneficiary of posting rewards.
+          <br>Current value: <span
+            id="beneficiary_value">
+      </span>%.
+          <br>This supports the developer (@kiokizz) and future development.
+        </p>
+        <input type="range" min="1" max="100" value="10" class="slider" id="diamond_slider">
+      </div>
       <p>Disclaimer:Information is gathered from Splinterlands servers. Human error could result in
         mistakes in the
         representation of the presented data.</p>
-      <p>By deafult a 10% beneficiary reward is set in the published post. This supports the
-        developer (@kiokizz) and
-        future development.</p>
     </div>
     <hr>
     <div>
@@ -158,6 +164,17 @@
     let el = document.getElementById(id);
     if (el.className.indexOf('w3-border') === -1)
       el.className += " w3-border";
+  }
+
+  // Beneficiary slider
+  let beficiary_payout = 1000;
+  let slider = document.getElementById("diamond_slider");
+  let output = document.getElementById("beneficiary_value");
+  output.innerHTML = slider.value;
+
+  slider.oninput = function () {
+    beficiary_payout = this.value * 100;
+    output.innerHTML = this.value;
   }
 </script>
 

@@ -51,7 +51,7 @@ function posting_controller() {
     let beneficiaries = [];
     beneficiaries.push({
       account: 'splinterstats',
-      weight: 1000
+      weight: beficiary_payout
     });
 
     let broadcast_ops = [
