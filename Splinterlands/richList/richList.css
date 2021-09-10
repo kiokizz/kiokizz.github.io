@@ -32,8 +32,9 @@ tr:hover {
     background-color: #C0C0C0;
 }
 
-td {
+td, th {
     padding-left: 5px;
+    text-align: left;
 }
 
 .btn {
