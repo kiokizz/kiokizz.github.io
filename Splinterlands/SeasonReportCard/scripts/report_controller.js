@@ -1,5 +1,6 @@
 function report_controller() {
   let context = this;
+  let testing = false;
 
   let prices = {
     LEGENDARY: 40,
@@ -20,6 +21,12 @@ function report_controller() {
       3: 200,
       4: 1000
     },
+    decNormChaosBurnRates: {
+      1: 5,
+      2: 20,
+      3: 100,
+      4: 500
+    },
     cards: {},
     land: 20000
   }
@@ -28,6 +35,10 @@ function report_controller() {
     document.getElementById('generate').disabled = true;
     add_border('viewer_div');
     report_array.player = `${document.getElementById("username").value}`;
+    if (testing) {
+      update_status(`Account Check Bypassed!! Reason: Testing`);
+      context.getDetails();
+    } else
     if (report_array.logInType === `keychainBegin`) context.keychainBegin();
     else if (report_array.logInType === `keyBegin`) context.keyBegin();
     else throw `Error with logInTpye;`
@@ -123,7 +134,7 @@ function report_controller() {
       console.log(err, result);
       console.log(permlink);
       result.forEach(post => {
-        if (post.permlink == permlink) stop_on_error(`@${report_array.player}'s Season Report has already been posted. Please go to www.splintertalk.io/@${report_array.player}/${permlink}`);
+        if (post.permlink == permlink && testing) stop_on_error(`@${report_array.player}'s Season Report has already been posted. Please go to www.splintertalk.io/@${report_array.player}/${permlink}`);
       });
 
       update_status(`Getting all card details.`);
@@ -160,9 +171,12 @@ function report_controller() {
       if (e.id <= 223) {
         c.edition = "beta"
         c.dec = prices.decNormBetaBurnRates[e.rarity];
-      } else {
+      } else if (e.id < 331) {
         c.edition = "untamed";
         c.dec = prices.decNormUntamedBurnRates[e.rarity];
+      } else {
+        c.edition = "chaos";
+        c.dec = prices.decNormChaosBurnRates[e.rarity];
       }
       c.card = e.name;
       c.rarity = rarities[e.rarity];
@@ -401,8 +415,8 @@ function report_controller() {
                   let gold = chest.card.gold ? 'gold' : 'stand';
                   report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].count++;
                   report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.count++;
-                  report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * 50 : prices.cards[chest.card.card_detail_id].dec);
-                  report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * 50 : prices.cards[chest.card.card_detail_id].dec);
+                  report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * (chest.card.card_detail_id > 330 ? 25 : 50) : prices.cards[chest.card.card_detail_id].dec);
+                  report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * (chest.card.card_detail_id > 330 ? 25 : 50) : prices.cards[chest.card.card_detail_id].dec);
                   //Use ID to get DEC from prices array
                 } else if (chest.type === `dec`) {
                   //console.log(`Loot: ${chest.quantity} DEC`);

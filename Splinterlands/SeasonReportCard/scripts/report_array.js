@@ -29,27 +29,37 @@ let report_array = {
       prize_list: [],
       prize_tally: {
         DEC: {
-          name: `DEC`,
+          name: `Dark Energy Crystals (DEC)`,
+          count: 0,
+          quantity: 0
+        },
+        SPS: {
+          name: `SplinterShards (SPS)`,
           count: 0,
           quantity: 0
         },
         HIVE: {
-          name: `Hive`,
+          name: `Hive (HIVE)`,
           count: 0,
           quantity: 0
         },
         HBD: {
-          name: `Hive Backed Dollars`,
+          name: `Hive Backed Dollars (HBD)`,
           count: 0,
           quantity: 0
         },
         SIM: {
-          name: `Sim City SIM`,
+          name: `Sim City (SIM)`,
           count: 0,
           quantity: 0
         },
         ENTRY: {
-          name: `Sim City ENTRY`,
+          name: `Sim City (ENTRY)`,
+          count: 0,
+          quantity: 0
+        },
+        CINETV: {
+          name: `CineTV (CINE)`,
           count: 0,
           quantity: 0
         },
