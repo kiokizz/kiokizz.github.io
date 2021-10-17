@@ -30,7 +30,9 @@ function data_collector() {
     MERITS: "Merits",
     GLADIUS: "GLADIUS",
     BLDSTONE: "Blood Stone",
-    PWRSTONE: "Power Stone"
+    PWRSTONE: "Power Stone",
+    CHAOS: "CHAOS",
+    VOUCHER: "Vouchers"
   }
 
   this.generate = function () {
@@ -58,20 +60,20 @@ function data_collector() {
     let topKeys = Object.keys(top);
 
     rowData.forEach((player, i) => {
-      topKeys.forEach((category, index)=>{
+      topKeys.forEach((category, index) => {
         if (i <= category) top[category] += player.balance;
       })
-      body += `<tr><td>${i + 1}</td><td>${player.player}</td><td> ${formatter(parseFloat(player.balance).toFixed(3))} (${(player.balance/supply*100).toFixed(2)}%)</td></tr>`;
+      body += `<tr><td>${i + 1}</td><td>${player.player}</td><td> ${formatter(parseFloat(player.balance).toFixed(3))} (${(player.balance / supply * 100).toFixed(2)}%)</td></tr>`;
     })
 
     el("content").innerHTML =
-      `Total ${types_names[el('type').value]} in circulation: ${formatter(supply)} in ${formatter(numbAccounts)} accounts.<br><br>
+        `Total ${types_names[el('type').value]} in circulation: ${formatter(supply)} in ${formatter(numbAccounts)} accounts.<br><br>
 Percentage Owned by:
 <ul>
-  <li>Top 10: ${formatter(top[10].toFixed(3))} ${types_names[el('type').value]} (${(top[10]/supply*100).toFixed(2)}%)</li>
-  <li>Top 50: ${formatter(top[50].toFixed(3))} ${types_names[el('type').value]} (${(top[50]/supply*100).toFixed(2)}%) </li>
-  <li>Top 100: ${formatter(top[100].toFixed(3))} ${types_names[el('type').value]} (${(top[100]/supply*100).toFixed(2)}%)</li>
-  <li>Top 200: ${formatter(top[200].toFixed(3))} ${types_names[el('type').value]} (${(top[200]/supply*100).toFixed(2)}%)</li>
+  <li>Top 10: ${formatter(top[10].toFixed(3))} ${types_names[el('type').value]} (${(top[10] / supply * 100).toFixed(2)}%)</li>
+  <li>Top 50: ${formatter(top[50].toFixed(3))} ${types_names[el('type').value]} (${(top[50] / supply * 100).toFixed(2)}%) </li>
+  <li>Top 100: ${formatter(top[100].toFixed(3))} ${types_names[el('type').value]} (${(top[100] / supply * 100).toFixed(2)}%)</li>
+  <li>Top 200: ${formatter(top[200].toFixed(3))} ${types_names[el('type').value]} (${(top[200] / supply * 100).toFixed(2)}%)</li>
 </ul>
       <table>
         ${header}
