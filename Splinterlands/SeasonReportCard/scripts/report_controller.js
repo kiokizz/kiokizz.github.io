@@ -134,7 +134,7 @@ function report_controller() {
       console.log(err, result);
       console.log(permlink);
       result.forEach(post => {
-        if (post.permlink == permlink && testing) stop_on_error(`@${report_array.player}'s Season Report has already been posted. Please go to www.splintertalk.io/@${report_array.player}/${permlink}`);
+        if (post.permlink == permlink && !testing) stop_on_error(`@${report_array.player}'s Season Report has already been posted. Please go to www.splintertalk.io/@${report_array.player}/${permlink}`);
       });
 
       update_status(`Getting all card details.`);
@@ -226,7 +226,7 @@ function report_controller() {
       report_array.matches.api_loss_count = report_array.matches.api_battles_count - report_array.matches.api_wins_count;
       report_array.matches.api_draw_count = `n/a`;
       update_status(`Getting player transactions before block: n/a.`);
-      report_array.general_query_types = `&types=market_purchase,market_sale,gift_packs,card_award,claim_reward,sm_battle,enter_tournament,leave_tournament`
+      report_array.general_query_types = `&types=market_purchase,market_sale,gift_packs,card_award,claim_reward,sm_battle,enter_tournament,leave_tournament,token_transfer`
       request(`https://api.steemmonsters.io/players/history?username=${report_array.player}&from_block=-1&limit=500${report_array.general_query_types}`, 0, context.playerHistory);
     }
   }
@@ -421,6 +421,9 @@ function report_controller() {
                 } else if (chest.type === `dec`) {
                   //console.log(`Loot: ${chest.quantity} DEC`);
                   report_array.earnings.loot_chests[dailyOrSeason].dec += chest.quantity;
+                } else if (chest.type === `credits`) {
+                  //console.log(`Loot: ${chest.quantity} DEC`);
+                  report_array.earnings.loot_chests[dailyOrSeason].credits += chest.quantity;
                 } else if (chest.type === `pack`) {
                   //console.log(`Loot: UNTAMED ${chest.quantity}`);
                   report_array.earnings.loot_chests[dailyOrSeason].untamed_packs++;
@@ -435,6 +438,13 @@ function report_controller() {
             //Add to tournament list
             let enter_result = JSON.parse(tx.data);
             report_array.matches.Tournament.ids.push(enter_result.tournament_id);
+            break;
+          case "token_transfer":
+            //Add to tournament list
+            let transfer_data = JSON.parse(tx.data);
+            if (transfer_data.type === "enter_tournament") {
+              report_array.matches.Tournament.ids.push(transfer_data.tournament_id);
+            }
             break;
           case "leave_tournament":
             //Remove from tournaments list
@@ -657,6 +667,7 @@ function report_controller() {
 
     //Calculations for Loot Chest DEC
     calc.total_loot_dec = report_array.earnings.loot_chests.daily.dec + report_array.earnings.loot_chests.season.dec;
+    calc.total_loot_credits = report_array.earnings.loot_chests.daily.credits + report_array.earnings.loot_chests.season.credits;
     calc.total_dec = calc.total_all_dec + calc.total_untamed_packs_dec + calc.total_legendary_potions_dec + calc.total_alchemy_potions_dec + calc.total_loot_dec + report_array.dec_balances.dec_reward/*report_array.earnings.matches*/;
 
     report_array.earnings.template = `##### Standard Foil Cards\n
@@ -683,6 +694,7 @@ function report_controller() {
 |Legendary Potions|${report_array.earnings.loot_chests.daily.legendary_potion}|${report_array.earnings.loot_chests.season.legendary_potion}|${calc.total_legendary_potions_count}|${calc.total_legendary_potions_dec}|
 |Alchemy Potions|${report_array.earnings.loot_chests.daily.alchemy_potion}|${report_array.earnings.loot_chests.season.alchemy_potion}|${calc.total_alchemy_potions_count}|${calc.total_alchemy_potions_dec}|
 |DEC|${report_array.earnings.loot_chests.daily.dec}|${report_array.earnings.loot_chests.season.dec}|-|${calc.total_loot_dec}|
+|CREDITS|${report_array.earnings.loot_chests.daily.credits}|${report_array.earnings.loot_chests.season.credits}|-|${calc.total_loot_credits}|
 |UNTAMED Packs|${report_array.earnings.loot_chests.daily.untamed_packs}|${report_array.earnings.loot_chests.season.untamed_packs}|${calc.total_untamed_packs_count}|${calc.total_untamed_packs_dec}|
 |Cards (Total)|${calc.total_dailies_count}|${calc.total_season_count}|${calc.total_all_count}|${calc.total_all_dec}|
 ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\n\n${report_array.leaderboard_table}\n\n` : `\n`} 
@@ -694,7 +706,8 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
 #### Total Ranked Play Rewards\n
 |Total Ranked Play Earnings|
 |-|
-|${(calc.total_dec + report_array.dec_balances.leaderboard_prize).toFixed(0)} DEC|`;
+|${(calc.total_dec + report_array.dec_balances.leaderboard_prize).toFixed(0)} DEC|
+|${calc.total_loot_credits} CREDITS|`;
     update_status(`Generating card usage statistics.`);
 
     //context.cardUsageData(false);

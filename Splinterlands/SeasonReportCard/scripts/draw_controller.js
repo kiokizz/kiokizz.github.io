@@ -80,7 +80,7 @@ Follow @splinterstats and come visit us in [Discord](https://discord.com/invite/
     let post_viewer = `${report_array.title}\n${template}`;
     document.getElementById('content').innerHTML = marked(`${post_viewer}`);
     report_array.report = template;
-    //console.log(`${template}`);
+    // console.log(`${template}`);
   }
 }
 
