@@ -38,8 +38,7 @@ function report_controller() {
     if (testing) {
       update_status(`Account Check Bypassed!! Reason: Testing`);
       context.getDetails();
-    } else
-    if (report_array.logInType === `keychainBegin`) context.keychainBegin();
+    } else if (report_array.logInType === `keychainBegin`) context.keychainBegin();
     else if (report_array.logInType === `keyBegin`) context.keyBegin();
     else throw `Error with logInTpye;`
   }
@@ -68,19 +67,19 @@ function report_controller() {
       hive_keychain.requestHandshake(function () {
         update_status(`Hive-Keychain Connected`);
         hive_keychain.requestSignBuffer(
-          `${report_array.player}`,
-          `${report_array.player}${report_array.timeString}`,
-          `Posting`,
-          function (response) {
-            console.log(response);
-            report_array.signature = response.result;
-            if (response.success) {
-              update_status(`Account Verified`);
-              context.getDetails();
-            } else stop_on_error(`Please ensure you have the Posting Key for @${report_array.player} in Hive Keychain and refresh the page.`);
-          },
-          null,
-          `Splinterlands Login`
+            `${report_array.player}`,
+            `${report_array.player}${report_array.timeString}`,
+            `Posting`,
+            function (response) {
+              console.log(response);
+              report_array.signature = response.result;
+              if (response.success) {
+                update_status(`Account Verified`);
+                context.getDetails();
+              } else stop_on_error(`Please ensure you have the Posting Key for @${report_array.player} in Hive Keychain and refresh the page.`);
+            },
+            null,
+            `Splinterlands Login`
         );
       });
     } else stop_on_error(`Please log-in to, or install, Hive Keychain`);
@@ -247,9 +246,9 @@ function report_controller() {
     if (limit === data.length) {
       update_status(`Getting player transactions before block: ${before_block}.`);
       request(
-        `https://api.steemmonsters.io/players/history?username=${report_array.player}&from_block=-1&before_block=${before_block}&limit=500${report_array.general_query_types}`,
-        0,
-        context.playerHistory);
+          `https://api.steemmonsters.io/players/history?username=${report_array.player}&from_block=-1&before_block=${before_block}&limit=500${report_array.general_query_types}`,
+          0,
+          context.playerHistory);
     } else {
       console.log(report_array.tx_types)
       report_array.dec_query_types = `&types=rental_payment_fees,market_rental,rental_payment,rental_refund,leaderboard_prizes,dec_reward`
@@ -275,9 +274,9 @@ function report_controller() {
       offset = 500 * Math.ceil(report_array.dec_transfers.length / 500);
       update_status(`Getting player DEC transactions with offset: ${offset}.`);
       request(
-        `https://api2.splinterlands.com/players/balance_history?token_type=DEC&offset=${offset}&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}`,
-        0,
-        context.playerDECBalanceHistory);
+          `https://api2.splinterlands.com/players/balance_history?token_type=DEC&offset=${offset}&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}`,
+          0,
+          context.playerDECBalanceHistory);
     } else {
       console.log(`DEC Transfers`, report_array.dec_transfer_types)
       request(`https://api2.splinterlands.com/players/balance_history?token_type=SPS&offset=0&limit=${limit}&username=${report_array.player}`, 0, context.playerSPSBalanceHistory);
@@ -302,9 +301,9 @@ function report_controller() {
       offset = 500 * Math.ceil(report_array.sps_transfers.length / 500);
       update_status(`Getting player SPS transactions with offset: ${offset}.`);
       request(
-        `https://api2.splinterlands.com/players/balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}`,
-        0,
-        context.playerSPSBalanceHistory);
+          `https://api2.splinterlands.com/players/balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}`,
+          0,
+          context.playerSPSBalanceHistory);
     } else {
       console.log(`SPS Transfers`, report_array.sps_transfer_types)
       context.sortHistory();
@@ -539,8 +538,8 @@ function report_controller() {
     update_status(`Collecting entered tournament's data.. ${report_array.matches.Tournament.data.length}/${report_array.matches.Tournament.ids.length}`);
     if (report_array.matches.Tournament.searchIndex < report_array.matches.Tournament.ids.length) {
       request(`https://api2.splinterlands.com/tournaments/find?id=${report_array.matches.Tournament.ids[report_array.matches.Tournament.searchIndex]}`,
-        0,
-        context.tournamentData);
+          0,
+          context.tournamentData);
     } else {
       //Sort Data once ready
       console.log(`Tournament Data: (${report_array.matches.Tournament.data.length}/${report_array.matches.Tournament.ids.length})`, report_array.matches.Tournament.data);
@@ -574,6 +573,14 @@ function report_controller() {
       });
 
       function add_to_prizeList(player, tournament, prizeArray) {
+        console.log(prizeArray);
+        // Where shared placement, prize info adjusted.
+        if (player.ext_prize_info !== null)
+          for (let prize of JSON.parse(player.ext_prize_info)) {
+            prizeArray.forEach((standard_prize, i) => {
+              if (prize.type === standard_prize.type) prizeArray[i].qty = parseFloat(prize.qty);
+            });
+          }
         //Add prize to culmulative earning for tournaments here...
         let ratio = (!isNaN(player.wins / (player.losses + player.draws)) ? (player.wins / (player.losses + player.draws)).toFixed(2) : 0);
         report_array.matches.Tournament.prize_list.push({
@@ -598,11 +605,11 @@ function report_controller() {
 
       let tournament_winnings_table_body = report_array.matches.Tournament.prize_list.reduce((body, row) => body += `|${row.Tournament}|${row.League}|${row.Editions}|${row.Placement}/${row.num_players}|${row.Ratio}|${row.Prize}|\n`, ``)
       report_array.matches.Tournament.winnings_table =
-        `### Prizes\n|Tournament|League|Editions|Placement/#entrants|Ratio (Win/Loss+Draw)|Prize|\n|-|-|-|-|-|-|\n${tournament_winnings_table_body}`
+          `### Prizes\n|Tournament|League|Editions|Placement/#entrants|Ratio (Win/Loss+Draw)|Prize|\n|-|-|-|-|-|-|\n${tournament_winnings_table_body}`
 
       let tournament_winnings_prize_summary_table_body = Object.values(report_array.matches.Tournament.prize_tally).reduce((body, row) => body += `${(row.count > 0) ? `${`|${row.name}|${row.count}|${row.quantity}|\n`}` : ``}`, ``)
       report_array.matches.Tournament.prizes_table =
-        `### Summary\n|Reward|Count|Quantity|\n|-|-|-|\n${tournament_winnings_prize_summary_table_body}`
+          `### Summary\n|Reward|Count|Quantity|\n|-|-|-|\n${tournament_winnings_prize_summary_table_body}`
 
       context.rewardsData();
     }
@@ -766,8 +773,8 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
         }
       });
       request(`https://api.splinterlands.io/cards/find?ids=${cardList}`,
-        0,
-        context.cardUsageData);
+          0,
+          context.cardUsageData);
     } else {
       report_array.matches.cards.used_cards_details = data;
       //console.log(`Info on used cards`, data);
