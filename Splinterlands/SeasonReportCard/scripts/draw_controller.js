@@ -78,7 +78,7 @@ Follow @splinterstats and come visit us in [Discord](https://discord.com/invite/
 
     report_array.title = `# ${report_array.custom_title}${(report_array.custom_title === ``) ? `` : ` - `}${report_array.static_title}`;
     let post_viewer = `${report_array.title}\n${template}`;
-    document.getElementById('content').innerHTML = marked(`${post_viewer}`);
+    document.getElementById('content').innerHTML = marked.parse(`${post_viewer}`);
     report_array.report = template;
     // console.log(`${template}`);
   }
