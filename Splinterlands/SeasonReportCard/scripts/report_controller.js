@@ -251,7 +251,7 @@ function report_controller() {
           context.playerHistory);
     } else {
       console.log(report_array.tx_types)
-      report_array.dec_query_types = `&types=rental_payment_fees,market_rental,rental_payment,rental_refund,leaderboard_prizes,dec_reward`
+      report_array.dec_query_types = `&types=rental_payment_fees,market_rental,rental_payment,rental_refund,leaderboard_prizes,dec_reward`;
       request(`https://api2.splinterlands.com/players/balance_history?token_type=DEC&offset=0&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}`, 0, context.playerDECBalanceHistory);
     }
   }
@@ -330,8 +330,11 @@ function report_controller() {
             let match_type = json.match_type;
             let win = (json.winner === report_array.player);
             if (match_type === `Ranked`) tally_wdl(match_type);
-            else if (match_type === `Tournament`) tally_wdl(match_type);
-            else if (match_type === `Practice`) {
+            else if (match_type === `Tournament`) {
+              tally_wdl(match_type);
+              report_array.matches.Tournament.match_data.push(tx);
+              report_array.matches.Tournament.match_data_tally++;
+            } else if (match_type === `Practice`) {
               console.log(`Practice Match`);
             } else {
               console.log("unknown match type", tx)
@@ -559,12 +562,13 @@ function report_controller() {
                     add_to_prizeList(player, tournament, group.items)
                   }
                 });
-
+                /* Commented out as already doing when gathering data.
                 // W/L/D
-                report_array.matches.Tournament.wins += player.wins;
-                report_array.matches.Tournament.loss += player.losses;
-                report_array.matches.Tournament.draws += player.draws;
-                console.log(`---`);
+                // report_array.matches.Tournament.wins += player.wins;
+                // report_array.matches.Tournament.loss += player.losses;
+                // report_array.matches.Tournament.draws += player.draws;
+                // console.log(`---`);
+                */
                 break;
               }
             }

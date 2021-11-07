@@ -17,9 +17,10 @@ function draw_controller() {
     report_array.custom_title = `${document.getElementById('title').value}`;
 
     /* Compare API battle count vs sm_battle count:*/
-    console.log(`API: ${report_array.matches.api_wins_count} sm_battle: ${report_array.matches.Ranked.wins}`);
-    console.log(`API: ${report_array.matches.api_loss_count} sm_battle: ${report_array.matches.Ranked.loss}`);
-    console.log(`API: ${report_array.matches.api_draw_count} sm_battle: ${report_array.matches.Ranked.draws}`);
+    console.log(`Ranked API: ${report_array.matches.api_wins_count} sm_battle: ${report_array.matches.Ranked.wins}`);
+    console.log(`Ranked API: ${report_array.matches.api_loss_count} sm_battle: ${report_array.matches.Ranked.loss}`);
+    console.log(`Ranked API: ${report_array.matches.api_draw_count} sm_battle: ${report_array.matches.Ranked.draws}`);
+    console.log(report_array.matches.Tournament);
 
     let template = `## @${report_array.player}
 

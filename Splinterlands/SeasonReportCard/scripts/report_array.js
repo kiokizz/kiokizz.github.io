@@ -74,7 +74,9 @@ let report_array = {
       draws: 0,
       win_rates: {
         0: 0
-      }
+      },
+      match_data: [],
+      match_data_tally: 0
     },
     total_matches: 0,
     teams_fielded: 0,
