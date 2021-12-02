@@ -196,32 +196,35 @@ function report_controller() {
     report_array.season_number_count = 0;
 
     // request(`https://api2.splinterlands.com/players/leaderboard_with_player?season=${report_array.season.id - 1}&token=${report_array.token}&username=${report_array.player}&leaderboard=${report_array.season_number_count++}&season_details=true`, 0, context.lastSeason)
-    request(`https://api2.splinterlands.com/players/details?name=${report_array.player}&season_details=true&season=${report_array.season.id - 1}`, 0, context.lastSeason)
+    // request(`https://api2.splinterlands.com/players/details?name=${report_array.player}&season_details=true&season=${report_array.season.id - 1}`, 0, context.lastSeason)
+    request(`https://cache-api.splinterlands.com/players/leaderboard_with_player?season=${report_array.season.id - 1}&username=${report_array.player}`, 0, context.lastSeason)
   }
 
   this.lastSeason = function (data) {
     console.log(data);
+    let season_details = data.player;
     if (data.error) stop_on_error(data.error);
 
-    if (data.season_details === null) {
+    if (season_details === null) {
       stop_on_error(`No player records found for the previous season.`)
-    } else if (data.season_details.season !== report_array.season.id - 1) {
+    } else if (season_details.season !== report_array.season.id - 1) {
+      console.log(season_details);
       stop_on_error(`Incorrect Season Data.`)
     } else {
-      if (data.season_details.reward_claim_tx === null) {
+      if (season_details.reward_claim_tx === null) {
         stop_on_error(`Season rewards have not been claimed. Please claim before proceeding. Please refresh the page before proceeding.`);
       }
       console.log(`Season data exists.`);
       //TODO Continue from here.
-      report_array.matches.guild = data.season_details.guild_name;
-      report_array.matches.league = rankings[data.season_details.league].name;
-      report_array.matches.league_name = rankings[data.season_details.league].group;
-      report_array.matches.rank = data.season_details.rank;
-      report_array.matches.rating = data.season_details.rating;
-      report_array.matches.highRating = data.season_details.max_rating;
-      report_array.matches.longestStreak = data.season_details.longest_streak;
-      report_array.matches.api_battles_count = data.season_details.battles;
-      report_array.matches.api_wins_count = data.season_details.wins;
+      report_array.matches.guild = season_details.guild_name;
+      report_array.matches.league = rankings[season_details.league].name;
+      report_array.matches.league_name = rankings[season_details.league].group;
+      report_array.matches.rank = season_details.rank;
+      report_array.matches.rating = season_details.rating;
+      report_array.matches.highRating = season_details.max_rating;
+      report_array.matches.longestStreak = season_details.longest_streak;
+      report_array.matches.api_battles_count = season_details.battles;
+      report_array.matches.api_wins_count = season_details.wins;
       report_array.matches.api_loss_count = report_array.matches.api_battles_count - report_array.matches.api_wins_count;
       report_array.matches.api_draw_count = `n/a`;
       update_status(`Getting player transactions before block: n/a.`);
@@ -458,7 +461,6 @@ function report_controller() {
         }
       }
     });
-
     // DEC History Sorting
     report_array.dec_balances = {
       dec_reward: 0,
