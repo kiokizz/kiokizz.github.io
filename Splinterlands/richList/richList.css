@@ -1,6 +1,5 @@
 body {
     width: 100%;
-    max-width: 1000px;
     font-size: 13pt;
 }
 
@@ -12,8 +11,8 @@ body {
 }
 
 #displayGallery img {
-        max-width: 19.5%;
-      }
+    max-width: 19.5%;
+}
 
 table {
     width: 100%;

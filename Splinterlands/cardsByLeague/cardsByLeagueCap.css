@@ -1,6 +1,5 @@
 body {
     width: 100%;
-    max-width: 1000px;
     font-size: 13pt;
 }
 
@@ -17,6 +16,7 @@ body {
 
 table {
     width: 100%;
+    max-width: 1000px;
 }
 
 table,

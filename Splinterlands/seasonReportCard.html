@@ -28,13 +28,17 @@
 
 <body>
 
-<div class="w3-panel w3-theme" style="margin-top: 0;">
-  <h1><a href='index.html'>SplinterStats</a> - Season Report Card</h1>
-  <sub>A tool for reflecting on and sharing your Splinterlands season play. Requires Hive
-    Keychain.</sub>
-  <p><a
+<div class="w3-theme w3-margin-bottom">
+  <div class="w3-container">
+    <h1><a href='index.html'>SplinterStats</a> - Season Report Card</h1>
+    <sub>A tool for reflecting on and sharing your Splinterlands season play. Requires Hive
+      Keychain.</sub>
+    <p><a
       href="https://www.splintertalk.io/splinterlands/@splinterstats/splinterstats-season-report-card-update-and-tutorial"
       target="_blank">Click here for more information.</a></p>
+  </div>
+  <div id="nav_div"></div>
+  <script src="navigation_loader.js" defer></script>
 </div>
 
 <div class="w3-panel">
@@ -144,8 +148,10 @@
       <p>- Know issue where some tournaments are not showing.</p>
       <hr>
       Change Log:
-      <p>2021/07/11: Double Counting of Tournament WLD figures removed. Ratio is based on matches played during season. Prize List is based on Tournament finished during season.</p>
-      <p>Read the latest updates on @splinterstats or visit us in <a href="https://discord.com/invite/qFSZX2WGQg">Discord</a> if you have any questions.</p>
+      <p>2021/07/11: Double Counting of Tournament WLD figures removed. Ratio is based on matches played during season.
+        Prize List is based on Tournament finished during season.</p>
+      <p>Read the latest updates on @splinterstats or visit us in <a href="https://discord.com/invite/qFSZX2WGQg">Discord</a>
+        if you have any questions.</p>
       <hr>
     </div>
   </div>
@@ -182,7 +188,7 @@
   slider.oninput = function () {
     beficiary_payout = this.value * 100;
     output.innerHTML = this.value;
-  }
+  };
 </script>
 
 </body>
