@@ -15,8 +15,20 @@
 <div class="w3-panel w3-theme" style="margin-top: 0;">
   <h1><a href='index.html'>SplinterStats</a></h1>
   <sub>A set of tools for accessing, sorting, and sharing data from Splinterlands.</sub>
-  <p> </p>
+  <p id="pricing_data"></p>
+  <p></p>
 </div>
+
+<script defer>
+  let update_prices = () => {
+    fetch("https://api2.splinterlands.com/settings")
+      .then(r => r.json())
+      .then(r => document.getElementById('pricing_data').innerHTML =
+        `Current price feeds - DEC: $${r['dec_price']}, SPS: $${r['sps_price']}`);
+  };
+  update_prices();
+  setInterval(update_prices, 1 * 60 * 1000);
+</script>
 
 
 <div id="menu">
