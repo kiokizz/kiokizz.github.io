@@ -1,3 +1,5 @@
+const el = id => document.getElementById(id);
+
 //https://stackoverflow.com/questions/9804777/how-to-test-if-a-string-is-json-or-not
 function isJSON(str) {
   if (typeof str !== 'string') return false;

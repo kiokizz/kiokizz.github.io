@@ -17,6 +17,7 @@
   <script src="SeasonReportCard/scripts/posting_controller.js"></script>
   <script src="SeasonReportCard/scripts/static_variables.js"></script>
   <script src="SeasonReportCard/scripts/utils.js"></script>
+  <script src="SeasonReportCard/scripts/season_time_reporter.js"></script>
 
   <link rel="shortcut icon" href="../resources/rose.jpg"/>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -36,10 +37,17 @@
     <p><a
       href="https://www.splintertalk.io/splinterlands/@splinterstats/splinterstats-season-report-card-update-and-tutorial"
       target="_blank">Click here for more information.</a></p>
+    <p id="season_time_string"></p>
   </div>
   <div id="nav_div"></div>
   <script src="navigation_loader.js" defer></script>
 </div>
+
+<script>
+  fetch("https://api2.splinterlands.com/settings")
+    .then(r => r.json())
+    .then(settings => setInterval(() => el('season_time_string').innerHTML = get_season_string(settings), 1000));
+</script>
 
 <div class="w3-panel">
   <label>Player (without @): </label>
