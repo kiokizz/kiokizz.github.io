@@ -126,7 +126,7 @@ function calculations() {
       "3": "reward",
       "4": "untamed",
       "5": "dice",
-
+      "7": "chaos"
     };
     obj.edition = editions[card["editions"]];
 
