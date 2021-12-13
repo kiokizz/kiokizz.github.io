@@ -82,6 +82,7 @@ input.fullTXT {
     height: 24px;
     border: 0;
     background: url('https://images.hive.blog/p/2bP4pJr4wVimqCWjYimXJe2cnCgn5jdsRDy6MHqvUDU?format=match&mode=fit&width=24');
+    background-size: contain;
     cursor: pointer;
     padding: 5px;
 }
