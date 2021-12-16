@@ -233,12 +233,15 @@ let report_array = {
   tx_types: [],
   dec_transfer_types: [],
   sps_transfer_types: [],
+  voucher_transfer_types: [],
   tx_ids: [],
   dec_transfer_ids: [],
   sps_transfer_ids: [],
+  voucher_transfer_ids: [],
   txs: [],
   dec_transfers: [],
   sps_transfers: [],
+  voucher_transfers: [],
   allCards: []
 }
 

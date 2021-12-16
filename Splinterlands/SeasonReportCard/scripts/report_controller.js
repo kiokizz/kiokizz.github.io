@@ -281,7 +281,7 @@ function report_controller() {
           0,
           context.playerDECBalanceHistory);
     } else {
-      console.log(`DEC Transfers`, report_array.dec_transfer_types)
+      console.log(`DEC Transfers`, report_array.dec_transfer_types);
       request(`https://api2.splinterlands.com/players/balance_history?token_type=SPS&offset=0&limit=${limit}&username=${report_array.player}`, 0, context.playerSPSBalanceHistory);
     }
   }
@@ -308,7 +308,34 @@ function report_controller() {
           0,
           context.playerSPSBalanceHistory);
     } else {
-      console.log(`SPS Transfers`, report_array.sps_transfer_types)
+      console.log(`SPS Transfers`, report_array.sps_transfer_types);
+      request(`https://api2.splinterlands.com/players/balance_history?token_type=VOUCHER&offset=0&limit=${limit}&username=${report_array.player}`, 0, context.playerVOUCHERBalanceHistory);
+    }
+  }
+
+  //Get player VOUCHER history
+  this.playerVOUCHERBalanceHistory = function (data) {
+    //console.log(data);
+    let offset = 0;
+    let limit = 500;
+    data.forEach((e, i) => {
+      if (!report_array.voucher_transfer_types.includes(e.type)) report_array.voucher_transfer_types.push(e.type);
+      if (!report_array.voucher_transfers.includes(e)) {
+        report_array.voucher_transfer_ids.push(e.trx_id);
+        report_array.voucher_transfers.push(e);
+      } //else console.log(`${i}: ${e.id}`);
+    });
+    //throw 'error';
+    console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.voucher_transfers.length}`);
+    if (limit === data.length) {
+      offset = 500 * Math.ceil(report_array.voucher_transfers.length / 500);
+      update_status(`Getting player VOUCHER transactions with offset: ${offset}.`);
+      request(
+          `https://api2.splinterlands.com/players/balance_history?token_type=VOUCHER&offset=${offset}&limit=${limit}&username=${report_array.player}`,
+          0,
+          context.playerSPSBalanceHistory);
+    } else {
+      console.log(`VOUCHER Transfers`, report_array.voucher_transfer_types);
       context.sortHistory();
     }
   }
@@ -491,7 +518,7 @@ function report_controller() {
         else if (tx.type === "rental_refund") report_array.dec_balances.rentals.refund += amount;
         else if (tx.type === "leaderboard_prizes") report_array.dec_balances.leaderboard_prize += amount;
         else if (tx.type === "dec_reward") report_array.dec_balances.dec_reward += amount;
-        else console.log(`Unexpected: ${tx.type}`);
+        else console.log(`Unexpected DEC: ${tx.type}`);
       }
     });
     console.log(`DEC Transactions to report:`, report_array.dec_balances);
@@ -518,15 +545,36 @@ function report_controller() {
         let amount = parseFloat(tx.amount);
         if (tx.type === "token_award") report_array.sps_balances.airdrop += amount;
         else if (tx.type === "claim_staking_rewards") report_array.sps_balances.staking += amount;
-        else console.log(`Unexpected: ${tx.type}`);
+        else if (tx.type === "token_transfer" || tx.type === "stake_tokens");
+        else console.log(`Unexpected SPS Type: ${tx.type}`);
       }
     });
     console.log(`SPS Transactions to report:`, report_array.sps_balances);
     if (report_array.sps_balances.airdrop > 0 || report_array.sps_balances.staking > 0) {
       let net_rentals_sps = report_array.sps_balances.airdrop + report_array.sps_balances.staking;
       let net_sps = (net_rentals_sps).toFixed(3);
-      report_array.sps_table = `|Type|Amount Claimed|\n|-|-|\n|Airdrop|${report_array.sps_balances.airdrop.toFixed(3)}|\n|Staking Rewards|${report_array.sps_balances.staking.toFixed(3)}|\n|NET|${net_sps}|`;
+      report_array.sps_table = `|Type|Amount Claimed|\n|-|-|\n|Airdrop|${report_array.sps_balances.airdrop.toFixed(3)}|\n|Staking Rewards|${report_array.sps_balances.staking.toFixed(3)}|\n|**NET SPS**|**${net_sps}**|`;
     }
+
+    // VOUCHER History Sorting
+    console.log(report_array.voucher_transfers);
+    report_array.voucher_balance = 0;
+    report_array.voucher_transfers.forEach((tx, i) => {
+      let created_date = Date.parse(tx.created_date);
+      let valid = false;
+      if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
+
+      if (valid) {
+        let amount = parseFloat(tx.amount);
+        if (tx.type === "voucher_drop") report_array.voucher_balance += amount;
+        else console.log(`Unexpected VOUCHER Type: ${tx.type}`);
+      }
+    });
+    console.log(report_array.voucher_balance)
+    if (report_array.voucher_balance > 0) {
+      report_array.sps_table += `\n|+ *Voucher Drops*|${report_array.voucher_balance.toFixed(3)} VOUCHER|`;
+    }
+
     if (report_array.matches.Tournament.ids.length > 0) context.tournamentData(0);
     else context.rewardsData();
   }
