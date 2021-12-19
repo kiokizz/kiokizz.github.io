@@ -48,7 +48,7 @@ function report_controller() {
   this.toggleLogin = function () {
     let checkBox = el("keyType");
     let passwordField = el("password");
-    if (checkBox.checked == false) {
+    if (!checkBox.checked) {
       passwordField.style.display = "block";
       report_array.logInType = `keyBegin`;
     } else {
@@ -100,7 +100,7 @@ function report_controller() {
       } catch (e) {
         isvalid = 'false';
       }
-      if (isvalid == true) {
+      if (isvalid) {
         report_array.timeString = context.getTime();
         report_array.signature = eosjs_ecc.sign(report_array.player + report_array.timeString, report_array.posting_key);
         update_status(`Posting Key Validated.`);
@@ -135,7 +135,7 @@ function report_controller() {
       console.log(err, result);
       console.log(permlink);
       result.forEach(post => {
-        if (post.permlink == permlink && !testing) stop_on_error(`@${report_array.player}'s Season Report has already been posted. Please go to www.splintertalk.io/@${report_array.player}/${permlink}`);
+        if (post.permlink === permlink && !testing) stop_on_error(`@${report_array.player}'s Season Report has already been posted. Please go to www.splintertalk.io/@${report_array.player}/${permlink}`);
       });
 
       update_status(`Getting all card details.`);
@@ -805,7 +805,7 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
             //details for phantom cards
             if (card.substring(0, 7) === `starter`) {
               report_array.allCards.forEach(c => {
-                if (c.id == id) {
+                if (c.id === id) {
                   report_array.matches.cards[type][card].name = c.name;
                 }
                 report_array.matches.cards[type][card].id = parseInt(id);
