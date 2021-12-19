@@ -192,7 +192,11 @@ function report_controller() {
     });
 
     update_status(`Getting player season records.`);
-    request(`https://api2.splinterlands.com/players/login?name=${report_array.player}&ts=${report_array.timeString}&sig=${report_array.signature}`, 0, context.logIn);
+    let url = `https://api2.splinterlands.com/players/login
+      ?name=${report_array.player}
+      &ts=${report_array.timeString}
+      &sig=${report_array.signature}`;
+    request(url, 0, context.logIn);
   }
 
   this.logIn = function (data) {
@@ -204,7 +208,10 @@ function report_controller() {
 
     // request(`https://api2.splinterlands.com/players/leaderboard_with_player?season=${report_array.season.id - 1}&token=${report_array.token}&username=${report_array.player}&leaderboard=${report_array.season_number_count++}&season_details=true`, 0, context.lastSeason)
     // request(`https://api2.splinterlands.com/players/details?name=${report_array.player}&season_details=true&season=${report_array.season.id - 1}`, 0, context.lastSeason)
-    request(`https://cache-api.splinterlands.com/players/leaderboard_with_player?season=${report_array.season.id - 1}&username=${report_array.player}`, 0, context.lastSeason)
+    let url = `https://cache-api.splinterlands.com/players/leaderboard_with_player
+      ?season=${report_array.season.id - 1}
+      &username=${report_array.player}`
+    request(url, 0, context.lastSeason)
   }
 
   this.lastSeason = function (data) {
@@ -219,7 +226,9 @@ function report_controller() {
       stop_on_error(`Incorrect Season Data.`)
     } else {
       if (season_details.reward_claim_tx === null) {
-        stop_on_error(`Season rewards have not been claimed. Please claim before proceeding. Please refresh the page before proceeding.`);
+        stop_on_error(`Season rewards have not been claimed. 
+          Please claim before proceeding.
+          Please refresh the page before proceeding.`);
       }
       console.log(`Season data exists.`);
       //TODO Continue from here.
@@ -235,8 +244,15 @@ function report_controller() {
       report_array.matches.api_loss_count = report_array.matches.api_battles_count - report_array.matches.api_wins_count;
       report_array.matches.api_draw_count = `n/a`;
       update_status(`Getting player transactions before block: n/a.`);
-      report_array.general_query_types = `&types=market_purchase,market_sale,gift_packs,card_award,claim_reward,sm_battle,enter_tournament,leave_tournament,token_transfer`
-      request(`https://api.steemmonsters.io/players/history?username=${report_array.player}&from_block=-1&limit=500${report_array.general_query_types}`, 0, context.playerHistory);
+      report_array.general_query_types = `&types=market_purchase,market_sale,
+        gift_packs,card_award,claim_reward,sm_battle,enter_tournament,
+        leave_tournament,token_transfer`;
+      let url = `https://api.steemmonsters.io/players/history
+        ?username=${report_array.player}
+        &from_block=-1
+        &limit=500
+        ${report_array.general_query_types}`
+      request(url, 0, context.playerHistory);
     }
   }
 
