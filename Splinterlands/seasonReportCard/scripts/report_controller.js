@@ -46,8 +46,8 @@ function report_controller() {
   }
 
   this.toggleLogin = function () {
-    var checkBox = el("keyType");
-    var passwordField = el("password");
+    let checkBox = el("keyType");
+    let passwordField = el("password");
     if (checkBox.checked == false) {
       passwordField.style.display = "block";
       report_array.logInType = `keyBegin`;
