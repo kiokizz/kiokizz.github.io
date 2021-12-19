@@ -797,6 +797,7 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
   }
 
   this.cardUsageData = function (data) {
+
     if (!data) {
       report_array.matches.teams.forEach(team => {
         if (Object.keys(team).length !== 0) {
@@ -901,8 +902,9 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
         }
       });
 
-      report_array.matches.Ranked.total_matches = report_array.matches.Ranked.wins + report_array.matches.Ranked.loss + report_array.matches.Ranked.draws;
-      report_array.matches.Tournament.total_matches = report_array.matches.Tournament.wins + report_array.matches.Tournament.loss + report_array.matches.Tournament.draws;
+      let sum = (arr) => arr["wins"] + arr["loss"] + arr["draws"];
+      report_array.matches.Ranked.total_matches = sum(report_array.matches.Ranked);
+      report_array.matches.Tournament.total_matches = sum(report_array.matches.Tournament);
       report_array.matches.total_matches = report_array.matches.Ranked.total_matches + report_array.matches.Tournament.total_matches;
       report_array.summoner_data = generatePublicDetails(report_array.matches.cards.summoners);
       report_array.monster_data = generatePublicDetails(report_array.matches.cards.monsters);
