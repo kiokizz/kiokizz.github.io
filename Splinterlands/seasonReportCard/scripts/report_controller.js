@@ -836,15 +836,11 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
         }
       });
 
-      let cardList = "";
-      report_array.matches.cards.array.forEach((card, i) => {
-        if (card.substring(0, 7) !== `starter`) {
-          cardList += card;
-          if (cardList.length > 1 && i !== report_array.matches.cards.array.length - 1) cardList += ",";
-        } else {
-          if (i === report_array.matches.cards.array.length - 1 && cardList.substring(cardList.length - 1) === ",") cardList = cardList.substring(0, cardList.length - 1);
-        }
-      });
+      let cardList = report_array.matches.cards.array.reduce((cardList, card) =>
+        card.substring(0, 7) === `starter` ? cardList : `${cardList}${card},`,
+        '');
+      if (cardList.length > 0) cardList = cardList.slice(0, -1);
+
       request(`https://api.splinterlands.io/cards/find?ids=${cardList}`,
           0,
           context.cardUsageData);
@@ -860,10 +856,10 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
 
       //Check for duplicates
       let toDelete = {};
-      checkDuplicates(Object.values(report_array.matches.cards.monsters), `monsters`);
-      checkDuplicates(Object.values(report_array.matches.cards.summoners), `summoners`);
+      checkDuplicateCards(Object.values(report_array.matches.cards.monsters), `monsters`);
+      checkDuplicateCards(Object.values(report_array.matches.cards.summoners), `summoners`);
 
-      function checkDuplicates(array, type) {
+      function checkDuplicateCards(array, type) {
         array.forEach(c1 => {
           array.forEach((c2) => {
             if (c1 !== c2 && c1.id === c2.id) {
