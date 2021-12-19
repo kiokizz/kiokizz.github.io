@@ -882,12 +882,7 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
 
       //Combine Duplicates
       Object.values(toDelete).forEach((instructions) => {
-        let count = 0;
-        let newIdentifier = ``;
-        let newType = ``;
-        let name;
-        let id;
-        let wins = 0;
+        let count = 0, newIdentifier = ``, newType = ``, name, id, wins = 0;
         //console.log(`Deletion instructions`, instructions);
         Object.values(instructions).forEach(instance => {
           //console.log(instance);
@@ -895,9 +890,9 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
           wins += instance.wins;
           newIdentifier += `*${instance.identifier}`;
           newType = instance.type;
-          name = report_array.matches.cards[instance.type][instance.identifier].name;
-          id = report_array.matches.cards[instance.type][instance.identifier].id;
-          delete report_array.matches.cards[instance.type][instance.identifier];
+          name = report_array.matches.cards[newType][newIdentifier].name;
+          id = report_array.matches.cards[newType][newIdentifier].id;
+          delete report_array.matches.cards[newType][newIdentifier];
         });
 
         report_array.matches.cards[newType][newIdentifier] = {
