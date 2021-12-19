@@ -926,17 +926,25 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
       }
 
       //Make table
-      report_array.matches.monster_frequency_table = `|Monster|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
+      report_array.matches.monster_frequency_table =
+        `|Monster|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
       report_array.monster_data.forEach((card, i) => {
         if (i < 100) {
-          report_array.matches.monster_frequency_table = `${report_array.matches.monster_frequency_table}\n|${card.name}|${card.count}|${card.percent_matches.toFixed(2)}%|${card.percent_win.toFixed(2)}%|`;
+          report_array.matches.monster_frequency_table =
+            `${report_array.matches.monster_frequency_table}\n
+            |${card.name}|${card.count}|${card.percent_matches.toFixed(2)}%
+            |${card.percent_win.toFixed(2)}%|`;
         }
       });
 
-      report_array.matches.summoner_frequency_table = `|Summoner|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
+      report_array.matches.summoner_frequency_table =
+        `|Summoner|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
       report_array.summoner_data.forEach((card, i) => {
         if (i < 10) {
-          report_array.matches.summoner_frequency_table = `${report_array.matches.summoner_frequency_table}\n|${card.name}|${card.count}|${card.percent_matches.toFixed(2)}%|${card.percent_win.toFixed(2)}%|`;
+          report_array.matches.summoner_frequency_table =
+            `${report_array.matches.summoner_frequency_table}\n
+            |${card.name}|${card.count}|${card.percent_matches.toFixed(2)}%
+            |${card.percent_win.toFixed(2)}%|`;
         }
       });
       console.log(`Cards Array`, report_array.matches.cards.array)
