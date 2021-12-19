@@ -673,7 +673,6 @@ function report_controller() {
 
   this.rewardsData = function () {
     update_status(`Counting Rewards.`);
-    let xyz = `xyz`;
     let calc = {};
     //Calculations for Rewards Cards
     //Standard Cards Counts
