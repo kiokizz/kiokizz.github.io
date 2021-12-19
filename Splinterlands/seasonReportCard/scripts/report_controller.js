@@ -1,4 +1,6 @@
 function report_controller() {
+  let el = id => document.getElementById(id);
+  
   let context = this;
   let testing = false;
 
@@ -32,9 +34,9 @@ function report_controller() {
   }
 
   this.generate = function () {
-    document.getElementById('generate').disabled = true;
+    el('generate').disabled = true;
     add_border('viewer_div');
-    report_array.player = `${document.getElementById("username").value}`;
+    report_array.player = `${el("username").value}`;
     if (testing) {
       update_status(`Account Check Bypassed!! Reason: Testing`);
       context.getDetails();
@@ -44,8 +46,8 @@ function report_controller() {
   }
 
   this.toggleLogin = function () {
-    var checkBox = document.getElementById("keyType");
-    var passwordField = document.getElementById("password");
+    var checkBox = el("keyType");
+    var passwordField = el("password");
     if (checkBox.checked == false) {
       passwordField.style.display = "block";
       report_array.logInType = `keyBegin`;
@@ -87,7 +89,7 @@ function report_controller() {
 
   this.keyBegin = function () {
     console.log("Logging in with private key.");
-    report_array.posting_key = `${document.getElementById("password").value}`;
+    report_array.posting_key = `${el("password").value}`;
     //encode message
     hive.api.getAccounts([report_array.player], function (err, result) {
       let pubWif = result[0].posting.key_auths[0][0];
@@ -965,23 +967,23 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
 
   this.enable_text_fields_and_post_button = function () {
     report_array.text_fields.forEach(text_field => {
-      document.getElementById(text_field).disabled = false;
+      el(text_field).disabled = false;
       //console.log(`Enabling ${text_field}`);
     });
     if (report_array.matches.Tournament.ids.length > 0) {
-      document.getElementById(`tournamentResults`).disabled = false;
-      document.getElementById(`tournament`).style.display = "inline";
+      el(`tournamentResults`).disabled = false;
+      el(`tournament`).style.display = "inline";
     }
     if (report_array.dec_balances.rentals.count > 0) {
-      document.getElementById(`rentals`).disabled = false;
-      document.getElementById(`rental`).style.display = "inline";
+      el(`rentals`).disabled = false;
+      el(`rental`).style.display = "inline";
     }
 
     if (report_array.sps_balances.airdrop > 0 || report_array.sps_balances.staking > 0) {
-      document.getElementById(`sps`).disabled = false;
-      document.getElementById(`sps_txt`).style.display = "inline";
+      el(`sps`).disabled = false;
+      el(`sps_txt`).style.display = "inline";
     }
 
-    document.getElementById('post').disabled = false;
+    el('post').disabled = false;
   }
 }
