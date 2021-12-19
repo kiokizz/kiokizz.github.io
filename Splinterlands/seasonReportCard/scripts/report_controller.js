@@ -659,7 +659,7 @@ function report_controller() {
 
       console.log(`Prize List`, report_array.matches.Tournament.prize_list);
 
-      let tournament_winnings_table_body = report_array.matches.Tournament.prize_list.reduce((body, row) => body += `|${row.Tournament}|${row.League}|${row.Editions}|${row.Placement}/${row.num_players}|${row.Ratio}|${row.Prize}|\n`, ``)
+      let tournament_winnings_table_body = report_array.matches.Tournament.prize_list.reduce((body, row) => `${body}|${row.Tournament}|${row.League}|${row.Editions}|${row.Placement}/${row.num_players}|${row.Ratio}|${row.Prize}|\n`, ``)
       report_array.matches.Tournament.winnings_table =
           `### Prizes\n|Tournament|League|Editions|Placement/#entrants|Ratio (Win/Loss+Draw)|Prize|\n|-|-|-|-|-|-|\n${tournament_winnings_table_body}`
 
