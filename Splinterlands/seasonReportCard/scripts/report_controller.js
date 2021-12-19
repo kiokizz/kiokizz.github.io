@@ -673,66 +673,90 @@ function report_controller() {
 
   this.rewardsData = function () {
     update_status(`Counting Rewards.`);
-    let calc = {};
     //Calculations for Rewards Cards
-    //Standard Cards Counts
-    calc.stand_common_count = report_array.earnings.loot_chests.daily.cards.stand[1].count + report_array.earnings.loot_chests.season.cards.stand[1].count;
-    calc.stand_rare_count = report_array.earnings.loot_chests.daily.cards.stand[2].count + report_array.earnings.loot_chests.season.cards.stand[2].count;
-    calc.stand_epic_count = report_array.earnings.loot_chests.daily.cards.stand[3].count + report_array.earnings.loot_chests.season.cards.stand[3].count;
-    calc.stand_legendary_count = report_array.earnings.loot_chests.daily.cards.stand[4].count + report_array.earnings.loot_chests.season.cards.stand[4].count;
-    //Standard Cards DEC
-    calc.stand_common_dec = report_array.earnings.loot_chests.daily.cards.stand[1].dec + report_array.earnings.loot_chests.season.cards.stand[1].dec;
-    calc.stand_rare_dec = report_array.earnings.loot_chests.daily.cards.stand[2].dec + report_array.earnings.loot_chests.season.cards.stand[2].dec;
-    calc.stand_epic_dec = report_array.earnings.loot_chests.daily.cards.stand[3].dec + report_array.earnings.loot_chests.season.cards.stand[3].dec;
-    calc.stand_legendary_dec = report_array.earnings.loot_chests.daily.cards.stand[4].dec + report_array.earnings.loot_chests.season.cards.stand[4].dec;
-    //Gold Cards Counts
-    calc.gold_common_count = report_array.earnings.loot_chests.daily.cards.gold[1].count + report_array.earnings.loot_chests.season.cards.gold[1].count;
-    calc.gold_rare_count = report_array.earnings.loot_chests.daily.cards.gold[2].count + report_array.earnings.loot_chests.season.cards.gold[2].count;
-    calc.gold_epic_count = report_array.earnings.loot_chests.daily.cards.gold[3].count + report_array.earnings.loot_chests.season.cards.gold[3].count;
-    calc.gold_legendary_count = report_array.earnings.loot_chests.daily.cards.gold[4].count + report_array.earnings.loot_chests.season.cards.gold[4].count;
-    //Gold Cards DEC
-    calc.gold_common_dec = report_array.earnings.loot_chests.daily.cards.gold[1].dec + report_array.earnings.loot_chests.season.cards.gold[1].dec;
-    calc.gold_rare_dec = report_array.earnings.loot_chests.daily.cards.gold[2].dec + report_array.earnings.loot_chests.season.cards.gold[2].dec;
-    calc.gold_epic_dec = report_array.earnings.loot_chests.daily.cards.gold[3].dec + report_array.earnings.loot_chests.season.cards.gold[3].dec;
-    calc.gold_legendary_dec = report_array.earnings.loot_chests.daily.cards.gold[4].dec + report_array.earnings.loot_chests.season.cards.gold[4].dec;
-    //Standard Cards Totals
-    calc.total_stand_count = report_array.earnings.loot_chests.daily.cards.stand.total.count + report_array.earnings.loot_chests.season.cards.stand.total.count;
-    calc.total_stand_dec = report_array.earnings.loot_chests.daily.cards.stand.total.dec + report_array.earnings.loot_chests.season.cards.stand.total.dec;
-    //Gold Cards Totals
-    calc.total_gold_count = report_array.earnings.loot_chests.daily.cards.gold.total.count + report_array.earnings.loot_chests.season.cards.gold.total.count;
-    calc.total_gold_dec = report_array.earnings.loot_chests.daily.cards.gold.total.dec + report_array.earnings.loot_chests.season.cards.gold.total.dec;
-    //Dailies Totals
-    calc.total_dailies_count = report_array.earnings.loot_chests.daily.cards.stand.total.count + report_array.earnings.loot_chests.daily.cards.gold.total.count;
-    calc.total_dailies_dec = report_array.earnings.loot_chests.daily.cards.stand.total.dec + report_array.earnings.loot_chests.daily.cards.gold.total.dec;
-    //Season Totals
-    calc.total_season_count = report_array.earnings.loot_chests.season.cards.stand.total.count + report_array.earnings.loot_chests.season.cards.gold.total.count;
-    calc.total_season_dec = report_array.earnings.loot_chests.season.cards.stand.total.dec + report_array.earnings.loot_chests.season.cards.gold.total.dec;
+    let loot_chests = report_array.earnings.loot_chests;
+    let calc = generateEarningsCalculations(loot_chests);
+
+    report_array.earnings.template = generateEarningsTemplate(calc, loot_chests);
+    update_status(`Generating card usage statistics.`);
+
+    //context.cardUsageData(false);
+    /* Changed for battle data being unavailable */
+    drawer.draw(); // replace with link to drawer element
+    console.log(`Finish`);
+    context.enable_text_fields_and_post_button();
+  }
+
+  function generateEarningsCalculations(loot_chests) {
+    let daily_cards = report_array.earnings.loot_chests.daily.cards;
+    let season_cards = report_array.earnings.loot_chests.season.cards;
+    let calc = {
+      //Standard Cards Counts
+      stand_common_count: daily_cards.stand[1].count + season_cards.stand[1].count,
+      stand_rare_count: daily_cards.stand[2].count + season_cards.stand[2].count,
+      stand_epic_count: daily_cards.stand[3].count + season_cards.stand[3].count,
+      stand_legendary_count: daily_cards.stand[4].count + season_cards.stand[4].count,
+      //Standard Cards DEC
+      stand_common_dec: daily_cards.stand[1].dec + season_cards.stand[1].dec,
+      stand_rare_dec: daily_cards.stand[2].dec + season_cards.stand[2].dec,
+      stand_epic_dec: daily_cards.stand[3].dec + season_cards.stand[3].dec,
+      stand_legendary_dec: daily_cards.stand[4].dec + season_cards.stand[4].dec,
+      //Gold Cards Counts
+      gold_common_count: daily_cards.gold[1].count + season_cards.gold[1].count,
+      gold_rare_count: daily_cards.gold[2].count + season_cards.gold[2].count,
+      gold_epic_count: daily_cards.gold[3].count + season_cards.gold[3].count,
+      gold_legendary_count: daily_cards.gold[4].count + season_cards.gold[4].count,
+      //Gold Cards DEC
+      gold_common_dec: daily_cards.gold[1].dec + season_cards.gold[1].dec,
+      gold_rare_dec: daily_cards.gold[2].dec + season_cards.gold[2].dec,
+      gold_epic_dec: daily_cards.gold[3].dec + season_cards.gold[3].dec,
+      gold_legendary_dec: daily_cards.gold[4].dec + season_cards.gold[4].dec,
+      //Standard Cards Totals
+      total_stand_count: daily_cards.stand.total.count + season_cards.stand.total.count,
+      total_stand_dec: daily_cards.stand.total.dec + season_cards.stand.total.dec,
+      //Gold Cards Totals
+      total_gold_count: daily_cards.gold.total.count + season_cards.gold.total.count,
+      total_gold_dec: daily_cards.gold.total.dec + season_cards.gold.total.dec,
+      //Dailies Totals
+      total_dailies_count: daily_cards.stand.total.count + daily_cards.gold.total.count,
+      total_dailies_dec: daily_cards.stand.total.dec + daily_cards.gold.total.dec,
+      //Season Totals
+      total_season_count: season_cards.stand.total.count + season_cards.gold.total.count,
+      total_season_dec: season_cards.stand.total.dec + season_cards.gold.total.dec
+    };
+
     //Cards Total DEC
     calc.total_all_count = calc.total_dailies_count + calc.total_season_count;
     calc.total_all_dec = calc.total_dailies_dec + calc.total_season_dec;
 
     //Calculations for Packs
+    let sum_loot_chests = (str) => loot_chests.daily[str] + loot_chests.season[str];
     //UNTAMED Packs
-    calc.total_untamed_packs_count = report_array.earnings.loot_chests.daily.untamed_packs + report_array.earnings.loot_chests.season.untamed_packs;
+    calc.total_untamed_packs_count = sum_loot_chests('untamed_packs');
     calc.total_untamed_packs_dec = calc.total_untamed_packs_count * prices.untamed_pack;
 
     //Calculations for Potions
     //Legendary
-    calc.total_legendary_potions_count = report_array.earnings.loot_chests.daily.legendary_potion + report_array.earnings.loot_chests.season.legendary_potion;
+    calc.total_legendary_potions_count = sum_loot_chests('legendary_potion');
     calc.total_legendary_potions_dec = calc.total_legendary_potions_count * prices.LEGENDARY;
     //Alchemy
-    calc.total_alchemy_potions_count = report_array.earnings.loot_chests.daily.alchemy_potion + report_array.earnings.loot_chests.season.alchemy_potion;
+    calc.total_alchemy_potions_count = sum_loot_chests('legendary_potion');
     calc.total_alchemy_potions_dec = calc.total_alchemy_potions_count * prices.GOLD;
 
     //Calculations for Capture DEC
     report_array.earnings.matches = parseInt(report_array.earnings.matches.toFixed(3));
 
     //Calculations for Loot Chest DEC
-    calc.total_loot_dec = report_array.earnings.loot_chests.daily.dec + report_array.earnings.loot_chests.season.dec;
-    calc.total_loot_credits = report_array.earnings.loot_chests.daily.credits + report_array.earnings.loot_chests.season.credits;
-    calc.total_dec = calc.total_all_dec + calc.total_untamed_packs_dec + calc.total_legendary_potions_dec + calc.total_alchemy_potions_dec + calc.total_loot_dec + report_array.dec_balances.dec_reward/*report_array.earnings.matches*/;
+    calc.total_loot_dec = sum_loot_chests('dec');
+    calc.total_loot_credits = sum_loot_chests('credits');
+    calc.total_dec = calc.total_all_dec + calc.total_untamed_packs_dec
+      + calc.total_legendary_potions_dec + calc.total_alchemy_potions_dec
+      + calc.total_loot_dec + report_array.dec_balances.dec_reward/*report_array.earnings.matches*/;
+    return calc;
+  }
 
-    report_array.earnings.template = `##### Standard Foil Cards\n
+  function generateEarningsTemplate(calc, loot_chests) {
+    return `##### Standard Foil Cards\n
 |Rarity|Quantiy|🔥DEC🔥|
 |-|-|-|
 |Common|${calc.stand_common_count}|${calc.stand_common_dec}|
@@ -753,11 +777,11 @@ function report_controller() {
 #### Loot Chests\n
 |Reward Chests|Dailies|Season|Total|💲DEC💲|
 |-|-|-|-|-|
-|Legendary Potions|${report_array.earnings.loot_chests.daily.legendary_potion}|${report_array.earnings.loot_chests.season.legendary_potion}|${calc.total_legendary_potions_count}|${calc.total_legendary_potions_dec}|
-|Alchemy Potions|${report_array.earnings.loot_chests.daily.alchemy_potion}|${report_array.earnings.loot_chests.season.alchemy_potion}|${calc.total_alchemy_potions_count}|${calc.total_alchemy_potions_dec}|
-|DEC|${report_array.earnings.loot_chests.daily.dec}|${report_array.earnings.loot_chests.season.dec}|-|${calc.total_loot_dec}|
-|CREDITS|${report_array.earnings.loot_chests.daily.credits}|${report_array.earnings.loot_chests.season.credits}|-|${calc.total_loot_credits}|
-|UNTAMED Packs|${report_array.earnings.loot_chests.daily.untamed_packs}|${report_array.earnings.loot_chests.season.untamed_packs}|${calc.total_untamed_packs_count}|${calc.total_untamed_packs_dec}|
+|Legendary Potions|${loot_chests.daily.legendary_potion}|${loot_chests.season.legendary_potion}|${calc.total_legendary_potions_count}|${calc.total_legendary_potions_dec}|
+|Alchemy Potions|${loot_chests.daily.alchemy_potion}|${loot_chests.season.alchemy_potion}|${calc.total_alchemy_potions_count}|${calc.total_alchemy_potions_dec}|
+|DEC|${loot_chests.daily.dec}|${loot_chests.season.dec}|-|${calc.total_loot_dec}|
+|CREDITS|${loot_chests.daily.credits}|${loot_chests.season.credits}|-|${calc.total_loot_credits}|
+|UNTAMED Packs|${loot_chests.daily.untamed_packs}|${loot_chests.season.untamed_packs}|${calc.total_untamed_packs_count}|${calc.total_untamed_packs_dec}|
 |Cards (Total)|${calc.total_dailies_count}|${calc.total_season_count}|${calc.total_all_count}|${calc.total_all_dec}|
 ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\n\n${report_array.leaderboard_table}\n\n` : `\n`} 
 #### Captured DEC (Ranked Rewards)\n
@@ -770,13 +794,6 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
 |-|
 |${(calc.total_dec + report_array.dec_balances.leaderboard_prize).toFixed(0)} DEC|
 |${calc.total_loot_credits} CREDITS|`;
-    update_status(`Generating card usage statistics.`);
-
-    //context.cardUsageData(false);
-    /* Changed for battle data being unavailable */
-    drawer.draw(); // replace with link to drawer element
-    console.log(`Finish`);
-    context.enable_text_fields_and_post_button();
   }
 
   this.cardUsageData = function (data) {
