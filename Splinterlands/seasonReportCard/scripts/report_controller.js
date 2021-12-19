@@ -266,7 +266,7 @@ function report_controller() {
     //console.log(data);
     let offset = 0;
     let limit = 500;
-    data.forEach((e, i) => {
+    data.forEach((e) => {
       if (!report_array.dec_transfer_types.includes(e.type)) report_array.dec_transfer_types.push(e.type);
       if (!report_array.dec_transfers.includes(e)) {
         report_array.dec_transfer_ids.push(e.trx_id);
@@ -293,7 +293,7 @@ function report_controller() {
     //console.log(data);
     let offset = 0;
     let limit = 500;
-    data.forEach((e, i) => {
+    data.forEach((e) => {
       if (!report_array.sps_transfer_types.includes(e.type)) report_array.sps_transfer_types.push(e.type);
       if (!report_array.sps_transfers.includes(e)) {
         report_array.sps_transfer_ids.push(e.trx_id);
@@ -320,7 +320,7 @@ function report_controller() {
     //console.log(data);
     let offset = 0;
     let limit = 500;
-    data.forEach((e, i) => {
+    data.forEach((e) => {
       if (!report_array.voucher_transfer_types.includes(e.type)) report_array.voucher_transfer_types.push(e.type);
       if (!report_array.voucher_transfers.includes(e)) {
         report_array.voucher_transfer_ids.push(e.trx_id);
@@ -502,7 +502,7 @@ function report_controller() {
       },
       leaderboard_prize: 0
     };
-    report_array.dec_transfers.forEach((tx, i) => {
+    report_array.dec_transfers.forEach((tx) => {
       let created_date = Date.parse(tx.created_date);
       let valid = false;
       if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
@@ -538,7 +538,7 @@ function report_controller() {
       staking: 0
     };
     console.log(report_array.sps_transfers);
-    report_array.sps_transfers.forEach((tx, i) => {
+    report_array.sps_transfers.forEach((tx) => {
       let created_date = Date.parse(tx.created_date);
       let valid = false;
       if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
@@ -561,7 +561,7 @@ function report_controller() {
     // VOUCHER History Sorting
     console.log(report_array.voucher_transfers);
     report_array.voucher_balance = 0;
-    report_array.voucher_transfers.forEach((tx, i) => {
+    report_array.voucher_transfers.forEach((tx) => {
       let created_date = Date.parse(tx.created_date);
       let valid = false;
       if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
@@ -599,7 +599,7 @@ function report_controller() {
       //Sort Data once ready
       console.log(`Tournament Data: (${report_array.matches.Tournament.data.length}/${report_array.matches.Tournament.ids.length})`, report_array.matches.Tournament.data);
 
-      report_array.matches.Tournament.data.forEach((tournament, i) => {
+      report_array.matches.Tournament.data.forEach((tournament) => {
         if (tournament.status === 2) {
           if (report_array.season_end > Date.parse(tournament.rounds[tournament.rounds.length - 1].start_date) + (tournament.data.duration_blocks ? (3000 * tournament.data.duration_blocks) : 0)) {
             for (let player of tournament.players) {
@@ -835,7 +835,7 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
       report_array.matches.cards.used_cards_details = data;
       //console.log(`Info on used cards`, data);
       //Assign details
-      report_array.matches.cards.used_cards_details.forEach((card, i) => {
+      report_array.matches.cards.used_cards_details.forEach((card) => {
         let cardType = `${card.details.type.toLowerCase()}s`;
         report_array.matches.cards[cardType][card.uid].name = card.details.name;
         report_array.matches.cards[cardType][card.uid].id = card.details.id;
@@ -848,7 +848,7 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
 
       function checkDuplicates(array, type) {
         array.forEach(c1 => {
-          array.forEach((c2, i) => {
+          array.forEach((c2) => {
             if (c1 !== c2 && c1.id === c2.id) {
               if (!toDelete[c1.id]) toDelete[c1.id] = {};
               if (!toDelete[c1.id][c1.identifier]) {
