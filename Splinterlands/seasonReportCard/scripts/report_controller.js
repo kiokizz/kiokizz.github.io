@@ -777,13 +777,32 @@ function report_controller() {
 #### Loot Chests\n
 |Reward Chests|Dailies|Season|Total|💲DEC💲|
 |-|-|-|-|-|
-|Legendary Potions|${loot_chests.daily.legendary_potion}|${loot_chests.season.legendary_potion}|${calc.total_legendary_potions_count}|${calc.total_legendary_potions_dec}|
-|Alchemy Potions|${loot_chests.daily.alchemy_potion}|${loot_chests.season.alchemy_potion}|${calc.total_alchemy_potions_count}|${calc.total_alchemy_potions_dec}|
+|Legendary Potions
+|${loot_chests.daily.legendary_potion}
+|${loot_chests.season.legendary_potion}
+|${calc.total_legendary_potions_count}
+|${calc.total_legendary_potions_dec}|
+|Alchemy Potions
+|${loot_chests.daily.alchemy_potion}
+|${loot_chests.season.alchemy_potion}|${calc.total_alchemy_potions_count}
+|${calc.total_alchemy_potions_dec}|
 |DEC|${loot_chests.daily.dec}|${loot_chests.season.dec}|-|${calc.total_loot_dec}|
-|CREDITS|${loot_chests.daily.credits}|${loot_chests.season.credits}|-|${calc.total_loot_credits}|
-|UNTAMED Packs|${loot_chests.daily.untamed_packs}|${loot_chests.season.untamed_packs}|${calc.total_untamed_packs_count}|${calc.total_untamed_packs_dec}|
-|Cards (Total)|${calc.total_dailies_count}|${calc.total_season_count}|${calc.total_all_count}|${calc.total_all_dec}|
-${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\n\n${report_array.leaderboard_table}\n\n` : `\n`} 
+|CREDITS
+|${loot_chests.daily.credits}
+|${loot_chests.season.credits}|-
+|${calc.total_loot_credits}|
+|UNTAMED Packs
+|${loot_chests.daily.untamed_packs}
+|${loot_chests.season.untamed_packs}
+|${calc.total_untamed_packs_count}
+|${calc.total_untamed_packs_dec}|
+|Cards (Total)
+|${calc.total_dailies_count}
+|${calc.total_season_count}
+|${calc.total_all_count}
+|${calc.total_all_dec}|
+${(!(report_array.dec_balances.leaderboard_prize <= 0) ? `\n` :
+      `\n### Leaderboard Prizes\n\n${report_array.leaderboard_table}\n\n`)} 
 #### Captured DEC (Ranked Rewards)\n
 |Ranked Play Wins|DEC Earned|
 |-|-|
@@ -814,7 +833,8 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
             id = card.split(`-`)[1];
             card = `starter-${id}`;
           }
-          if (!report_array.matches.cards.array.includes(card)) report_array.matches.cards.array.push(card);
+          if (!report_array.matches.cards.array.includes(card))
+            report_array.matches.cards.array.push(card);
           if (!report_array.matches.cards[type][card]) {
             report_array.matches.cards[type][card] = {};
             report_array.matches.cards[type][card].identifier = card;
@@ -901,7 +921,8 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
       let sum = (arr) => arr["wins"] + arr["loss"] + arr["draws"];
       report_array.matches.Ranked.total_matches = sum(report_array.matches.Ranked);
       report_array.matches.Tournament.total_matches = sum(report_array.matches.Tournament);
-      report_array.matches.total_matches = report_array.matches.Ranked.total_matches + report_array.matches.Tournament.total_matches;
+      report_array.matches.total_matches =
+        report_array.matches.Ranked.total_matches + report_array.matches.Tournament.total_matches;
       report_array.summoner_data = generatePublicDetails(report_array.matches.cards.summoners);
       report_array.monster_data = generatePublicDetails(report_array.matches.cards.monsters);
 
@@ -964,11 +985,14 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
     report_array.matches.ruleset_frequency_table = `|Ruleset|Frequency|Win Rate|\n|-|-|-|`;
     rulesets_array.forEach(ruleset => {
       let total = ruleset.wins + ruleset.loss + ruleset.draws;
-      report_array.matches.ruleset_frequency_table = `${report_array.matches.ruleset_frequency_table}\n|${ruleset.name}|${total}|${(100 * ruleset.wins / total).toFixed(2)}%|`
+      report_array.matches.ruleset_frequency_table =
+        `${report_array.matches.ruleset_frequency_table}\n
+        |${ruleset.name}|${total}|${(100 * ruleset.wins / total).toFixed(2)}%|`
     });
 
     // For checking:
-    console.log(`DEC sm_battle: ${report_array.earnings.matches}\nDEC balance history: ${report_array.dec_balances.dec_reward.toFixed(3)}`);
+    console.log(`DEC sm_battle: ${report_array.earnings.matches}\n
+    DEC balance history: ${report_array.dec_balances.dec_reward.toFixed(3)}`);
 
     drawer.draw(); // replace with link to drawer element
     console.log(`Finish`);
