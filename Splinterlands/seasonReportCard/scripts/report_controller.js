@@ -896,12 +896,8 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
         });
 
         report_array.matches.cards[newType][newIdentifier] = {
-          identifier: newIdentifier,
-          count: count,
-          name: name,
-          id: id,
-          type: newType,
-          wins: wins
+          identifier: newIdentifier, count: count, name: name, id: id,
+          type: newType, wins: wins
         }
       });
 
