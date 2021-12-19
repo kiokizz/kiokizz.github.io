@@ -63,25 +63,26 @@ function report_controller() {
 
   this.keychainBegin = function () {
     console.log(`Loggin in with Hive Keychain.`);
-    if (window.hive_keychain) {
+    if (hive_keychain) {
       report_array.timeString = context.getTime();
       console.log(report_array.timeString);
-      hive_keychain.requestHandshake(function () {
+      hive_keychain.requestHandshake(() => {
         update_status(`Hive-Keychain Connected`);
         hive_keychain.requestSignBuffer(
-            `${report_array.player}`,
-            `${report_array.player}${report_array.timeString}`,
-            `Posting`,
-            function (response) {
-              console.log(response);
-              report_array.signature = response.result;
-              if (response.success) {
-                update_status(`Account Verified`);
-                context.getDetails();
-              } else stop_on_error(`Please ensure you have the Posting Key for @${report_array.player} in Hive Keychain and refresh the page.`);
-            },
-            null,
-            `Splinterlands Login`
+          `${report_array.player}`,
+          `${report_array.player}${report_array.timeString}`,
+          `Posting`,
+          function (response) {
+            console.log(response);
+            report_array.signature = response.result;
+            if (response.success) {
+              update_status(`Account Verified`);
+              context.getDetails();
+            } else stop_on_error(`Please ensure you have the Posting Key for
+             @${report_array.player} in Hive Keychain and refresh the page.`);
+          },
+          null,
+          `Splinterlands Login`
         );
       });
     } else stop_on_error(`Please log-in to, or install, Hive Keychain`);
