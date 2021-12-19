@@ -865,7 +865,7 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
       }
 
       //Combine Duplicates
-      Object.values(toDelete).forEach((instructions, i) => {
+      Object.values(toDelete).forEach((instructions) => {
         let count = 0;
         let newIdentifier = ``;
         let newType = ``;
