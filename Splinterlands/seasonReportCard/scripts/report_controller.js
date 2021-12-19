@@ -925,10 +925,7 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
         });
         console.log(`Sorted Array of Cards: `, arrayOfCards);
 
-        let total = 0;
-        arrayOfCards.forEach(card => {
-          total += card.count;
-        });
+        let total = arrayOfCards.reduce((total, card) => total + card.count, 0);
         console.log(`Total usage: ${total}`);
 
         arrayOfCards.forEach(card => {
