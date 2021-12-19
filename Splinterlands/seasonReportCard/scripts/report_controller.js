@@ -1,6 +1,6 @@
 function report_controller() {
   let el = id => document.getElementById(id);
-  
+
   let context = this;
   let testing = false;
 
@@ -547,8 +547,8 @@ function report_controller() {
         let amount = parseFloat(tx.amount);
         if (tx.type === "token_award") report_array.sps_balances.airdrop += amount;
         else if (tx.type === "claim_staking_rewards") report_array.sps_balances.staking += amount;
-        else if (tx.type === "token_transfer" || tx.type === "stake_tokens");
-        else console.log(`Unexpected SPS Type: ${tx.type}`);
+        else if (!["token_transfer", "stake_tokens"].includes(tx.type))
+          console.log(`Unexpected SPS Type: ${tx.type}`);
       }
     });
     console.log(`SPS Transactions to report:`, report_array.sps_balances);
