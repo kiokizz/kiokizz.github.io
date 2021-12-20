@@ -187,13 +187,13 @@
   }
 
   // Beneficiary slider
-  let beficiary_payout = 1000;
+  let beneficiary_payout = 1000;
   let slider = document.getElementById("diamond_slider");
   let output = document.getElementById("beneficiary_value");
   output.innerHTML = slider.value;
 
   slider.oninput = function () {
-    beficiary_payout = this.value * 100;
+    beneficiary_payout = this.value * 100;
     output.innerHTML = this.value;
   };
 
