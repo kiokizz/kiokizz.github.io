@@ -1,4 +1,6 @@
 function report_controller() {
+  let el = id => document.getElementById(id);
+
   let context = this;
   let testing = false;
 
@@ -32,9 +34,9 @@ function report_controller() {
   }
 
   this.generate = function () {
-    document.getElementById('generate').disabled = true;
+    el('generate').disabled = true;
     add_border('viewer_div');
-    report_array.player = `${document.getElementById("username").value}`;
+    report_array.player = `${el("username").value}`;
     if (testing) {
       update_status(`Account Check Bypassed!! Reason: Testing`);
       context.getDetails();
@@ -44,9 +46,9 @@ function report_controller() {
   }
 
   this.toggleLogin = function () {
-    var checkBox = document.getElementById("keyType");
-    var passwordField = document.getElementById("password");
-    if (checkBox.checked == false) {
+    let checkBox = el("keyType");
+    let passwordField = el("password");
+    if (!checkBox.checked) {
       passwordField.style.display = "block";
       report_array.logInType = `keyBegin`;
     } else {
@@ -61,25 +63,26 @@ function report_controller() {
 
   this.keychainBegin = function () {
     console.log(`Loggin in with Hive Keychain.`);
-    if (window.hive_keychain) {
+    if (hive_keychain) {
       report_array.timeString = context.getTime();
       console.log(report_array.timeString);
-      hive_keychain.requestHandshake(function () {
+      hive_keychain.requestHandshake(() => {
         update_status(`Hive-Keychain Connected`);
         hive_keychain.requestSignBuffer(
-            `${report_array.player}`,
-            `${report_array.player}${report_array.timeString}`,
-            `Posting`,
-            function (response) {
-              console.log(response);
-              report_array.signature = response.result;
-              if (response.success) {
-                update_status(`Account Verified`);
-                context.getDetails();
-              } else stop_on_error(`Please ensure you have the Posting Key for @${report_array.player} in Hive Keychain and refresh the page.`);
-            },
-            null,
-            `Splinterlands Login`
+          `${report_array.player}`,
+          `${report_array.player}${report_array.timeString}`,
+          `Posting`,
+          function (response) {
+            console.log(response);
+            report_array.signature = response.result;
+            if (response.success) {
+              update_status(`Account Verified`);
+              context.getDetails();
+            } else stop_on_error(`Please ensure you have the Posting Key for
+             @${report_array.player} in Hive Keychain and refresh the page.`);
+          },
+          null,
+          `Splinterlands Login`
         );
       });
     } else stop_on_error(`Please log-in to, or install, Hive Keychain`);
@@ -87,7 +90,7 @@ function report_controller() {
 
   this.keyBegin = function () {
     console.log("Logging in with private key.");
-    report_array.posting_key = `${document.getElementById("password").value}`;
+    report_array.posting_key = `${el("password").value}`;
     //encode message
     hive.api.getAccounts([report_array.player], function (err, result) {
       let pubWif = result[0].posting.key_auths[0][0];
@@ -98,7 +101,7 @@ function report_controller() {
       } catch (e) {
         isvalid = 'false';
       }
-      if (isvalid == true) {
+      if (isvalid) {
         report_array.timeString = context.getTime();
         report_array.signature = eosjs_ecc.sign(report_array.player + report_array.timeString, report_array.posting_key);
         update_status(`Posting Key Validated.`);
@@ -129,11 +132,15 @@ function report_controller() {
     console.log(`Season: ${report_array.season.nameNum}`);
 
     var permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
-    hive.api.getDiscussionsByAuthorBeforeDate(report_array.player, null, new Date().toISOString().split('.')[0], 100, function (err, result) {
+    hive.api.getDiscussionsByAuthorBeforeDate(report_array.player, null,
+      new Date().toISOString().split('.')[0], 100, function (err, result) {
       console.log(err, result);
       console.log(permlink);
       result.forEach(post => {
-        if (post.permlink == permlink && !testing) stop_on_error(`@${report_array.player}'s Season Report has already been posted. Please go to www.splintertalk.io/@${report_array.player}/${permlink}`);
+        if (post.permlink === permlink && !testing)
+          stop_on_error(`@${report_array.player}'s Season Report has already 
+          been posted. Please go to 
+          www.splintertalk.io/@${report_array.player}/${permlink}`);
       });
 
       update_status(`Getting all card details.`);
@@ -185,7 +192,11 @@ function report_controller() {
     });
 
     update_status(`Getting player season records.`);
-    request(`https://api2.splinterlands.com/players/login?name=${report_array.player}&ts=${report_array.timeString}&sig=${report_array.signature}`, 0, context.logIn);
+    let url = `https://api2.splinterlands.com/players/login`
+      + `?name=${report_array.player}`
+      + `&ts=${report_array.timeString}`
+      + `&sig=${report_array.signature}`;
+    request(url, 0, context.logIn);
   }
 
   this.logIn = function (data) {
@@ -197,7 +208,10 @@ function report_controller() {
 
     // request(`https://api2.splinterlands.com/players/leaderboard_with_player?season=${report_array.season.id - 1}&token=${report_array.token}&username=${report_array.player}&leaderboard=${report_array.season_number_count++}&season_details=true`, 0, context.lastSeason)
     // request(`https://api2.splinterlands.com/players/details?name=${report_array.player}&season_details=true&season=${report_array.season.id - 1}`, 0, context.lastSeason)
-    request(`https://cache-api.splinterlands.com/players/leaderboard_with_player?season=${report_array.season.id - 1}&username=${report_array.player}`, 0, context.lastSeason)
+    let url = `https://cache-api.splinterlands.com/players/leaderboard_with_player`
+      + `?season=${report_array.season.id - 1}`
+      + `&username=${report_array.player}`;
+    request(url, 0, context.lastSeason);
   }
 
   this.lastSeason = function (data) {
@@ -212,7 +226,9 @@ function report_controller() {
       stop_on_error(`Incorrect Season Data.`)
     } else {
       if (season_details.reward_claim_tx === null) {
-        stop_on_error(`Season rewards have not been claimed. Please claim before proceeding. Please refresh the page before proceeding.`);
+        stop_on_error(`Season rewards have not been claimed. 
+          Please claim before proceeding.
+          Please refresh the page before proceeding.`);
       }
       console.log(`Season data exists.`);
       //TODO Continue from here.
@@ -228,8 +244,15 @@ function report_controller() {
       report_array.matches.api_loss_count = report_array.matches.api_battles_count - report_array.matches.api_wins_count;
       report_array.matches.api_draw_count = `n/a`;
       update_status(`Getting player transactions before block: n/a.`);
-      report_array.general_query_types = `&types=market_purchase,market_sale,gift_packs,card_award,claim_reward,sm_battle,enter_tournament,leave_tournament,token_transfer`
-      request(`https://api.steemmonsters.io/players/history?username=${report_array.player}&from_block=-1&limit=500${report_array.general_query_types}`, 0, context.playerHistory);
+      report_array.general_query_types = `&types=market_purchase,market_sale,
+        gift_packs,card_award,claim_reward,sm_battle,enter_tournament,
+        leave_tournament,token_transfer`;
+      let url = `https://api.steemmonsters.io/players/history`
+        + `?username=${report_array.player}`
+        + `&from_block=-1`
+        + `&limit=500`
+        + `${report_array.general_query_types}`
+      request(url, 0, context.playerHistory);
     }
   }
 
@@ -264,7 +287,7 @@ function report_controller() {
     //console.log(data);
     let offset = 0;
     let limit = 500;
-    data.forEach((e, i) => {
+    data.forEach((e) => {
       if (!report_array.dec_transfer_types.includes(e.type)) report_array.dec_transfer_types.push(e.type);
       if (!report_array.dec_transfers.includes(e)) {
         report_array.dec_transfer_ids.push(e.trx_id);
@@ -291,7 +314,7 @@ function report_controller() {
     //console.log(data);
     let offset = 0;
     let limit = 500;
-    data.forEach((e, i) => {
+    data.forEach((e) => {
       if (!report_array.sps_transfer_types.includes(e.type)) report_array.sps_transfer_types.push(e.type);
       if (!report_array.sps_transfers.includes(e)) {
         report_array.sps_transfer_ids.push(e.trx_id);
@@ -318,7 +341,7 @@ function report_controller() {
     //console.log(data);
     let offset = 0;
     let limit = 500;
-    data.forEach((e, i) => {
+    data.forEach((e) => {
       if (!report_array.voucher_transfer_types.includes(e.type)) report_array.voucher_transfer_types.push(e.type);
       if (!report_array.voucher_transfers.includes(e)) {
         report_array.voucher_transfer_ids.push(e.trx_id);
@@ -500,7 +523,7 @@ function report_controller() {
       },
       leaderboard_prize: 0
     };
-    report_array.dec_transfers.forEach((tx, i) => {
+    report_array.dec_transfers.forEach((tx) => {
       let created_date = Date.parse(tx.created_date);
       let valid = false;
       if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
@@ -536,7 +559,7 @@ function report_controller() {
       staking: 0
     };
     console.log(report_array.sps_transfers);
-    report_array.sps_transfers.forEach((tx, i) => {
+    report_array.sps_transfers.forEach((tx) => {
       let created_date = Date.parse(tx.created_date);
       let valid = false;
       if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
@@ -545,8 +568,8 @@ function report_controller() {
         let amount = parseFloat(tx.amount);
         if (tx.type === "token_award") report_array.sps_balances.airdrop += amount;
         else if (tx.type === "claim_staking_rewards") report_array.sps_balances.staking += amount;
-        else if (tx.type === "token_transfer" || tx.type === "stake_tokens");
-        else console.log(`Unexpected SPS Type: ${tx.type}`);
+        else if (!["token_transfer", "stake_tokens"].includes(tx.type))
+          console.log(`Unexpected SPS Type: ${tx.type}`);
       }
     });
     console.log(`SPS Transactions to report:`, report_array.sps_balances);
@@ -559,7 +582,7 @@ function report_controller() {
     // VOUCHER History Sorting
     console.log(report_array.voucher_transfers);
     report_array.voucher_balance = 0;
-    report_array.voucher_transfers.forEach((tx, i) => {
+    report_array.voucher_transfers.forEach((tx) => {
       let created_date = Date.parse(tx.created_date);
       let valid = false;
       if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
@@ -597,7 +620,7 @@ function report_controller() {
       //Sort Data once ready
       console.log(`Tournament Data: (${report_array.matches.Tournament.data.length}/${report_array.matches.Tournament.ids.length})`, report_array.matches.Tournament.data);
 
-      report_array.matches.Tournament.data.forEach((tournament, i) => {
+      report_array.matches.Tournament.data.forEach((tournament) => {
         if (tournament.status === 2) {
           if (report_array.season_end > Date.parse(tournament.rounds[tournament.rounds.length - 1].start_date) + (tournament.data.duration_blocks ? (3000 * tournament.data.duration_blocks) : 0)) {
             for (let player of tournament.players) {
@@ -638,11 +661,11 @@ function report_controller() {
         //Add prize to culmulative earning for tournaments here...
         let ratio = (!isNaN(player.wins / (player.losses + player.draws)) ? (player.wins / (player.losses + player.draws)).toFixed(2) : 0);
         report_array.matches.Tournament.prize_list.push({
-          Prize: prizeArray.reduce((string, prize, i) => string += `${(prize.type === `CUSTOM`) ? prize.text : `${prize.qty} ${prize.type}`}${(prizeArray.length > 1 && i < prizeArray.length - 1) ? ` + ` : ``}`, ``),
+          Prize: prizeArray.reduce((string, prize, i) => `${string}${(prize.type === `CUSTOM`) ? prize.text : `${prize.qty} ${prize.type}`}${(prizeArray.length > 1 && i < prizeArray.length - 1) ? ` + ` : ``}`, ``),
           Tournament: `${tournament.name}`,
           num_players: `${tournament.num_players}`,
           League: `${rating_level[tournament.data.rating_level]}`,
-          Editions: `${(tournament.data.allowed_cards.editions.length === 0 || tournament.data.allowed_cards.editions.length === 6) ? `Open` : `${tournament.data.allowed_cards.editions.reduce((list, ed) => list += editions[ed], ``)}`}`,
+          Editions: `${(tournament.data.allowed_cards.editions.length === 0 || tournament.data.allowed_cards.editions.length === 6) ? `Open` : `${tournament.data.allowed_cards.editions.reduce((list, ed) => list + editions[ed], ``)}`}`,
           Gold: ``,
           Card_Limits: ``,
           Placement: `${player.finish}`,
@@ -657,11 +680,11 @@ function report_controller() {
 
       console.log(`Prize List`, report_array.matches.Tournament.prize_list);
 
-      let tournament_winnings_table_body = report_array.matches.Tournament.prize_list.reduce((body, row) => body += `|${row.Tournament}|${row.League}|${row.Editions}|${row.Placement}/${row.num_players}|${row.Ratio}|${row.Prize}|\n`, ``)
+      let tournament_winnings_table_body = report_array.matches.Tournament.prize_list.reduce((body, row) => `${body}|${row.Tournament}|${row.League}|${row.Editions}|${row.Placement}/${row.num_players}|${row.Ratio}|${row.Prize}|\n`, ``)
       report_array.matches.Tournament.winnings_table =
           `### Prizes\n|Tournament|League|Editions|Placement/#entrants|Ratio (Win/Loss+Draw)|Prize|\n|-|-|-|-|-|-|\n${tournament_winnings_table_body}`
 
-      let tournament_winnings_prize_summary_table_body = Object.values(report_array.matches.Tournament.prize_tally).reduce((body, row) => body += `${(row.count > 0) ? `${`|${row.name}|${row.count}|${row.quantity}|\n`}` : ``}`, ``)
+      let tournament_winnings_prize_summary_table_body = Object.values(report_array.matches.Tournament.prize_tally).reduce((body, row) => `${body}${(row.count > 0) ? `${`|${row.name}|${row.count}|${row.quantity}|\n`}` : ``}`, ``)
       report_array.matches.Tournament.prizes_table =
           `### Summary\n|Reward|Count|Quantity|\n|-|-|-|\n${tournament_winnings_prize_summary_table_body}`
 
@@ -671,104 +694,11 @@ function report_controller() {
 
   this.rewardsData = function () {
     update_status(`Counting Rewards.`);
-    let xyz = `xyz`;
-    let calc = {};
     //Calculations for Rewards Cards
-    //Standard Cards Counts
-    calc.stand_common_count = report_array.earnings.loot_chests.daily.cards.stand[1].count + report_array.earnings.loot_chests.season.cards.stand[1].count;
-    calc.stand_rare_count = report_array.earnings.loot_chests.daily.cards.stand[2].count + report_array.earnings.loot_chests.season.cards.stand[2].count;
-    calc.stand_epic_count = report_array.earnings.loot_chests.daily.cards.stand[3].count + report_array.earnings.loot_chests.season.cards.stand[3].count;
-    calc.stand_legendary_count = report_array.earnings.loot_chests.daily.cards.stand[4].count + report_array.earnings.loot_chests.season.cards.stand[4].count;
-    //Standard Cards DEC
-    calc.stand_common_dec = report_array.earnings.loot_chests.daily.cards.stand[1].dec + report_array.earnings.loot_chests.season.cards.stand[1].dec;
-    calc.stand_rare_dec = report_array.earnings.loot_chests.daily.cards.stand[2].dec + report_array.earnings.loot_chests.season.cards.stand[2].dec;
-    calc.stand_epic_dec = report_array.earnings.loot_chests.daily.cards.stand[3].dec + report_array.earnings.loot_chests.season.cards.stand[3].dec;
-    calc.stand_legendary_dec = report_array.earnings.loot_chests.daily.cards.stand[4].dec + report_array.earnings.loot_chests.season.cards.stand[4].dec;
-    //Gold Cards Counts
-    calc.gold_common_count = report_array.earnings.loot_chests.daily.cards.gold[1].count + report_array.earnings.loot_chests.season.cards.gold[1].count;
-    calc.gold_rare_count = report_array.earnings.loot_chests.daily.cards.gold[2].count + report_array.earnings.loot_chests.season.cards.gold[2].count;
-    calc.gold_epic_count = report_array.earnings.loot_chests.daily.cards.gold[3].count + report_array.earnings.loot_chests.season.cards.gold[3].count;
-    calc.gold_legendary_count = report_array.earnings.loot_chests.daily.cards.gold[4].count + report_array.earnings.loot_chests.season.cards.gold[4].count;
-    //Gold Cards DEC
-    calc.gold_common_dec = report_array.earnings.loot_chests.daily.cards.gold[1].dec + report_array.earnings.loot_chests.season.cards.gold[1].dec;
-    calc.gold_rare_dec = report_array.earnings.loot_chests.daily.cards.gold[2].dec + report_array.earnings.loot_chests.season.cards.gold[2].dec;
-    calc.gold_epic_dec = report_array.earnings.loot_chests.daily.cards.gold[3].dec + report_array.earnings.loot_chests.season.cards.gold[3].dec;
-    calc.gold_legendary_dec = report_array.earnings.loot_chests.daily.cards.gold[4].dec + report_array.earnings.loot_chests.season.cards.gold[4].dec;
-    //Standard Cards Totals
-    calc.total_stand_count = report_array.earnings.loot_chests.daily.cards.stand.total.count + report_array.earnings.loot_chests.season.cards.stand.total.count;
-    calc.total_stand_dec = report_array.earnings.loot_chests.daily.cards.stand.total.dec + report_array.earnings.loot_chests.season.cards.stand.total.dec;
-    //Gold Cards Totals
-    calc.total_gold_count = report_array.earnings.loot_chests.daily.cards.gold.total.count + report_array.earnings.loot_chests.season.cards.gold.total.count;
-    calc.total_gold_dec = report_array.earnings.loot_chests.daily.cards.gold.total.dec + report_array.earnings.loot_chests.season.cards.gold.total.dec;
-    //Dailies Totals
-    calc.total_dailies_count = report_array.earnings.loot_chests.daily.cards.stand.total.count + report_array.earnings.loot_chests.daily.cards.gold.total.count;
-    calc.total_dailies_dec = report_array.earnings.loot_chests.daily.cards.stand.total.dec + report_array.earnings.loot_chests.daily.cards.gold.total.dec;
-    //Season Totals
-    calc.total_season_count = report_array.earnings.loot_chests.season.cards.stand.total.count + report_array.earnings.loot_chests.season.cards.gold.total.count;
-    calc.total_season_dec = report_array.earnings.loot_chests.season.cards.stand.total.dec + report_array.earnings.loot_chests.season.cards.gold.total.dec;
-    //Cards Total DEC
-    calc.total_all_count = calc.total_dailies_count + calc.total_season_count;
-    calc.total_all_dec = calc.total_dailies_dec + calc.total_season_dec;
+    let loot_chests = report_array.earnings.loot_chests;
+    let calc = generateEarningsCalculations(loot_chests);
 
-    //Calculations for Packs
-    //UNTAMED Packs
-    calc.total_untamed_packs_count = report_array.earnings.loot_chests.daily.untamed_packs + report_array.earnings.loot_chests.season.untamed_packs;
-    calc.total_untamed_packs_dec = calc.total_untamed_packs_count * prices.untamed_pack;
-
-    //Calculations for Potions
-    //Legendary
-    calc.total_legendary_potions_count = report_array.earnings.loot_chests.daily.legendary_potion + report_array.earnings.loot_chests.season.legendary_potion;
-    calc.total_legendary_potions_dec = calc.total_legendary_potions_count * prices.LEGENDARY;
-    //Alchemy
-    calc.total_alchemy_potions_count = report_array.earnings.loot_chests.daily.alchemy_potion + report_array.earnings.loot_chests.season.alchemy_potion;
-    calc.total_alchemy_potions_dec = calc.total_alchemy_potions_count * prices.GOLD;
-
-    //Calculations for Capture DEC
-    report_array.earnings.matches = parseInt(report_array.earnings.matches.toFixed(3));
-
-    //Calculations for Loot Chest DEC
-    calc.total_loot_dec = report_array.earnings.loot_chests.daily.dec + report_array.earnings.loot_chests.season.dec;
-    calc.total_loot_credits = report_array.earnings.loot_chests.daily.credits + report_array.earnings.loot_chests.season.credits;
-    calc.total_dec = calc.total_all_dec + calc.total_untamed_packs_dec + calc.total_legendary_potions_dec + calc.total_alchemy_potions_dec + calc.total_loot_dec + report_array.dec_balances.dec_reward/*report_array.earnings.matches*/;
-
-    report_array.earnings.template = `##### Standard Foil Cards\n
-|Rarity|Quantiy|🔥DEC🔥|
-|-|-|-|
-|Common|${calc.stand_common_count}|${calc.stand_common_dec}|
-|Rare|${calc.stand_rare_count}|${calc.stand_rare_dec}|
-|Epic|${calc.stand_epic_count}|${calc.stand_epic_dec}|
-|Legendary|${calc.stand_legendary_count}|${calc.stand_legendary_dec}|
-|Total Standard|${calc.total_stand_count}|${calc.total_stand_dec}|
-
-##### Gold Foil Cards\n
-|Rarity|Quantiy|🔥DEC🔥|
-|-|-|-|
-|Common|${calc.gold_common_count}|${calc.gold_common_dec}|
-|Rare|${calc.gold_rare_count}|${calc.gold_rare_dec}|
-|Epic|${calc.gold_epic_count}|${calc.gold_epic_dec}|
-|Legendary|${calc.gold_legendary_count}|${calc.gold_legendary_dec}|
-|Total Gold|${calc.total_gold_count}|${calc.total_gold_dec}|
-
-#### Loot Chests\n
-|Reward Chests|Dailies|Season|Total|💲DEC💲|
-|-|-|-|-|-|
-|Legendary Potions|${report_array.earnings.loot_chests.daily.legendary_potion}|${report_array.earnings.loot_chests.season.legendary_potion}|${calc.total_legendary_potions_count}|${calc.total_legendary_potions_dec}|
-|Alchemy Potions|${report_array.earnings.loot_chests.daily.alchemy_potion}|${report_array.earnings.loot_chests.season.alchemy_potion}|${calc.total_alchemy_potions_count}|${calc.total_alchemy_potions_dec}|
-|DEC|${report_array.earnings.loot_chests.daily.dec}|${report_array.earnings.loot_chests.season.dec}|-|${calc.total_loot_dec}|
-|CREDITS|${report_array.earnings.loot_chests.daily.credits}|${report_array.earnings.loot_chests.season.credits}|-|${calc.total_loot_credits}|
-|UNTAMED Packs|${report_array.earnings.loot_chests.daily.untamed_packs}|${report_array.earnings.loot_chests.season.untamed_packs}|${calc.total_untamed_packs_count}|${calc.total_untamed_packs_dec}|
-|Cards (Total)|${calc.total_dailies_count}|${calc.total_season_count}|${calc.total_all_count}|${calc.total_all_dec}|
-${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\n\n${report_array.leaderboard_table}\n\n` : `\n`} 
-#### Captured DEC (Ranked Rewards)\n
-|Ranked Play Wins|DEC Earned|
-|-|-|
-|${report_array.matches.api_wins_count}|${report_array.dec_balances.dec_reward.toFixed(0)}|
-
-#### Total Ranked Play Rewards\n
-|Total Ranked Play Earnings|
-|-|
-|${(calc.total_dec + report_array.dec_balances.leaderboard_prize).toFixed(0)} DEC|
-|${calc.total_loot_credits} CREDITS|`;
+    report_array.earnings.template = generateEarningsTemplate(calc, loot_chests);
     update_status(`Generating card usage statistics.`);
 
     //context.cardUsageData(false);
@@ -778,7 +708,134 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
     context.enable_text_fields_and_post_button();
   }
 
+  function generateEarningsCalculations(loot_chests) {
+    let daily_cards = report_array.earnings.loot_chests.daily.cards;
+    let season_cards = report_array.earnings.loot_chests.season.cards;
+    let calc = {
+      //Standard Cards Counts
+      stand_common_count: daily_cards.stand[1].count + season_cards.stand[1].count,
+      stand_rare_count: daily_cards.stand[2].count + season_cards.stand[2].count,
+      stand_epic_count: daily_cards.stand[3].count + season_cards.stand[3].count,
+      stand_legendary_count: daily_cards.stand[4].count + season_cards.stand[4].count,
+      //Standard Cards DEC
+      stand_common_dec: daily_cards.stand[1].dec + season_cards.stand[1].dec,
+      stand_rare_dec: daily_cards.stand[2].dec + season_cards.stand[2].dec,
+      stand_epic_dec: daily_cards.stand[3].dec + season_cards.stand[3].dec,
+      stand_legendary_dec: daily_cards.stand[4].dec + season_cards.stand[4].dec,
+      //Gold Cards Counts
+      gold_common_count: daily_cards.gold[1].count + season_cards.gold[1].count,
+      gold_rare_count: daily_cards.gold[2].count + season_cards.gold[2].count,
+      gold_epic_count: daily_cards.gold[3].count + season_cards.gold[3].count,
+      gold_legendary_count: daily_cards.gold[4].count + season_cards.gold[4].count,
+      //Gold Cards DEC
+      gold_common_dec: daily_cards.gold[1].dec + season_cards.gold[1].dec,
+      gold_rare_dec: daily_cards.gold[2].dec + season_cards.gold[2].dec,
+      gold_epic_dec: daily_cards.gold[3].dec + season_cards.gold[3].dec,
+      gold_legendary_dec: daily_cards.gold[4].dec + season_cards.gold[4].dec,
+      //Standard Cards Totals
+      total_stand_count: daily_cards.stand.total.count + season_cards.stand.total.count,
+      total_stand_dec: daily_cards.stand.total.dec + season_cards.stand.total.dec,
+      //Gold Cards Totals
+      total_gold_count: daily_cards.gold.total.count + season_cards.gold.total.count,
+      total_gold_dec: daily_cards.gold.total.dec + season_cards.gold.total.dec,
+      //Dailies Totals
+      total_dailies_count: daily_cards.stand.total.count + daily_cards.gold.total.count,
+      total_dailies_dec: daily_cards.stand.total.dec + daily_cards.gold.total.dec,
+      //Season Totals
+      total_season_count: season_cards.stand.total.count + season_cards.gold.total.count,
+      total_season_dec: season_cards.stand.total.dec + season_cards.gold.total.dec
+    };
+
+    //Cards Total DEC
+    calc.total_all_count = calc.total_dailies_count + calc.total_season_count;
+    calc.total_all_dec = calc.total_dailies_dec + calc.total_season_dec;
+
+    //Calculations for Packs
+    let sum_loot_chests = (str) => loot_chests.daily[str] + loot_chests.season[str];
+    //UNTAMED Packs
+    calc.total_untamed_packs_count = sum_loot_chests('untamed_packs');
+    calc.total_untamed_packs_dec = calc.total_untamed_packs_count * prices.untamed_pack;
+
+    //Calculations for Potions
+    //Legendary
+    calc.total_legendary_potions_count = sum_loot_chests('legendary_potion');
+    calc.total_legendary_potions_dec = calc.total_legendary_potions_count * prices.LEGENDARY;
+    //Alchemy
+    calc.total_alchemy_potions_count = sum_loot_chests('alchemy_potion');
+    calc.total_alchemy_potions_dec = calc.total_alchemy_potions_count * prices.GOLD;
+
+    //Calculations for Capture DEC
+    report_array.earnings.matches = parseInt(report_array.earnings.matches.toFixed(3));
+
+    //Calculations for Loot Chest DEC
+    calc.total_loot_dec = sum_loot_chests('dec');
+    calc.total_loot_credits = sum_loot_chests('credits');
+    calc.total_dec = calc.total_all_dec + calc.total_untamed_packs_dec
+      + calc.total_legendary_potions_dec + calc.total_alchemy_potions_dec
+      + calc.total_loot_dec + report_array.dec_balances.dec_reward/*report_array.earnings.matches*/;
+    return calc;
+  }
+
+  function generateEarningsTemplate(calc, loot_chests) {
+    return `##### Standard Foil Cards`
+      + `\n|Rarity|Quantity|🔥DEC🔥|`
+      + `\n|-|-|-|`
+      + `\n|Common|${calc.stand_common_count}|${calc.stand_common_dec}|`
+      + `\n|Rare|${calc.stand_rare_count}|${calc.stand_rare_dec}|`
+      + `\n|Epic|${calc.stand_epic_count}|${calc.stand_epic_dec}|`
+      + `\n|Legendary|${calc.stand_legendary_count}|${calc.stand_legendary_dec}|`
+      + `\n|Total Standard|${calc.total_stand_count}|${calc.total_stand_dec}|`
+      + `\n##### Gold Foil Cards\n`
+      + `\n|Rarity|Quantity|🔥DEC🔥|`
+      + `\n|-|-|-|`
+      + `\n|Common|${calc.gold_common_count}|${calc.gold_common_dec}|`
+      + `\n|Rare|${calc.gold_rare_count}|${calc.gold_rare_dec}|`
+      + `\n|Epic|${calc.gold_epic_count}|${calc.gold_epic_dec}|`
+      + `\n|Legendary|${calc.gold_legendary_count}|${calc.gold_legendary_dec}|`
+      + `\n|Total Gold|${calc.total_gold_count}|${calc.total_gold_dec}|`
+      + `\n#### Loot Chests\n`
+      + `\n|Reward Chests|Dailies|Season|Total|💲DEC💲|`
+      + `\n|-|-|-|-|-|`
+      + `\n|Legendary Potions`
+      + `|${loot_chests.daily.legendary_potion}`
+      + `|${loot_chests.season.legendary_potion}`
+      + `|${calc.total_legendary_potions_count}`
+      + `|${calc.total_legendary_potions_dec}|`
+      + `\n|Alchemy Potions`
+      + `|${loot_chests.daily.alchemy_potion}`
+      + `|${loot_chests.season.alchemy_potion}|${calc.total_alchemy_potions_count}`
+      + `|${calc.total_alchemy_potions_dec}|`
+      + `\n|DEC|${loot_chests.daily.dec}|${loot_chests.season.dec}|-|${calc.total_loot_dec}|`
+      + `\n|CREDITS`
+      + `|${loot_chests.daily.credits}`
+      + `|${loot_chests.season.credits}|-`
+      + `|${calc.total_loot_credits}|`
+      + `\n|UNTAMED Packs`
+      + `|${loot_chests.daily.untamed_packs}`
+      + `|${loot_chests.season.untamed_packs}`
+      + `|${calc.total_untamed_packs_count}`
+      + `|${calc.total_untamed_packs_dec}|`
+      + `\n|Cards (Total)`
+      + `|${calc.total_dailies_count}`
+      + `|${calc.total_season_count}`
+      + `|${calc.total_all_count}`
+      + `|${calc.total_all_dec}|`
+      // +`${(!(report_array.dec_balances.leaderboard_prize <= 0) ? `\n` :
+      //   `\n### Leaderboard Prizes\n\n${report_array.leaderboard_table}\n\n`)}
+      + `\n#### Captured DEC (Ranked Rewards)\n`
+      + `\n|Ranked Play Wins|DEC Earned|`
+      + `\n|-|-|`
+      + `\n|${report_array.matches.api_wins_count}|`
+      + `${report_array.dec_balances.dec_reward.toFixed(0)}|`
+      + `\n#### Total Ranked Play Rewards\n`
+      + `\n|Total Ranked Play Earnings|`
+      + `\n|-|`
+      + `\n|${(calc.total_dec + report_array.dec_balances.leaderboard_prize).toFixed(0)} DEC|`
+      + `\n|${calc.total_loot_credits} CREDITS|`;
+  }
+
   this.cardUsageData = function (data) {
+
     if (!data) {
       report_array.matches.teams.forEach(team => {
         if (Object.keys(team).length !== 0) {
@@ -795,7 +852,8 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
             id = card.split(`-`)[1];
             card = `starter-${id}`;
           }
-          if (!report_array.matches.cards.array.includes(card)) report_array.matches.cards.array.push(card);
+          if (!report_array.matches.cards.array.includes(card))
+            report_array.matches.cards.array.push(card);
           if (!report_array.matches.cards[type][card]) {
             report_array.matches.cards[type][card] = {};
             report_array.matches.cards[type][card].identifier = card;
@@ -804,7 +862,7 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
             //details for phantom cards
             if (card.substring(0, 7) === `starter`) {
               report_array.allCards.forEach(c => {
-                if (c.id == id) {
+                if (c.id === id) {
                   report_array.matches.cards[type][card].name = c.name;
                 }
                 report_array.matches.cards[type][card].id = parseInt(id);
@@ -817,15 +875,11 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
         }
       });
 
-      let cardList = "";
-      report_array.matches.cards.array.forEach((card, i) => {
-        if (card.substring(0, 7) !== `starter`) {
-          cardList += card;
-          if (cardList.length > 1 && i !== report_array.matches.cards.array.length - 1) cardList += ",";
-        } else {
-          if (i === report_array.matches.cards.array.length - 1 && cardList.substring(cardList.length - 1) === ",") cardList = cardList.substring(0, cardList.length - 1);
-        }
-      });
+      let cardList = report_array.matches.cards.array.reduce((cardList, card) =>
+        card.substring(0, 7) === `starter` ? cardList : `${cardList}${card},`,
+        '');
+      if (cardList.length > 0) cardList = cardList.slice(0, -1);
+
       request(`https://api.splinterlands.io/cards/find?ids=${cardList}`,
           0,
           context.cardUsageData);
@@ -833,7 +887,7 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
       report_array.matches.cards.used_cards_details = data;
       //console.log(`Info on used cards`, data);
       //Assign details
-      report_array.matches.cards.used_cards_details.forEach((card, i) => {
+      report_array.matches.cards.used_cards_details.forEach((card) => {
         let cardType = `${card.details.type.toLowerCase()}s`;
         report_array.matches.cards[cardType][card.uid].name = card.details.name;
         report_array.matches.cards[cardType][card.uid].id = card.details.id;
@@ -841,12 +895,12 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
 
       //Check for duplicates
       let toDelete = {};
-      checkDuplicates(Object.values(report_array.matches.cards.monsters), `monsters`);
-      checkDuplicates(Object.values(report_array.matches.cards.summoners), `summoners`);
+      checkDuplicateCards(Object.values(report_array.matches.cards.monsters), `monsters`);
+      checkDuplicateCards(Object.values(report_array.matches.cards.summoners), `summoners`);
 
-      function checkDuplicates(array, type) {
+      function checkDuplicateCards(array, type) {
         array.forEach(c1 => {
-          array.forEach((c2, i) => {
+          array.forEach((c2) => {
             if (c1 !== c2 && c1.id === c2.id) {
               if (!toDelete[c1.id]) toDelete[c1.id] = {};
               if (!toDelete[c1.id][c1.identifier]) {
@@ -863,13 +917,8 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
       }
 
       //Combine Duplicates
-      Object.values(toDelete).forEach((instructions, i) => {
-        let count = 0;
-        let newIdentifier = ``;
-        let newType = ``;
-        let name;
-        let id;
-        let wins = 0;
+      Object.values(toDelete).forEach((instructions) => {
+        let count = 0, newIdentifier = ``, newType = ``, name, id, wins = 0;
         //console.log(`Deletion instructions`, instructions);
         Object.values(instructions).forEach(instance => {
           //console.log(instance);
@@ -877,24 +926,22 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
           wins += instance.wins;
           newIdentifier += `*${instance.identifier}`;
           newType = instance.type;
-          name = report_array.matches.cards[instance.type][instance.identifier].name;
-          id = report_array.matches.cards[instance.type][instance.identifier].id;
-          delete report_array.matches.cards[instance.type][instance.identifier];
+          name = report_array.matches.cards[newType][newIdentifier].name;
+          id = report_array.matches.cards[newType][newIdentifier].id;
+          delete report_array.matches.cards[newType][newIdentifier];
         });
 
         report_array.matches.cards[newType][newIdentifier] = {
-          identifier: newIdentifier,
-          count: count,
-          name: name,
-          id: id,
-          type: newType,
-          wins: wins
+          identifier: newIdentifier, count: count, name: name, id: id,
+          type: newType, wins: wins
         }
       });
 
-      report_array.matches.Ranked.total_matches = report_array.matches.Ranked.wins + report_array.matches.Ranked.loss + report_array.matches.Ranked.draws;
-      report_array.matches.Tournament.total_matches = report_array.matches.Tournament.wins + report_array.matches.Tournament.loss + report_array.matches.Tournament.draws;
-      report_array.matches.total_matches = report_array.matches.Ranked.total_matches + report_array.matches.Tournament.total_matches;
+      let sum = (arr) => arr["wins"] + arr["loss"] + arr["draws"];
+      report_array.matches.Ranked.total_matches = sum(report_array.matches.Ranked);
+      report_array.matches.Tournament.total_matches = sum(report_array.matches.Tournament);
+      report_array.matches.total_matches =
+        report_array.matches.Ranked.total_matches + report_array.matches.Tournament.total_matches;
       report_array.summoner_data = generatePublicDetails(report_array.matches.cards.summoners);
       report_array.monster_data = generatePublicDetails(report_array.matches.cards.monsters);
 
@@ -907,10 +954,7 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
         });
         console.log(`Sorted Array of Cards: `, arrayOfCards);
 
-        let total = 0;
-        arrayOfCards.forEach(card => {
-          total += card.count;
-        });
+        let total = arrayOfCards.reduce((total, card) => total + card.count, 0);
         console.log(`Total usage: ${total}`);
 
         arrayOfCards.forEach(card => {
@@ -922,17 +966,25 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
       }
 
       //Make table
-      report_array.matches.monster_frequency_table = `|Monster|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
+      report_array.matches.monster_frequency_table =
+        `|Monster|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
       report_array.monster_data.forEach((card, i) => {
         if (i < 100) {
-          report_array.matches.monster_frequency_table = `${report_array.matches.monster_frequency_table}\n|${card.name}|${card.count}|${card.percent_matches.toFixed(2)}%|${card.percent_win.toFixed(2)}%|`;
+          report_array.matches.monster_frequency_table =
+            `${report_array.matches.monster_frequency_table}\n
+            |${card.name}|${card.count}|${card.percent_matches.toFixed(2)}%
+            |${card.percent_win.toFixed(2)}%|`;
         }
       });
 
-      report_array.matches.summoner_frequency_table = `|Summoner|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
+      report_array.matches.summoner_frequency_table =
+        `|Summoner|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
       report_array.summoner_data.forEach((card, i) => {
         if (i < 10) {
-          report_array.matches.summoner_frequency_table = `${report_array.matches.summoner_frequency_table}\n|${card.name}|${card.count}|${card.percent_matches.toFixed(2)}%|${card.percent_win.toFixed(2)}%|`;
+          report_array.matches.summoner_frequency_table =
+            `${report_array.matches.summoner_frequency_table}\n
+            |${card.name}|${card.count}|${card.percent_matches.toFixed(2)}%
+            |${card.percent_win.toFixed(2)}%|`;
         }
       });
       console.log(`Cards Array`, report_array.matches.cards.array)
@@ -952,11 +1004,14 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
     report_array.matches.ruleset_frequency_table = `|Ruleset|Frequency|Win Rate|\n|-|-|-|`;
     rulesets_array.forEach(ruleset => {
       let total = ruleset.wins + ruleset.loss + ruleset.draws;
-      report_array.matches.ruleset_frequency_table = `${report_array.matches.ruleset_frequency_table}\n|${ruleset.name}|${total}|${(100 * ruleset.wins / total).toFixed(2)}%|`
+      report_array.matches.ruleset_frequency_table =
+        `${report_array.matches.ruleset_frequency_table}\n
+        |${ruleset.name}|${total}|${(100 * ruleset.wins / total).toFixed(2)}%|`
     });
 
     // For checking:
-    console.log(`DEC sm_battle: ${report_array.earnings.matches}\nDEC balance history: ${report_array.dec_balances.dec_reward.toFixed(3)}`);
+    console.log(`DEC sm_battle: ${report_array.earnings.matches}\n
+    DEC balance history: ${report_array.dec_balances.dec_reward.toFixed(3)}`);
 
     drawer.draw(); // replace with link to drawer element
     console.log(`Finish`);
@@ -965,23 +1020,23 @@ ${(report_array.dec_balances.leaderboard_prize > 0) ? `\n### Leaderboard Prizes\
 
   this.enable_text_fields_and_post_button = function () {
     report_array.text_fields.forEach(text_field => {
-      document.getElementById(text_field).disabled = false;
+      el(text_field).disabled = false;
       //console.log(`Enabling ${text_field}`);
     });
     if (report_array.matches.Tournament.ids.length > 0) {
-      document.getElementById(`tournamentResults`).disabled = false;
-      document.getElementById(`tournament`).style.display = "inline";
+      el(`tournamentResults`).disabled = false;
+      el(`tournament`).style.display = "inline";
     }
     if (report_array.dec_balances.rentals.count > 0) {
-      document.getElementById(`rentals`).disabled = false;
-      document.getElementById(`rental`).style.display = "inline";
+      el(`rentals`).disabled = false;
+      el(`rental`).style.display = "inline";
     }
 
     if (report_array.sps_balances.airdrop > 0 || report_array.sps_balances.staking > 0) {
-      document.getElementById(`sps`).disabled = false;
-      document.getElementById(`sps_txt`).style.display = "inline";
+      el(`sps`).disabled = false;
+      el(`sps_txt`).style.display = "inline";
     }
 
-    document.getElementById('post').disabled = false;
+    el('post').disabled = false;
   }
 }
