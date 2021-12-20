@@ -192,10 +192,10 @@ function report_controller() {
     });
 
     update_status(`Getting player season records.`);
-    let url = `https://api2.splinterlands.com/players/login
-      ?name=${report_array.player}
-      &ts=${report_array.timeString}
-      &sig=${report_array.signature}`;
+    let url = `https://api2.splinterlands.com/players/login`
+      + `?name=${report_array.player}`
+      + `&ts=${report_array.timeString}`
+      + `&sig=${report_array.signature}`;
     request(url, 0, context.logIn);
   }
 
@@ -208,10 +208,10 @@ function report_controller() {
 
     // request(`https://api2.splinterlands.com/players/leaderboard_with_player?season=${report_array.season.id - 1}&token=${report_array.token}&username=${report_array.player}&leaderboard=${report_array.season_number_count++}&season_details=true`, 0, context.lastSeason)
     // request(`https://api2.splinterlands.com/players/details?name=${report_array.player}&season_details=true&season=${report_array.season.id - 1}`, 0, context.lastSeason)
-    let url = `https://cache-api.splinterlands.com/players/leaderboard_with_player
-      ?season=${report_array.season.id - 1}
-      &username=${report_array.player}`
-    request(url, 0, context.lastSeason)
+    let url = `https://cache-api.splinterlands.com/players/leaderboard_with_player`
+      + `?season=${report_array.season.id - 1}`
+      + `&username=${report_array.player}`;
+    request(url, 0, context.lastSeason);
   }
 
   this.lastSeason = function (data) {
@@ -247,11 +247,11 @@ function report_controller() {
       report_array.general_query_types = `&types=market_purchase,market_sale,
         gift_packs,card_award,claim_reward,sm_battle,enter_tournament,
         leave_tournament,token_transfer`;
-      let url = `https://api.steemmonsters.io/players/history
-        ?username=${report_array.player}
-        &from_block=-1
-        &limit=500
-        ${report_array.general_query_types}`
+      let url = `https://api.steemmonsters.io/players/history`
+        + `?username=${report_array.player}`
+        + `&from_block=-1`
+        + `&limit=500`
+        + `${report_array.general_query_types}`
       request(url, 0, context.playerHistory);
     }
   }
@@ -761,7 +761,7 @@ function report_controller() {
     calc.total_legendary_potions_count = sum_loot_chests('legendary_potion');
     calc.total_legendary_potions_dec = calc.total_legendary_potions_count * prices.LEGENDARY;
     //Alchemy
-    calc.total_alchemy_potions_count = sum_loot_chests('legendary_potion');
+    calc.total_alchemy_potions_count = sum_loot_chests('alchemy_potion');
     calc.total_alchemy_potions_dec = calc.total_alchemy_potions_count * prices.GOLD;
 
     //Calculations for Capture DEC
@@ -777,63 +777,61 @@ function report_controller() {
   }
 
   function generateEarningsTemplate(calc, loot_chests) {
-    return `##### Standard Foil Cards\n
-|Rarity|Quantiy|🔥DEC🔥|
-|-|-|-|
-|Common|${calc.stand_common_count}|${calc.stand_common_dec}|
-|Rare|${calc.stand_rare_count}|${calc.stand_rare_dec}|
-|Epic|${calc.stand_epic_count}|${calc.stand_epic_dec}|
-|Legendary|${calc.stand_legendary_count}|${calc.stand_legendary_dec}|
-|Total Standard|${calc.total_stand_count}|${calc.total_stand_dec}|
-
-##### Gold Foil Cards\n
-|Rarity|Quantiy|🔥DEC🔥|
-|-|-|-|
-|Common|${calc.gold_common_count}|${calc.gold_common_dec}|
-|Rare|${calc.gold_rare_count}|${calc.gold_rare_dec}|
-|Epic|${calc.gold_epic_count}|${calc.gold_epic_dec}|
-|Legendary|${calc.gold_legendary_count}|${calc.gold_legendary_dec}|
-|Total Gold|${calc.total_gold_count}|${calc.total_gold_dec}|
-
-#### Loot Chests\n
-|Reward Chests|Dailies|Season|Total|💲DEC💲|
-|-|-|-|-|-|
-|Legendary Potions
-|${loot_chests.daily.legendary_potion}
-|${loot_chests.season.legendary_potion}
-|${calc.total_legendary_potions_count}
-|${calc.total_legendary_potions_dec}|
-|Alchemy Potions
-|${loot_chests.daily.alchemy_potion}
-|${loot_chests.season.alchemy_potion}|${calc.total_alchemy_potions_count}
-|${calc.total_alchemy_potions_dec}|
-|DEC|${loot_chests.daily.dec}|${loot_chests.season.dec}|-|${calc.total_loot_dec}|
-|CREDITS
-|${loot_chests.daily.credits}
-|${loot_chests.season.credits}|-
-|${calc.total_loot_credits}|
-|UNTAMED Packs
-|${loot_chests.daily.untamed_packs}
-|${loot_chests.season.untamed_packs}
-|${calc.total_untamed_packs_count}
-|${calc.total_untamed_packs_dec}|
-|Cards (Total)
-|${calc.total_dailies_count}
-|${calc.total_season_count}
-|${calc.total_all_count}
-|${calc.total_all_dec}|
-${(!(report_array.dec_balances.leaderboard_prize <= 0) ? `\n` :
-      `\n### Leaderboard Prizes\n\n${report_array.leaderboard_table}\n\n`)} 
-#### Captured DEC (Ranked Rewards)\n
-|Ranked Play Wins|DEC Earned|
-|-|-|
-|${report_array.matches.api_wins_count}|${report_array.dec_balances.dec_reward.toFixed(0)}|
-
-#### Total Ranked Play Rewards\n
-|Total Ranked Play Earnings|
-|-|
-|${(calc.total_dec + report_array.dec_balances.leaderboard_prize).toFixed(0)} DEC|
-|${calc.total_loot_credits} CREDITS|`;
+    return `##### Standard Foil Cards`
+      + `\n|Rarity|Quantity|🔥DEC🔥|`
+      + `\n|-|-|-|`
+      + `\n|Common|${calc.stand_common_count}|${calc.stand_common_dec}|`
+      + `\n|Rare|${calc.stand_rare_count}|${calc.stand_rare_dec}|`
+      + `\n|Epic|${calc.stand_epic_count}|${calc.stand_epic_dec}|`
+      + `\n|Legendary|${calc.stand_legendary_count}|${calc.stand_legendary_dec}|`
+      + `\n|Total Standard|${calc.total_stand_count}|${calc.total_stand_dec}|`
+      + `\n##### Gold Foil Cards\n`
+      + `\n|Rarity|Quantity|🔥DEC🔥|`
+      + `\n|-|-|-|`
+      + `\n|Common|${calc.gold_common_count}|${calc.gold_common_dec}|`
+      + `\n|Rare|${calc.gold_rare_count}|${calc.gold_rare_dec}|`
+      + `\n|Epic|${calc.gold_epic_count}|${calc.gold_epic_dec}|`
+      + `\n|Legendary|${calc.gold_legendary_count}|${calc.gold_legendary_dec}|`
+      + `\n|Total Gold|${calc.total_gold_count}|${calc.total_gold_dec}|`
+      + `\n#### Loot Chests\n`
+      + `\n|Reward Chests|Dailies|Season|Total|💲DEC💲|`
+      + `\n|-|-|-|-|-|`
+      + `\n|Legendary Potions`
+      + `|${loot_chests.daily.legendary_potion}`
+      + `|${loot_chests.season.legendary_potion}`
+      + `|${calc.total_legendary_potions_count}`
+      + `|${calc.total_legendary_potions_dec}|`
+      + `\n|Alchemy Potions`
+      + `|${loot_chests.daily.alchemy_potion}`
+      + `|${loot_chests.season.alchemy_potion}|${calc.total_alchemy_potions_count}`
+      + `|${calc.total_alchemy_potions_dec}|`
+      + `\n|DEC|${loot_chests.daily.dec}|${loot_chests.season.dec}|-|${calc.total_loot_dec}|`
+      + `\n|CREDITS`
+      + `|${loot_chests.daily.credits}`
+      + `|${loot_chests.season.credits}|-`
+      + `|${calc.total_loot_credits}|`
+      + `\n|UNTAMED Packs`
+      + `|${loot_chests.daily.untamed_packs}`
+      + `|${loot_chests.season.untamed_packs}`
+      + `|${calc.total_untamed_packs_count}`
+      + `|${calc.total_untamed_packs_dec}|`
+      + `\n|Cards (Total)`
+      + `|${calc.total_dailies_count}`
+      + `|${calc.total_season_count}`
+      + `|${calc.total_all_count}`
+      + `|${calc.total_all_dec}|`
+      // +`${(!(report_array.dec_balances.leaderboard_prize <= 0) ? `\n` :
+      //   `\n### Leaderboard Prizes\n\n${report_array.leaderboard_table}\n\n`)}
+      + `\n#### Captured DEC (Ranked Rewards)\n`
+      + `\n|Ranked Play Wins|DEC Earned|`
+      + `\n|-|-|`
+      + `\n|${report_array.matches.api_wins_count}|`
+      + `${report_array.dec_balances.dec_reward.toFixed(0)}|`
+      + `\n#### Total Ranked Play Rewards\n`
+      + `\n|Total Ranked Play Earnings|`
+      + `\n|-|`
+      + `\n|${(calc.total_dec + report_array.dec_balances.leaderboard_prize).toFixed(0)} DEC|`
+      + `\n|${calc.total_loot_credits} CREDITS|`;
   }
 
   this.cardUsageData = function (data) {
