@@ -54,10 +54,7 @@
   <input class="w3-input w3-border" type="text" id="username" value="" placeholder="username">
   <input class="w3-input w3-border" type="text" id="password" value="" placeholder="posting key"
          style="display: none">
-  <button id="generate" class="w3-button w3-theme"
-          onclick="reporter.generate(); document.getElementById('keyType').disabled">
-    Generate
-  </button>
+  <button id="generate" class="w3-button w3-theme">Generate</button>
   <label for="keyType">Hive Keychain:</label>
   <input type="checkbox" id="keyType" checked onclick="reporter.toggleLogin()">
 </div>
@@ -198,6 +195,18 @@
   slider.oninput = function () {
     beficiary_payout = this.value * 100;
     output.innerHTML = this.value;
+  };
+
+  // Generate Button
+  let generate_btn = el('generate');
+  generate_btn.onclick = async () => {
+    generate_btn.disabled = true;
+    reporter.generate();
+    document.getElementById('keyType').disabled;
+  };
+
+  el('username').onkeydown = async e => {
+    if (e.key === 'Enter' && !generate_btn.disabled) generate_btn.click();
   };
 </script>
 
