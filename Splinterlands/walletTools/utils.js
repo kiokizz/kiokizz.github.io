@@ -20,18 +20,8 @@ function request_transactions(nam, tok, off = 0, lim = 500, txs = []) {
           txs.forEach(tx => {
             let hash = `${tx['created_date']}${tx['trx_id']}${tx['balance_end']}`;
             tx['hash'] = hash;
-            obj [hash] = tx;
+            obj[hash] = tx;
           });
-          // txs = txs.filter((tx, index, txs) => {
-          //   console.log(index);
-          //   let fist_occurence = -1;
-          //   for (let [i, tx2] of txs.entries()) {
-          //     if (i > index) break;
-          //     if (tx["trx_id"] === tx2["trx_id"] && tx['balance_end'] === tx2['balance_end'])
-          //       fist_occurence = i;
-          //   }
-          //   return fist_occurence === index;
-          // });
 
           if (off > 0) resolve(obj);
           else {
@@ -42,14 +32,26 @@ function request_transactions(nam, tok, off = 0, lim = 500, txs = []) {
             resolve(return_arr);
           }
         })
-        .catch(function (err) {
-          // 500/5min limit??
-          // Retry on error? resolve(response = await request_transactions(username, token, array.length);
-          console.error(err);
-          console.error(arguments);
+        .catch(err => {
           reject(err);
         });
     }
-  )
-    ;
+  );
+}
+
+// This converts an array of objects into a csv file for download
+function download_csv(arr, title) {
+  let csv_data = arr.reduce(
+    (p, c) => `${p}${Object.values(c).join(',')}\n`,
+    `data:text/plain;charset=utf-8,${Object.keys(arr[0]).join(',')}\n`
+  );
+
+  let csv_text = document.createElement('a');
+  csv_text.setAttribute('href', encodeURIComponent(csv_data));
+  csv_text.setAttribute('download', `${title}.csv`);
+
+  csv_text.style.display = 'none';
+  document.body.appendChild(csv_text);
+  csv_text.click();
+  document.body.removeChild(csv_text);
 }

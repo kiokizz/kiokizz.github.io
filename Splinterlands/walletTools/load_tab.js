@@ -1,33 +1,16 @@
-const layout_info = {
-  sps: {
-    div: 'sps_tab_div',
-    tab_btn: 'sps_tab_btn',
-    tbl_div: 'sps_tbl',
-    back_btn: 'sps_back',
-    next_btn: 'sps_next'
-  },
-  dec: {
-    div: 'dec_tab_div',
-    tab_btn: 'dec_tab_btn',
-    tbl_div: 'dec_tbl',
-    back_btn: 'dec_back',
-    next_btn: 'dec_next'
-  },
-  cre: {
-    div: 'cre_tab_div',
-    tab_btn: 'cre_tab_btn',
-    tbl_div: 'cre_tbl',
-    back_btn: 'cre_back',
-    next_btn: 'cre_next'
-  },
-  vou: {
-    div: 'vou_tab_div',
-    tab_btn: 'vou_tab_btn',
-    tbl_div: 'vou_tbl',
-    back_btn: 'vou_back',
-    next_btn: 'vou_next'
-  }
-};
+const layout_info = {};
+
+['sps', 'dec', 'cre', 'vou'].forEach(t => {
+  layout_info[t] = {
+    div: `${t}_tab_div`,
+    tab_btn: `${t}_tab_btn`,
+    tbl_div: `${t}_tbl`,
+    back_btn: `${t}_back`,
+    next_btn: `${t}_next`,
+    dld_csv_btn: `${t}_csv`
+  };
+});
+
 
 function load_tab(tok, txs) {
   console.log(txs);
