@@ -40,7 +40,6 @@ function load_tab(tok, txs) {
     show('init_modal', false);
   }
 
-
   append_hr(tab);
   tab.innerHTML += get_balance_section();
   append_hr(tab);
@@ -50,9 +49,17 @@ function load_tab(tok, txs) {
   tab.append(...get_pagination_buttons());
   tab.innerHTML += get_download_buttons();
 
-  let off = 0;
-  el(info['back_btn']).onclick = () => refresh_tx_table(txs, off -= 100);
-  el(info['next_btn']).onclick = () => refresh_tx_table(txs, off += 100);
+  const lim = 100;
+  let off = (lim => {
+    let off = 0;
+    return {
+      decrement: () => off - lim <= 0 ? off : (off -= lim),
+      increment: () => off + lim >= txs.length ? off : (off += lim)
+    };
+  })(lim);
+
+  el(info['back_btn']).onclick = () => refresh_tx_table(txs, off.decrement());
+  el(info['next_btn']).onclick = () => refresh_tx_table(txs, off.increment());
 
   function append_hr(e) {
     e.appendChild(document.createElement('hr'));
@@ -123,7 +130,7 @@ function load_tab(tok, txs) {
     table_div.innerHTML = get_tx_table(txs, off);
   }
 
-  function get_tx_table(txs, off = 0, lim = 100) {
+  function get_tx_table(txs, off = 0, lim = lim) {
     let format_tx_amt = amt => (amt >= 0) ? amt : `(${amt.substr(1)})`;
     let get_tx_rows = txs => txs.reduce((trs, tx, idx) => {
       if (idx < off || idx >= off + lim) return trs;
