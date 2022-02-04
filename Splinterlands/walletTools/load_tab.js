@@ -47,7 +47,7 @@ function load_tab(tok, txs) {
   tab.innerHTML += get_graphs_section();
   append_hr(tab);
   tab.innerHTML += get_tx_list(txs);
-  tab.append(...get_pagination_buttons(txs));
+  tab.append(...get_pagination_buttons());
   tab.innerHTML += get_download_buttons();
 
   let off = 0;
@@ -149,7 +149,7 @@ function load_tab(tok, txs) {
       </div>`;
   }
 
-  function get_pagination_buttons(txs) {
+  function get_pagination_buttons() {
     let back = document.createElement('button');
     back.className += 'w3-button w3-border w3-round';
     back.innerText = 'Back';
