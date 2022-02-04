@@ -18,6 +18,11 @@ function switch_to_tab(id) {
   el(`${id.substr(0, 7)}_div`).className += ' w3-show';
 }
 
+function is_visible(element) {
+  if (typeof element === 'string') element = el(element);
+  return element.className.includes(' w3-show');
+}
+
 function show(element, show = true) {
   if (typeof element === 'string') element = el(element);
   if (show) element.className += ' w3-show';
