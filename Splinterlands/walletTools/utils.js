@@ -41,17 +41,16 @@ function request_transactions(nam, tok, off = 0, lim = 500, txs = []) {
 
 // This converts an array of objects into a csv file for download
 function download_csv(arr, title) {
-  let csv_data = arr.reduce(
-    (p, c) => `${p}${Object.values(c).join(',')}\n`,
-    `data:text/plain;charset=utf-8,${Object.keys(arr[0]).join(',')}\n`
-  );
+  let csv_data =
+    "data:text/plain;charset=utf-8,"
+    + `${Object.keys(arr[0]).join(',')}\n`
+    + arr.map(c => Object.values(c).join(',')).join("\n");
 
-  let csv_text = document.createElement('a');
-  csv_text.setAttribute('href', encodeURIComponent(csv_data));
-  csv_text.setAttribute('download', `${title}.csv`);
-
-  csv_text.style.display = 'none';
-  document.body.appendChild(csv_text);
-  csv_text.click();
-  document.body.removeChild(csv_text);
+  let csv_link = document.createElement('a');
+  csv_link.setAttribute('href', encodeURI(csv_data));
+  csv_link.setAttribute('download', `${title}.csv`);
+  csv_link.style.display = 'none';
+  document.body.appendChild(csv_link);
+  csv_link.click();
+  // document.body.removeChild(csv_link);
 }

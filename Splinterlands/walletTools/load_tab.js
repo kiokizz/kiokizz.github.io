@@ -43,9 +43,10 @@ function load_tab(tok, txs) {
   el(info['back_btn']).onclick = () => refresh_tx_table(txs, off.decrement());
   el(info['next_btn']).onclick = () => refresh_tx_table(txs, off.increment());
 
-
-  // TODO add first and last tx date to title of download
-  el(info['dld_csv_btn']).onclick = () => download_csv(txs, 'csv');
+  let d = (s) => s.substr(0, 10);
+  el(info['dld_csv_btn']).onclick = () => download_csv(txs,
+    `${d(txs[0]['created_date'])} - ${d(txs[txs.length - 1]['created_date'])}`
+  );
 
   function append_hr(e) {
     e.appendChild(document.createElement('hr'));
@@ -155,7 +156,6 @@ function load_tab(tok, txs) {
     return [back, next];
   }
 
-  // TODO get this download working
   function get_download_buttons() {
     let div = document.createElement('div');
     div.className += 'w3-panel w3-center';
