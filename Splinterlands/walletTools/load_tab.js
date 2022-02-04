@@ -30,19 +30,22 @@ function load_tab(tok, txs) {
   append_hr(tab);
   tab.innerHTML += get_tx_list(txs);
   tab.append(...get_pagination_buttons());
-  tab.innerHTML += get_download_buttons();
+  tab.append(...get_download_buttons());
 
-  const lim = 100;
   let off = (lim => {
     let off = 0;
     return {
       decrement: () => off - lim <= 0 ? off : (off -= lim),
       increment: () => off + lim >= txs.length ? off : (off += lim)
     };
-  })(lim);
+  })(100);
 
   el(info['back_btn']).onclick = () => refresh_tx_table(txs, off.decrement());
   el(info['next_btn']).onclick = () => refresh_tx_table(txs, off.increment());
+
+
+  // TODO add first and last tx date to title of download
+  el(info['dld_csv_btn']).onclick = () => download_csv(txs, 'csv');
 
   function append_hr(e) {
     e.appendChild(document.createElement('hr'));
@@ -113,7 +116,7 @@ function load_tab(tok, txs) {
     table_div.innerHTML = get_tx_table(txs, off);
   }
 
-  function get_tx_table(txs, off = 0, lim = lim) {
+  function get_tx_table(txs, off = 0, lim = 100) {
     let format_tx_amt = amt => (amt >= 0) ? amt : `(${amt.substr(1)})`;
     let get_tx_rows = txs => txs.reduce((trs, tx, idx) => {
       if (idx < off || idx >= off + lim) return trs;
@@ -152,16 +155,20 @@ function load_tab(tok, txs) {
     return [back, next];
   }
 
+  // TODO get this download working
   function get_download_buttons() {
-    return `<div class="w3-panel w3-center">
-      <button class="w3-button w3-border w3-round tab_btn"
-              id="export_sps_csv_btn" onclick="alert(this.id)">
-        Export as CSV
-      </button>
-      <button class="w3-button w3-border w3-round tab_btn"
-              id="export_sps_pdf_btn" onclick="alert(this.id)">
-        Export as PDF
-      </button>
-    </div>`;
+    let div = document.createElement('div');
+    div.className += 'w3-panel w3-center';
+    let csv = document.createElement('button');
+    csv.className += 'w3-button w3-border w3-round tab_btn';
+    csv.innerText = 'Export as CSV';
+    csv.id = info['dld_csv_btn'];
+    let pdf = document.createElement('button');
+    pdf.className += 'w3-button w3-border w3-round w3-left-align';
+    pdf.innerText = 'Export as PDF';
+    pdf.disabled = true;
+
+    div.append(csv, pdf);
+    return [div];
   }
 }
