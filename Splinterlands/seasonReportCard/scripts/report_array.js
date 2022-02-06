@@ -155,7 +155,7 @@ let report_array = {
             }
           }
         },
-        untamed_packs: 0
+        chaos_packs: 0
       },
       season: {
         count: 0,
@@ -209,7 +209,7 @@ let report_array = {
             }
           }
         },
-        untamed_packs: 0
+        chaos_packs: 0
       }
     }
   },

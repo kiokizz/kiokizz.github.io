@@ -9,7 +9,7 @@ function report_controller() {
     GOLD: 50,
     MYSTERY: 1200,
     QUEST: 750,
-    untamed_pack: 2000,
+    chaos_pack: 4000,
     essence_orb: 2500,
     decNormBetaBurnRates: {
       1: 15,
@@ -69,20 +69,20 @@ function report_controller() {
       hive_keychain.requestHandshake(() => {
         update_status(`Hive-Keychain Connected`);
         hive_keychain.requestSignBuffer(
-          `${report_array.player}`,
-          `${report_array.player}${report_array.timeString}`,
-          `Posting`,
-          function (response) {
-            console.log(response);
-            report_array.signature = response.result;
-            if (response.success) {
-              update_status(`Account Verified`);
-              context.getDetails();
-            } else stop_on_error(`Please ensure you have the Posting Key for
+            `${report_array.player}`,
+            `${report_array.player}${report_array.timeString}`,
+            `Posting`,
+            function (response) {
+              console.log(response);
+              report_array.signature = response.result;
+              if (response.success) {
+                update_status(`Account Verified`);
+                context.getDetails();
+              } else stop_on_error(`Please ensure you have the Posting Key for
              @${report_array.player} in Hive Keychain and refresh the page.`);
-          },
-          null,
-          `Splinterlands Login`
+            },
+            null,
+            `Splinterlands Login`
         );
       });
     } else stop_on_error(`Please log-in to, or install, Hive Keychain`);
@@ -133,19 +133,19 @@ function report_controller() {
 
     var permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
     hive.api.getDiscussionsByAuthorBeforeDate(report_array.player, null,
-      new Date().toISOString().split('.')[0], 100, function (err, result) {
-        console.log(err, result);
-        console.log(permlink);
-        result.forEach(post => {
-          if (post.permlink === permlink && !testing)
-            stop_on_error(`@${report_array.player}'s Season Report has already 
+        new Date().toISOString().split('.')[0], 100, function (err, result) {
+          console.log(err, result);
+          console.log(permlink);
+          result.forEach(post => {
+            if (post.permlink === permlink && !testing)
+              stop_on_error(`@${report_array.player}'s Season Report has already 
           been posted. Please go to 
           www.splintertalk.io/@${report_array.player}/${permlink}`);
-        });
+          });
 
-        update_status(`Getting all card details.`);
-        request(`https://game-api.splinterlands.com/cards/get_details`, 0, context.allCardsDetails);
-      });
+          update_status(`Getting all card details.`);
+          request(`https://game-api.splinterlands.com/cards/get_details`, 0, context.allCardsDetails);
+        });
   };
 
   this.allCardsDetails = function (data) {
@@ -193,9 +193,9 @@ function report_controller() {
 
     update_status(`Getting player season records.`);
     let url = `https://api2.splinterlands.com/players/login`
-      + `?name=${report_array.player}`
-      + `&ts=${report_array.timeString}`
-      + `&sig=${report_array.signature}`;
+        + `?name=${report_array.player}`
+        + `&ts=${report_array.timeString}`
+        + `&sig=${report_array.signature}`;
     request(url, 0, context.logIn);
   };
 
@@ -209,8 +209,8 @@ function report_controller() {
     // request(`https://api2.splinterlands.com/players/leaderboard_with_player?season=${report_array.season.id - 1}&token=${report_array.token}&username=${report_array.player}&leaderboard=${report_array.season_number_count++}&season_details=true`, 0, context.lastSeason)
     // request(`https://api2.splinterlands.com/players/details?name=${report_array.player}&season_details=true&season=${report_array.season.id - 1}`, 0, context.lastSeason)
     let url = `https://cache-api.splinterlands.com/players/leaderboard_with_player`
-      + `?season=${report_array.season.id - 1}`
-      + `&username=${report_array.player}`;
+        + `?season=${report_array.season.id - 1}`
+        + `&username=${report_array.player}`;
     request(url, 0, context.lastSeason);
   };
 
@@ -248,10 +248,10 @@ function report_controller() {
         gift_packs,card_award,claim_reward,sm_battle,enter_tournament,
         leave_tournament,token_transfer`;
       let url = `https://api.steemmonsters.io/players/history`
-        + `?username=${report_array.player}`
-        + `&from_block=-1`
-        + `&limit=500`
-        + `${report_array.general_query_types}`;
+          + `?username=${report_array.player}`
+          + `&from_block=-1`
+          + `&limit=500`
+          + `${report_array.general_query_types}`;
       request(url, 0, context.playerHistory);
     }
   };
@@ -272,9 +272,9 @@ function report_controller() {
     if (limit === data.length) {
       update_status(`Getting player transactions before block: ${before_block}.`);
       request(
-        `https://api.steemmonsters.io/players/history?username=${report_array.player}&from_block=-1&before_block=${before_block}&limit=500${report_array.general_query_types}`,
-        0,
-        context.playerHistory);
+          `https://api.steemmonsters.io/players/history?username=${report_array.player}&from_block=-1&before_block=${before_block}&limit=500${report_array.general_query_types}`,
+          0,
+          context.playerHistory);
     } else {
       console.log(report_array.tx_types);
       report_array.dec_query_types = `&types=rental_payment_fees,market_rental,rental_payment,rental_refund,leaderboard_prizes,dec_reward`;
@@ -300,9 +300,9 @@ function report_controller() {
       offset = 500 * Math.ceil(report_array.dec_transfers.length / 500);
       update_status(`Getting player DEC transactions with offset: ${offset}.`);
       request(
-        `https://api2.splinterlands.com/players/balance_history?token_type=DEC&offset=${offset}&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}`,
-        0,
-        context.playerDECBalanceHistory);
+          `https://api2.splinterlands.com/players/balance_history?token_type=DEC&offset=${offset}&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}`,
+          0,
+          context.playerDECBalanceHistory);
     } else {
       console.log(`DEC Transfers`, report_array.dec_transfer_types);
       request(`https://api2.splinterlands.com/players/balance_history?token_type=SPS&offset=0&limit=${limit}&username=${report_array.player}`, 0, context.playerSPSBalanceHistory);
@@ -327,9 +327,9 @@ function report_controller() {
       offset = 500 * Math.ceil(report_array.sps_transfers.length / 500);
       update_status(`Getting player SPS transactions with offset: ${offset}.`);
       request(
-        `https://api2.splinterlands.com/players/balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}`,
-        0,
-        context.playerSPSBalanceHistory);
+          `https://api2.splinterlands.com/players/balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}`,
+          0,
+          context.playerSPSBalanceHistory);
     } else {
       console.log(`SPS Transfers`, report_array.sps_transfer_types);
       request(`https://api2.splinterlands.com/players/balance_history?token_type=VOUCHER&offset=0&limit=${limit}&username=${report_array.player}`, 0, context.playerVOUCHERBalanceHistory);
@@ -354,9 +354,9 @@ function report_controller() {
       offset = 500 * Math.ceil(report_array.voucher_transfers.length / 500);
       update_status(`Getting player VOUCHER transactions with offset: ${offset}.`);
       request(
-        `https://api2.splinterlands.com/players/balance_history?token_type=VOUCHER&offset=${offset}&limit=${limit}&username=${report_array.player}`,
-        0,
-        context.playerSPSBalanceHistory);
+          `https://api2.splinterlands.com/players/balance_history?token_type=VOUCHER&offset=${offset}&limit=${limit}&username=${report_array.player}`,
+          0,
+          context.playerSPSBalanceHistory);
     } else {
       console.log(`VOUCHER Transfers`, report_array.voucher_transfer_types);
       context.sortHistory();
@@ -392,7 +392,7 @@ function report_controller() {
       } else if (tx.type === "leave_tournament") {//Remove from tournaments list
         let leave_result = JSON.parse(tx.data);
         report_array.matches.Tournament.ids =
-          report_array.matches.Tournament.ids.filter(t => t !== leave_result["tournament_id"]);
+            report_array.matches.Tournament.ids.filter(t => t !== leave_result["tournament_id"]);
       } else {
         console.log(`Unidentified case! ${tx.type}`, tx);
       }
@@ -510,7 +510,7 @@ function report_controller() {
           report_array.earnings.loot_chests[dailyOrSeason].credits += chest.quantity;
         } else if (chest.type === `pack`) {
           //console.log(`Loot: UNTAMED ${chest.quantity}`);
-          report_array.earnings.loot_chests[dailyOrSeason].untamed_packs++;
+          report_array.earnings.loot_chests[dailyOrSeason].chaos_packs++;
         } else {
           console.log(`Unknown reward type: ${chest.type}`);
           alert(`Unknown reward type: ${chest.type}`);
@@ -585,7 +585,7 @@ function report_controller() {
     if (report_array.sps_balances.airdrop > 0 || report_array.sps_balances.staking > 0) {
       let net_rentals_sps = report_array.sps_balances.airdrop + report_array.sps_balances.staking;
       let net_sps = (net_rentals_sps).toFixed(3);
-      report_array.sps_table = `|Type|Amount Claimed|\n|-|-|\n|Airdrop|${report_array.sps_balances.airdrop.toFixed(3)}|\n|Staking Rewards|${report_array.sps_balances.staking.toFixed(3)}|\n|**NET SPS**|**${net_sps}**|`;
+      report_array.sps_table = `|Type|⭐ Amount Claimed|\n|-|-|\n|Airdrop|${report_array.sps_balances.airdrop.toFixed(3)}|\n|Staking Rewards|${report_array.sps_balances.staking.toFixed(3)}|\n|**NET SPS**|**${net_sps}**|`;
     }
   }
 
@@ -605,7 +605,7 @@ function report_controller() {
     });
     console.log(report_array.voucher_balance);
     if (report_array.voucher_balance > 0) {
-      report_array.sps_table += `\n|+ *Voucher Drops*|${report_array.voucher_balance.toFixed(3)} VOUCHER|`;
+      report_array.sps_table += `\n|+ *Voucher Drops*|${report_array.voucher_balance.toFixed(3)} 🎟️|`;
     }
   }
 
@@ -621,8 +621,8 @@ function report_controller() {
     update_status(`Collecting entered tournament's data.. ${report_array.matches.Tournament.data.length}/${report_array.matches.Tournament.ids.length}`);
     if (report_array.matches.Tournament.searchIndex < report_array.matches.Tournament.ids.length) {
       request(`https://api2.splinterlands.com/tournaments/find?id=${report_array.matches.Tournament.ids[report_array.matches.Tournament.searchIndex]}`,
-        0,
-        context.tournamentData);
+          0,
+          context.tournamentData);
     } else {
       //Sort Data once ready
       console.log(`Tournament Data: (${report_array.matches.Tournament.data.length}/${report_array.matches.Tournament.ids.length})`, report_array.matches.Tournament.data);
@@ -689,11 +689,11 @@ function report_controller() {
 
       let tournament_winnings_table_body = report_array.matches.Tournament.prize_list.reduce((body, row) => `${body}|${row.Tournament}|${row.League}|${row.Editions}|${row.Placement}/${row.num_players}|${row.Ratio}|${row.Prize}|\n`, ``);
       report_array.matches.Tournament.winnings_table =
-        `### Prizes\n|Tournament|League|Editions|Placement/#entrants|Ratio (Win/Loss+Draw)|Prize|\n|-|-|-|-|-|-|\n${tournament_winnings_table_body}`;
+          `### Prizes\n|Tournament|League|Editions|Placement/#entrants|Ratio (Win/Loss+Draw)|Prize|\n|-|-|-|-|-|-|\n${tournament_winnings_table_body}`;
 
       let tournament_winnings_prize_summary_table_body = Object.values(report_array.matches.Tournament.prize_tally).reduce((body, row) => `${body}${(row.count > 0) ? `${`|${row.name}|${row.count}|${row.quantity}|\n`}` : ``}`, ``);
       report_array.matches.Tournament.prizes_table =
-        `### Summary\n|Reward|Count|Quantity|\n|-|-|-|\n${tournament_winnings_prize_summary_table_body}`;
+          `### Summary\n|Reward|Count|Quantity|\n|-|-|-|\n${tournament_winnings_prize_summary_table_body}`;
 
       context.rewardsData();
     }
@@ -760,16 +760,16 @@ function report_controller() {
     //Calculations for Packs
     let sum_loot_chests = (str) => loot_chests.daily[str] + loot_chests.season[str];
     //UNTAMED Packs
-    calc.total_untamed_packs_count = sum_loot_chests('untamed_packs');
-    calc.total_untamed_packs_dec = calc.total_untamed_packs_count * prices.untamed_pack;
+    calc.total_chaos_packs_count = sum_loot_chests('chaos_packs');
+    calc.total_chaos_packs_credits = calc.total_chaos_packs_count * prices.chaos_pack;
 
     //Calculations for Potions
     //Legendary
     calc.total_legendary_potions_count = sum_loot_chests('legendary_potion');
-    calc.total_legendary_potions_dec = calc.total_legendary_potions_count * prices.LEGENDARY;
+    calc.total_legendary_potions_credits = calc.total_legendary_potions_count * prices.LEGENDARY;
     //Alchemy
     calc.total_alchemy_potions_count = sum_loot_chests('alchemy_potion');
-    calc.total_alchemy_potions_dec = calc.total_alchemy_potions_count * prices.GOLD;
+    calc.total_alchemy_potions_credits = calc.total_alchemy_potions_count * prices.GOLD;
 
     //Calculations for Capture DEC
     report_array.earnings.matches = parseInt(report_array.earnings.matches.toFixed(3));
@@ -777,68 +777,69 @@ function report_controller() {
     //Calculations for Loot Chest DEC
     calc.total_loot_dec = sum_loot_chests('dec');
     calc.total_loot_credits = sum_loot_chests('credits');
-    calc.total_dec = calc.total_all_dec + calc.total_untamed_packs_dec
-      + calc.total_legendary_potions_dec + calc.total_alchemy_potions_dec
-      + calc.total_loot_dec + report_array.dec_balances.dec_reward/*report_array.earnings.matches*/;
+    calc.toal_credits = calc.total_loot_credits + calc.total_chaos_packs_credits
+        + calc.total_legendary_potions_credits + calc.total_alchemy_potions_credits;
+    calc.total_dec = calc.total_all_dec
+        + calc.total_loot_dec + report_array.dec_balances.dec_reward/*report_array.earnings.matches*/;
     return calc;
   }
 
   function generateEarningsTemplate(calc, loot_chests) {
     return `##### Standard Foil Cards`
-      + `\n|Rarity|Quantity|🔥DEC🔥|`
-      + `\n|-|-|-|`
-      + `\n|Common|${calc.stand_common_count}|${calc.stand_common_dec}|`
-      + `\n|Rare|${calc.stand_rare_count}|${calc.stand_rare_dec}|`
-      + `\n|Epic|${calc.stand_epic_count}|${calc.stand_epic_dec}|`
-      + `\n|Legendary|${calc.stand_legendary_count}|${calc.stand_legendary_dec}|`
-      + `\n|Total Standard|${calc.total_stand_count}|${calc.total_stand_dec}|`
-      + `\n##### Gold Foil Cards\n`
-      + `\n|Rarity|Quantity|🔥DEC🔥|`
-      + `\n|-|-|-|`
-      + `\n|Common|${calc.gold_common_count}|${calc.gold_common_dec}|`
-      + `\n|Rare|${calc.gold_rare_count}|${calc.gold_rare_dec}|`
-      + `\n|Epic|${calc.gold_epic_count}|${calc.gold_epic_dec}|`
-      + `\n|Legendary|${calc.gold_legendary_count}|${calc.gold_legendary_dec}|`
-      + `\n|Total Gold|${calc.total_gold_count}|${calc.total_gold_dec}|`
-      + `\n#### Loot Chests\n`
-      + `\n|Reward Chests|Dailies|Season|Total|💲DEC💲|`
-      + `\n|-|-|-|-|-|`
-      + `\n|Legendary Potions`
-      + `|${loot_chests.daily.legendary_potion}`
-      + `|${loot_chests.season.legendary_potion}`
-      + `|${calc.total_legendary_potions_count}`
-      + `|${calc.total_legendary_potions_dec}|`
-      + `\n|Alchemy Potions`
-      + `|${loot_chests.daily.alchemy_potion}`
-      + `|${loot_chests.season.alchemy_potion}|${calc.total_alchemy_potions_count}`
-      + `|${calc.total_alchemy_potions_dec}|`
-      + `\n|DEC|${loot_chests.daily.dec}|${loot_chests.season.dec}|-|${calc.total_loot_dec}|`
-      + `\n|CREDITS`
-      + `|${loot_chests.daily.credits}`
-      + `|${loot_chests.season.credits}|-`
-      + `|${calc.total_loot_credits}|`
-      + `\n|UNTAMED Packs`
-      + `|${loot_chests.daily.untamed_packs}`
-      + `|${loot_chests.season.untamed_packs}`
-      + `|${calc.total_untamed_packs_count}`
-      + `|${calc.total_untamed_packs_dec}|`
-      + `\n|Cards (Total)`
-      + `|${calc.total_dailies_count}`
-      + `|${calc.total_season_count}`
-      + `|${calc.total_all_count}`
-      + `|${calc.total_all_dec}|`
-      // +`${(!(report_array.dec_balances.leaderboard_prize <= 0) ? `\n` :
-      //   `\n### Leaderboard Prizes\n\n${report_array.leaderboard_table}\n\n`)}
-      + `\n#### Captured DEC (Ranked Rewards)\n`
-      + `\n|Ranked Play Wins|DEC Earned|`
-      + `\n|-|-|`
-      + `\n|${report_array.matches.api_wins_count}|`
-      + `${report_array.dec_balances.dec_reward.toFixed(0)}|`
-      + `\n#### Total Ranked Play Rewards\n`
-      + `\n|Total Ranked Play Earnings|`
-      + `\n|-|`
-      + `\n|${(calc.total_dec + report_array.dec_balances.leaderboard_prize).toFixed(0)} DEC|`
-      + `\n|${calc.total_loot_credits} CREDITS|`;
+        + `\n|Rarity|Quantity|🔥DEC🔥|`
+        + `\n|-|-|-|`
+        + `\n|Common|${calc.stand_common_count}|${calc.stand_common_dec}|`
+        + `\n|Rare|${calc.stand_rare_count}|${calc.stand_rare_dec}|`
+        + `\n|Epic|${calc.stand_epic_count}|${calc.stand_epic_dec}|`
+        + `\n|Legendary|${calc.stand_legendary_count}|${calc.stand_legendary_dec}|`
+        + `\n|Total Standard|${calc.total_stand_count}|${calc.total_stand_dec}|`
+        + `\n##### Gold Foil Cards\n`
+        + `\n|Rarity|Quantity|🔥DEC🔥|`
+        + `\n|-|-|-|`
+        + `\n|Common|${calc.gold_common_count}|${calc.gold_common_dec}|`
+        + `\n|Rare|${calc.gold_rare_count}|${calc.gold_rare_dec}|`
+        + `\n|Epic|${calc.gold_epic_count}|${calc.gold_epic_dec}|`
+        + `\n|Legendary|${calc.gold_legendary_count}|${calc.gold_legendary_dec}|`
+        + `\n|Total Gold|${calc.total_gold_count}|${calc.total_gold_dec}|`
+        + `\n#### Loot Chests\n`
+        + `\n|Reward Chests|Dailies|Season|Total| 💲Token |`
+        + `\n|-|-|-|-|-|`
+        + `\n|Legendary Potions`
+        + `|${loot_chests.daily.legendary_potion}`
+        + `|${loot_chests.season.legendary_potion}`
+        + `|${calc.total_legendary_potions_count}`
+        + `|🟡 ${calc.total_legendary_potions_credits}|`
+        + `\n|Alchemy Potions`
+        + `|${loot_chests.daily.alchemy_potion}`
+        + `|${loot_chests.season.alchemy_potion}|${calc.total_alchemy_potions_count}`
+        + `|🟡 ${calc.total_alchemy_potions_credits}|`
+        + `\n|DEC|${loot_chests.daily.dec}|${loot_chests.season.dec}|-|🟣 ${calc.total_loot_dec}|`
+        + `\n|CREDITS`
+        + `|${loot_chests.daily.credits}`
+        + `|${loot_chests.season.credits}|-`
+        + `|🟡 ${calc.total_loot_credits}|`
+        + `\n|CHAOS Packs`
+        + `|${loot_chests.daily.chaos_packs}`
+        + `|${loot_chests.season.chaos_packs}`
+        + `|${calc.total_chaos_packs_count}`
+        + `|🟡 ${calc.total_chaos_packs_credits}|`
+        + `\n|Cards (Total)`
+        + `|${calc.total_dailies_count}`
+        + `|${calc.total_season_count}`
+        + `|${calc.total_all_count}`
+        + `|🟣 ${calc.total_all_dec}|`
+        // +`${(!(report_array.dec_balances.leaderboard_prize <= 0) ? `\n` :
+        //   `\n### Leaderboard Prizes\n\n${report_array.leaderboard_table}\n\n`)}
+        + `\n#### Captured DEC (Ranked Rewards)\n`
+        + `\n|Ranked Play Wins|DEC Earned|`
+        + `\n|-|-|`
+        + `\n|${report_array.matches.api_wins_count}|`
+        + `🟣 ${report_array.dec_balances.dec_reward.toFixed(0)}|`
+        + `\n#### Total Ranked Play Rewards\n`
+        + `\n|Total Ranked Play Earnings|`
+        + `\n|-|`
+        + `\n|🟣 ${(calc.total_dec + report_array.dec_balances.leaderboard_prize).toFixed(0)} DEC|`
+        + `\n|🟡 ${calc.toal_credits} CREDITS|`;
   }
 
   this.cardUsageData = function (data) {
@@ -883,13 +884,13 @@ function report_controller() {
       });
 
       let cardList = report_array.matches.cards.array.reduce((cardList, card) =>
-          card.substring(0, 7) === `starter` ? cardList : `${cardList}${card},`,
-        '');
+              card.substring(0, 7) === `starter` ? cardList : `${cardList}${card},`,
+          '');
       if (cardList.length > 0) cardList = cardList.slice(0, -1);
 
       request(`https://api.splinterlands.io/cards/find?ids=${cardList}`,
-        0,
-        context.cardUsageData);
+          0,
+          context.cardUsageData);
     } else {
       report_array.matches.cards.used_cards_details = data;
       //console.log(`Info on used cards`, data);
@@ -948,7 +949,7 @@ function report_controller() {
       report_array.matches.Ranked.total_matches = sum(report_array.matches.Ranked);
       report_array.matches.Tournament.total_matches = sum(report_array.matches.Tournament);
       report_array.matches.total_matches =
-        report_array.matches.Ranked.total_matches + report_array.matches.Tournament.total_matches;
+          report_array.matches.Ranked.total_matches + report_array.matches.Tournament.total_matches;
       report_array.summoner_data = generatePublicDetails(report_array.matches.cards.summoners);
       report_array.monster_data = generatePublicDetails(report_array.matches.cards.monsters);
 
@@ -974,22 +975,22 @@ function report_controller() {
 
       //Make table
       report_array.matches.monster_frequency_table =
-        `|Monster|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
+          `|Monster|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
       report_array.monster_data.forEach((card, i) => {
         if (i < 100) {
           report_array.matches.monster_frequency_table =
-            `${report_array.matches.monster_frequency_table}\n
+              `${report_array.matches.monster_frequency_table}\n
             |${card.name}|${card.count}|${card.percent_matches.toFixed(2)}%
             |${card.percent_win.toFixed(2)}%|`;
         }
       });
 
       report_array.matches.summoner_frequency_table =
-        `|Summoner|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
+          `|Summoner|Frequency|Teams Fielded|Win Rate|\n|-|-|-|-|`;
       report_array.summoner_data.forEach((card, i) => {
         if (i < 10) {
           report_array.matches.summoner_frequency_table =
-            `${report_array.matches.summoner_frequency_table}\n
+              `${report_array.matches.summoner_frequency_table}\n
             |${card.name}|${card.count}|${card.percent_matches.toFixed(2)}%
             |${card.percent_win.toFixed(2)}%|`;
         }
@@ -1012,7 +1013,7 @@ function report_controller() {
     rulesets_array.forEach(ruleset => {
       let total = ruleset.wins + ruleset.loss + ruleset.draws;
       report_array.matches.ruleset_frequency_table =
-        `${report_array.matches.ruleset_frequency_table}\n
+          `${report_array.matches.ruleset_frequency_table}\n
         |${ruleset.name}|${total}|${(100 * ruleset.wins / total).toFixed(2)}%|`;
     });
 

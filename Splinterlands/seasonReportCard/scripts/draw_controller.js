@@ -67,7 +67,7 @@ ${report_array.earnings.template}
 
 ${document.getElementById('textRewards').value}
 
-${divider}${(report_array.dec_balances.rentals.count > 0) ? `\n\n### Rental Report\n\n${report_array.rentals_table}\n\n${document.getElementById('rentals').value}\n${divider}` : ``}${(report_array.sps_balances.airdrop > 0 || report_array.sps_balances.staking > 0) ? `\n\n### SPS Report\n\n${report_array.sps_table}\n\n${document.getElementById('sps').value}\n${divider}` : ``}
+${divider}${(report_array.dec_balances.rentals.count > 0) ? `\n\n### 🟣 Rental Report\n\n${report_array.rentals_table}\n\n${document.getElementById('rentals').value}\n${divider}` : ``}${(report_array.sps_balances.airdrop > 0 || report_array.sps_balances.staking > 0) ? `\n\n### ⭐ SPS Report\n\n${report_array.sps_table}\n\n${document.getElementById('sps').value}\n${divider}` : ``}
 
 ${document.getElementById('textClosing').value}
 
