@@ -163,12 +163,8 @@ function load_tab(tok, txs) {
     csv.className += 'w3-button w3-border w3-round tab_btn';
     csv.innerText = 'Export as CSV';
     csv.id = info['dld_csv_btn'];
-    let pdf = document.createElement('button');
-    pdf.className += 'w3-button w3-border w3-round w3-left-align';
-    pdf.innerText = 'Export as PDF';
-    pdf.disabled = true;
 
-    div.append(csv, pdf);
+    div.append(csv);
     return [div];
   }
 }
