@@ -66,7 +66,7 @@ const rarities = {
 };
 
 function getCards() {
-  let url = "https://game-api.splinterlands.com/cards/get_details";
+  let url = "https://api2.splinterlands.com/cards/get_details";
 
   $.get(url, function (data) {
     cards = data;

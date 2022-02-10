@@ -2,7 +2,7 @@ function report_controller() {
   let el = id => document.getElementById(id);
 
   let context = this;
-  let testing = false;
+  let testing = true;
 
   let prices = {
     LEGENDARY: 40,
@@ -114,7 +114,7 @@ function report_controller() {
 
   this.getDetails = function () {
     update_status(`Getting Splinterlands settings.`);
-    let url = "https://game-api.splinterlands.com/settings";
+    let url = "https://api2.splinterlands.com/settings";
     request(url, 0, context.seasonNum);
   };
 
@@ -144,7 +144,7 @@ function report_controller() {
           });
 
           update_status(`Getting all card details.`);
-          request(`https://game-api.splinterlands.com/cards/get_details`, 0, context.allCardsDetails);
+          request(`https://api2.splinterlands.com/cards/get_details`, 0, context.allCardsDetails);
         });
   };
 

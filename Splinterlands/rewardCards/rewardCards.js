@@ -3,7 +3,7 @@ var body1 = "Data regarding the remaining reward edition cards for Splinterlands
 document.getElementById("body1").innerHTML = body1;
 
 var body2 =
-  "Disclaimer: Human error could result in mistakes in the representation of the above data. Extracted from https://game-api.splinterlands.com/cards/get_details.<br>" +
+  "Disclaimer: Human error could result in mistakes in the representation of the above data. Extracted from https://api2.splinterlands.com/cards/get_details.<br>" +
   "<br><a href=\"https://github.com/kiokizz\">GitHub</a> | Check out my blogs <a href=\"https://hive.blog/@kiokizz\">@kiokizz</a> & <a href=\"https://hive.blog/@splinterstats\">@splinterstats</a>"
 
 document.getElementById("body2").innerHTML = body2;
@@ -35,7 +35,7 @@ let hidden = {
 getRewardCards();
 
 function getRewardCards() {
-  let url = "https://game-api.splinterlands.com/cards/get_details";
+  let url = "https://api2.splinterlands.com/cards/get_details";
   $.get(url, url, function (data) {
     console.log(data);
     if (data) {
@@ -49,7 +49,7 @@ function getRewardCards() {
 }
 
 function getPrices() {
-  let url = "https://game-api.splinterlands.com/market/for_sale_grouped";
+  let url = "https://api2.splinterlands.com/market/for_sale_grouped";
   $.get(url, url, function (data) {
     console.log(data);
     if (data) {
