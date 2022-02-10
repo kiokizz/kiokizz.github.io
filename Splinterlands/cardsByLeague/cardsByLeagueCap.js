@@ -240,7 +240,7 @@ function createHTMLPage(table) {
     summoner = parseInt(el("Summoner").value);
     league = el("League").value;
 
-    const additionFilters = ["beta", "promo", "reward", "untamed", "dice"];
+    const additionFilters = ["beta", "promo", "reward", "untamed", "dice", "chaos"];
     editionsToFilter = additionFilters.filter(c => el(c).checked);
 
     let abilities = [
