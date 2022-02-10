@@ -58,7 +58,7 @@ let report_array = {
           count: 0,
           quantity: 0
         },
-        CINETV: {
+        CINE: {
           name: `CineTV (CINE)`,
           count: 0,
           quantity: 0
