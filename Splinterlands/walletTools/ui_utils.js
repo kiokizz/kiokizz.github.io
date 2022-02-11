@@ -40,3 +40,18 @@ function validate_input(input, tester_function, err) {
   show(err.id);
   return false;
 }
+
+function get_button(innerText, id) {
+  let btn = document.createElement('button');
+  btn.className += 'w3-button w3-border w3-round';
+  btn.innerText = innerText;
+  btn.id = id;
+  return btn;
+}
+
+function get_centered_div(els = []) {
+  let div = document.createElement('div');
+  div.className += 'w3-panel w3-center';
+  div.append(...els);
+  return div;
+}

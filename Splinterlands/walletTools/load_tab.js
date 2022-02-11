@@ -29,13 +29,18 @@ function load_tab(tok, txs) {
   tab.innerHTML += get_graphs_section();
   append_hr(tab);
   tab.innerHTML += get_tx_list(txs);
-  tab.append(...get_pagination_buttons());
-  tab.append(...get_download_buttons());
+  tab.append(
+    get_button('Back', info['back_btn']),
+    get_button('Next', info['next_btn'])
+  );
+  tab.append(get_centered_div([
+    get_button('Export as CSV', info['dld_csv_btn'])
+  ]));
 
   let off = (lim => {
     let off = 0;
     return {
-      decrement: () => off - lim <= 0 ? off : (off -= lim),
+      decrement: () => off - lim < 0 ? off : (off -= lim),
       increment: () => off + lim >= txs.length ? off : (off += lim)
     };
   })(100);
@@ -141,30 +146,5 @@ function load_tab(tok, txs) {
         ${get_tx_rows(txs)}
       </table>
       </div>`;
-  }
-
-  function get_pagination_buttons() {
-    let back = document.createElement('button');
-    back.className += 'w3-button w3-border w3-round';
-    back.innerText = 'Back';
-    back.id = info['back_btn'];
-    let next = document.createElement('button');
-    next.className += 'w3-button w3-border w3-round w3-left-align';
-    next.innerText = 'Next';
-    next.id = info['next_btn'];
-
-    return [back, next];
-  }
-
-  function get_download_buttons() {
-    let div = document.createElement('div');
-    div.className += 'w3-panel w3-center';
-    let csv = document.createElement('button');
-    csv.className += 'w3-button w3-border w3-round tab_btn';
-    csv.innerText = 'Export as CSV';
-    csv.id = info['dld_csv_btn'];
-
-    div.append(csv);
-    return [div];
   }
 }
