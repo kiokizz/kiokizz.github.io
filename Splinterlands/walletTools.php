@@ -8,11 +8,10 @@
   <link rel="stylesheet" type="text/css" href="walletTools/walletTools.css">
   <script
       src="https://cdn.jsdelivr.net/npm/@hiveio/hive-js/dist/hive.min.js">
-
   </script>
-  <script src="walletTools/utils.js"></script>
-  <script src="walletTools/ui_utils.js"></script>
-  <script src="walletTools/load_tab.js"></script>
+  <script src="walletTools/utils.js?v=1"></script>
+  <script src="walletTools/ui_utils.js?v=1"></script>
+  <script src="walletTools/load_tab.js?v=1"></script>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet"
         href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
