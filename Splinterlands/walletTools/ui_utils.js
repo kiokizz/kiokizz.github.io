@@ -41,6 +41,10 @@ function validate_input(input, tester_function, err) {
   return false;
 }
 
+function append_hr(e) {
+  e.appendChild(document.createElement('hr'));
+}
+
 function get_button(innerText, id) {
   let btn = document.createElement('button');
   btn.className += 'w3-button w3-border w3-round';
