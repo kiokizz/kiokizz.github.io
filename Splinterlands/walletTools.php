@@ -5,9 +5,9 @@
   <meta charset="UTF-8">
   <title>Splinterlands Collection Tools</title>
   <link rel="shortcut icon" href="resources/rose.jpg"/>
-    <link rel="stylesheet" type="text/css" href="walletTools/walletTools.css">
+  <link rel="stylesheet" type="text/css" href="walletTools/walletTools.css">
   <script
-    src="https://cdn.jsdelivr.net/npm/@hiveio/hive-js/dist/hive.min.js">
+      src="https://cdn.jsdelivr.net/npm/@hiveio/hive-js/dist/hive.min.js">
 
   </script>
   <script src="walletTools/utils.js"></script>
@@ -43,21 +43,13 @@
     </button>
   </div>
 
-  <div id='sps_tab_div' class="w3-panel w3-hide tab_div">
+  <div id='sps_tab_div' class="w3-panel w3-hide tab_div"></div>
 
-  </div>
+  <div id='dec_tab_div' class="w3-panel w3-hide tab_div"></div>
 
-  <div id='dec_tab_div' class="w3-panel w3-hide tab_div">
+  <div id='cre_tab_div' class="w3-panel w3-hide tab_div"></div>
 
-  </div>
-
-  <div id='cre_tab_div' class="w3-panel w3-hide tab_div">
-
-  </div>
-
-  <div id='vou_tab_div' class="w3-panel w3-hide tab_div">
-
-  </div>
+  <div id='vou_tab_div' class="w3-panel w3-hide tab_div"></div>
 
 </div>
 
@@ -86,14 +78,15 @@
 
     <div class="w3-container">
       <div class="w3-panel">
-        <label>Username (without @): </label>
-        <input class="w3-input w3-border" type="text" id="init_username"
-               value="" placeholder="username"
-               oninput="validate_input(
+        <label>Username (without @):
+          <input class="w3-input w3-border" type="text" id="init_username"
+                 value="" placeholder="username"
+                 oninput="validate_input(
                  this.id,
                  is_valid_splinterlands_username,
                  el('init_err')
                )">
+        </label>
         <p id="init_err" class="w3-panel w3-red w3-padding w3-hide"></p>
         <button id="init_btn" class="w3-button w3-theme"
                 onclick="init_page('init_btn')">
