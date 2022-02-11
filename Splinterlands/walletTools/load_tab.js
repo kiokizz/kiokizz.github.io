@@ -139,7 +139,7 @@ function load_tab(tok, txs) {
   }
 
   function get_tx_table(off = 0, lim = 100) {
-    let format_tx_amt = amt => (amt >= 0) ? amt : `(${amt.substr(1)})`;
+    let format_tx_amt = amt => (amt >= 0) ? amt : `(${amt.substring(1)})`;
     let get_tx_rows = txs => txs.filter(
       tx => !(tx['amount'] >= 0 && !filters.in)
         && !(tx['amount'] < 0 && !filters.out)
@@ -147,7 +147,7 @@ function load_tab(tok, txs) {
     ).reduce((trs, tx, idx) => {
       if (idx < off || idx >= off + lim) return trs;
       return trs + `<tr>
-        <td class="w3-left-align">${tx['created_date'].substr(0, 10)}</td>
+        <td class="w3-left-align">${tx['created_date'].substring(0, 10)}</td>
         <td class="w3-center">${tx['type']}</td>
         <td class="w3-right-align">${format_tx_amt(tx['amount'])}</td>
         <td class="w3-right-align">${tx['balance_end']}</td>
