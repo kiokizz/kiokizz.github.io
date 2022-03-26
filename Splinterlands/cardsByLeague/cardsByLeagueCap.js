@@ -317,13 +317,13 @@ function makeTable() {
             <button id="card" class="btn">${league}|${rarities[summoner]}</button>
             <button id="color" class="btn">🌈</button>
           </th>
-          <th><button id="mana" class="btn">🔮 Mana</button></th>
-          <th><button id="health" class="btn">💗 Health</button></th>
-          <th><button id="armor" class="btn">🛡️ Armor</button></th>
-          <th><button id="speed" class="btn">⏩ Speed</button></th>
-          <th><button id="attack" class="btn">🗡️ Melee</button></th>
-          <th><button id="ranged" class="btn">🏹 Ranged</button></th>
-          <th><button id="magic" class="btn">✨ Magic</button></th>
+          <th><button id="mana" class="btn"><img src="./resources/stats/stat_mana.png" width="40" height="40"></button></th>
+          <th><button id="health" class="btn"><img src="./resources/stats/stat_health.png" width="40" height="40"></button></th>
+          <th><button id="armor" class="btn"><img src="./resources/stats/stat_defense.png" width="40" height="40"></button></th>
+          <th><button id="speed" class="btn"><img src="./resources/stats/stat_speed.png" width="40" height="40"></button></th>
+          <th><button id="attack" class="btn"><img src="./resources/stats/stat_melee-attack.png" width="40" height="40"></button></th>
+          <th><button id="ranged" class="btn"><img src="./resources/stats/stat_ranged-attack.png" width="40" height="40"></button></th>
+          <th><button id="magic" class="btn"><img src="./resources/stats/stat_magic-attack.png" width="40" height="40"></button></th>
           <th>Abilities</th>
         </tr>
         ${data.monster_rows}
@@ -337,13 +337,13 @@ function makeTable() {
         <th colspan="9" style="font-size: large">Summoners</th>
         <tr>
           <th></th>
-          <th>🔮</th>
-          <th>💗</th>
-          <th>🛡️</th>
-          <th>⏩</th>
-          <th>🗡️</th>
-          <th>🏹</th>
-          <th>✨</th>
+          <th><button id="mana" class="btn"><img src="./resources/stats/stat_mana.png" width="40" height="40"></button></th>
+          <th><button id="health" class="btn"><img src="./resources/stats/stat_health.png" width="40" height="40"></button></th>
+          <th><button id="armor" class="btn"><img src="./resources/stats/stat_defense.png" width="40" height="40"></button></th>
+          <th><button id="speed" class="btn"><img src="./resources/stats/stat_speed.png" width="40" height="40"></button></th>
+          <th><button id="attack" class="btn"><img src="./resources/stats/stat_melee-attack.png" width="40" height="40"></button></th>
+          <th><button id="ranged" class="btn"><img src="./resources/stats/stat_ranged-attack.png" width="40" height="40"></button></th>
+          <th><button id="magic" class="btn"><img src="./resources/stats/stat_magic-attack.png" width="40" height="40"></button></th>
           <th>Abilities</th>
         </tr>
         ${data.summoner_rows}
