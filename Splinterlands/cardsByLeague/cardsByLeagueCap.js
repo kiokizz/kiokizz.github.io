@@ -370,8 +370,6 @@ function createHTMLPage(table) {
   Array.from(CSVs).map(c => c.style.display = "block");
 
   if (!data.listeners) {
-    console.error(`EVENT LISTENERS ADDED.`)
-    console.log(`Add listensers`);
     data.listeners = true;
 
     el("selectorsFilter").onclick = () => calculations()
