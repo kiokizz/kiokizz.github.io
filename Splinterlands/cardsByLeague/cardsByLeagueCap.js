@@ -173,6 +173,7 @@ function monsters_array() {
       magic: card["stats"].magic[level],
       abilities: "",
       color: card.color,
+      rarity: card.rarity,
       type: `monster`
     };
 
@@ -232,6 +233,7 @@ function summoner_array() {
           magic: card["stats"].magic,
           abilities: "",
           color: card.color,
+          rarity: card.rarity,
           type: `summoner`
         };
 
@@ -400,9 +402,9 @@ function sortTable(column) {
 
 function download() {
   let dataCSV = data.monsters.reduce(
-      (p, c) => `${p}${c.card},${c.mana},${c.health},${c.armor},${c.speed},` +
+      (p, c) => `${p}${c.card},${rarities[c.rarity]},${c.color},${c.edition},${c.level + 1},${c.mana},${c.health},${c.armor},${c.speed},` +
           `${c.attack},${c.ranged},${c.magic},${c.abilities}\n`,
-      "card,mana,health,armor,speed,attack,ranged,magic,abilities\n"
+      "card,rarity,color,edition,level,mana,health,armor,speed,attack,ranged,magic,abilities\n"
   );
 
   let csv_text = document.createElement('a');
