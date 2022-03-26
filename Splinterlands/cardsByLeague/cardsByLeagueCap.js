@@ -407,7 +407,7 @@ function sortTable(column) {
   if (sorted === column) makeTable(data.monsters.reverse());
   else {
     sorted = column;
-    data.monster_rows.sort((card1, card2) => {
+    data.monsters.sort((card1, card2) => {
       if (card1[column] < card2[column]) return -1;
       if (card1[column] > card2[column]) return 1;
       return 0;
