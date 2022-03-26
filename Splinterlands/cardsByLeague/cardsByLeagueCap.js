@@ -370,6 +370,8 @@ function createHTMLPage(table) {
     console.log(`Add listensers`);
     data.listeners = true;
 
+    el("selectorsFilter").onclick = () => calculations()
+
     let fields_change = [`Summoner`, `League`, `beta`, `promo`, `reward`, `untamed`, `dice`, `gladius`, `chaos`, `ability1`,
       `ability2`, `ability3`, `stat`, `operator`, `statvalue`, `summonersCheckbox`, `galleryCheckbox`]
     fields_change.forEach((field) => el(field).onchange = () => calculations());
