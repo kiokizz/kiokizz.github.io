@@ -99,6 +99,7 @@ const textColor = {
   Green: "black",
   White: "black",
   Grey: "black",
+  Gray: "black",
   Gold: "black",
   Blue: "black",
   Black: "white"
@@ -284,9 +285,12 @@ function makeTable() {
                <img style="max-width:100%;height:auto;" src="${imageLink}" alt="">
             </span></a>`;
 
+          let colored_svgs = color_edition[textColor[c.color]];
+          let edition_svg = colored_svgs[c.edition];
+
           return `${p}
             <tr>
-              <td ${style}> ⭐<b>${level}</b> | ${tool_tip}</td>
+              <td ${style}>${edition_svg}⭐<b>${level}</b> | ${tool_tip}</td>
               <td class="ct">${c.mana}</td>
               <td class="ct">${c.health}</td>
               <td class="ct">${c.armor}</td>

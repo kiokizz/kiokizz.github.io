@@ -74,6 +74,10 @@ th {
     border-collapse: collapse;
 }
 
+tr svg {
+    vertical-align: middle;
+}
+
 .ct {
     text-align: center;
 }
