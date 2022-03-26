@@ -1,6 +1,7 @@
 let data = {
   monsters: [],
-  summoners: []
+  summoners: [],
+  listeners: false
 };
 let cards = [];
 let sorted = "";
@@ -11,7 +12,6 @@ let abilitiesList = [];
 let editionsToFilter = [];
 let abilitiesToFilter = [];
 let statFilter = ["none"];
-let galleryImages = [];
 
 const leageCaps = {
   novice: [1, 1, 1, 1],
@@ -117,7 +117,8 @@ function getCards() {
 function calculations() {
   data = {
     monsters: [],
-    summoners: []
+    summoners: [],
+    listeners: data.listeners
   };
   sorted = "";
 
@@ -324,6 +325,9 @@ function makeTable() {
         ${data.monster_rows}
       </table>`;
 
+  el('abilities').innerHTML =
+      abilitiesList.reduce((p, c) => `${p}<option value="${c}">`);
+
   tables.summoners =
       `<table>
         <th colspan="9" style="font-size: large">Summoners</th>
@@ -340,9 +344,6 @@ function makeTable() {
         </tr>
         ${data.summoner_rows}
       </table>`;
-
-  el('abilities').innerHTML =
-      abilitiesList.reduce((p, c) => `${p}<option value="${c}">`);
 
   createHTMLPage(tables);
 }
@@ -364,7 +365,18 @@ function createHTMLPage(table) {
   let CSVs = document.getElementsByClassName("CSV");
   Array.from(CSVs).map(c => c.style.display = "block");
 
-  el("selectorsFilter").onclick = () => calculations()
+  if (!data.listeners) {
+    console.error(`EVENT LISTENERS ADDED.`)
+    console.log(`Add listensers`);
+    data.listeners = true;
+
+    let fields_change = [`Summoner`, `League`, `beta`, `promo`, `reward`, `untamed`, `dice`, `gladius`, `chaos`, `ability1`,
+      `ability2`, `ability3`, `stat`, `operator`, `statvalue`, `summonersCheckbox`, `galleryCheckbox`]
+    fields_change.forEach((field) => el(field).onchange = () => calculations());
+
+    let fields_keyup = [`ability1`, `ability2`, `ability3`];
+    fields_change.forEach((field) => el(field).onkeyup = () => calculations());
+  }
 }
 
 function galleryView(summoner_images) {
