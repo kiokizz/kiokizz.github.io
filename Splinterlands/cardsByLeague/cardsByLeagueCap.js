@@ -105,6 +105,16 @@ const textColor = {
   Black: "white"
 };
 
+const splinterColor = {
+  fire: `Red`,
+  earth: `Green`,
+  life: `White`,
+  neutral: `Gray`,
+  dragon: `Gold`,
+  water: `Blue`,
+  death: `Black`
+};
+
 function getCards() {
   let url = "https://api2.splinterlands.com/cards/get_details";
 
@@ -155,7 +165,7 @@ function calculations() {
 }
 
 function monsters_array() {
-  console.log(summoner, league, summonerCaps);
+  // console.log(summoner, league, summonerCaps);
 
   cards.forEach(card => {
     if (card.type !== "Monster") return;
@@ -207,6 +217,15 @@ function monsters_array() {
     let filter =
         (statFilter[1] === "<") ? (a, b) => a < b :
             (statFilter[1] === ">") ? (a, b) => a > b : (a, b) => a === b;
+
+    // ToList Splinter
+    console.log(card)
+    let colours = [];
+    let splinters = [`fire`, `water`, `earth`, `life`, `death`, `dragon`, `neutral`];
+    splinters.forEach((splinter) => {
+      if (el(splinter).checked) colours.push(splinterColor[splinter])
+    })
+    if (colours.length > 0 && !colours.includes(card.color)) return;
 
     fail = statFilter[0] !== "none" && statFilter[2] &&
         !filter(obj[statFilter[0]], parseInt(statFilter[2]));
@@ -379,7 +398,7 @@ function createHTMLPage(table) {
     fields_change.forEach((field) => el(field).onchange = () => calculations());
 
     let fields_keyup = [`ability1`, `ability2`, `ability3`];
-    fields_change.forEach((field) => el(field).onkeyup = () => calculations());
+    fields_keyup.forEach((field) => el(field).onkeyup = () => calculations());
 
     document.getElementById("chaos").checked = true;
     calculations();
@@ -442,4 +461,12 @@ function download() {
   document.body.appendChild(csv_text);
   csv_text.click();
   document.body.removeChild(csv_text);
+}
+
+function toggleSplinterImg(id) {
+  let e = el(id);
+  let clicked = e.checked ? `` : `_black`;
+  let path = `resources/${id}_symbol${clicked}.png`;
+  el(`${id}-img`).src = path;
+  calculations();
 }

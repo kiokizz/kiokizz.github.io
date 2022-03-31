@@ -147,7 +147,6 @@ tr svg {
     fill: black;
     fill-opacity: 100%;
     filter: invert(100%);
-    /*filter: invert(100%) sepia(50%) saturate(3.5);*/
 }
 
 
@@ -155,11 +154,13 @@ tr svg {
     fill-opacity: 50%;
     filter: invert(50%);
     /*filter: saturate(-5);*/
-    /*filter: invert(50%) sepia(100%) saturate(0.1);*/
 }
 
 .edition_check_alt:checked + label{
     fill-opacity: 100%;
     filter: saturate(5);
-    /*filter: invert(100%) saturate(3.5);*/
+}
+
+.splinter_check {
+    display: none;
 }
