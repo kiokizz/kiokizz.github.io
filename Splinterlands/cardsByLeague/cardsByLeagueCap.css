@@ -120,3 +120,46 @@ tr svg {
     left: 30px;
     bottom: 20px;
 }
+
+.edition_check {
+    position:relative;
+}
+
+.edition_check, .edition_check_alt {
+    display: none;
+    height: 30px;
+}
+
+.edition_check + label:hover, .edition_check_alt + label:hover {
+    height: 30px;
+    fill-opacity: 100%;
+    position:relative;
+    left:0.5px;
+    top:0.5px;
+}
+
+.edition_check + label{
+    fill-opacity: 50%;
+    filter: invert(50%) sepia(100%) saturate(0.1);
+}
+
+.edition_check:checked + label{
+    fill: black;
+    fill-opacity: 100%;
+    filter: invert(100%);
+    /*filter: invert(100%) sepia(50%) saturate(3.5);*/
+}
+
+
+.edition_check_alt + label{
+    fill-opacity: 50%;
+    filter: invert(50%);
+    /*filter: saturate(-5);*/
+    /*filter: invert(50%) sepia(100%) saturate(0.1);*/
+}
+
+.edition_check_alt:checked + label{
+    fill-opacity: 100%;
+    filter: saturate(5);
+    /*filter: invert(100%) saturate(3.5);*/
+}
