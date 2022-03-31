@@ -3,7 +3,6 @@ let data = {
   summoners: [],
   listeners: false
 };
-let toggle_chaos = false;
 let cards = [];
 let sorted = "";
 
@@ -383,6 +382,7 @@ function createHTMLPage(table) {
     fields_change.forEach((field) => el(field).onkeyup = () => calculations());
 
     document.getElementById("chaos").checked = true;
+    calculations();
   }
 }
 
