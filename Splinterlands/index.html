@@ -2,68 +2,74 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <title>SplinterStats</title>
-  <link rel="shortcut icon" href="resources/rose.jpg"/>
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
-  <link rel="stylesheet" type="text/css" href="index_style.css">
+    <meta charset="UTF-8">
+    <title>SplinterStats</title>
+    <link rel="shortcut icon" href="resources/rose.jpg"/>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+    <link rel="stylesheet" type="text/css" href="index_style.css">
 </head>
 
 <body>
 
 <div class="w3-panel w3-theme" style="margin-top: 0;">
-  <h1><a href='index.html'>SplinterStats</a></h1>
-  <sub>A set of tools for accessing, sorting, and sharing data from Splinterlands.</sub>
-  <p id="pricing_data"></p>
-  <p></p>
+    <h1><a href='index.html'>SplinterStats</a></h1>
+    <sub>A set of tools for accessing, sorting, and sharing data from Splinterlands.</sub>
+    <p id="settings_data">Loading API...</p>
+    <p></p>
 </div>
 
 <script defer>
   let update_prices = () => {
     fetch("https://api2.splinterlands.com/settings")
-      .then(r => r.json())
-      .then(r => document.getElementById('pricing_data').innerHTML =
-        `Current price feeds - DEC: $${r['dec_price']}, SPS: $${r['sps_price']}`);
+        .then(r => r.json())
+        .then(r => {
+          let blocks = r['chain_props']['ref_block_num'] - r['last_block'] + 20 /*Approximately 20+- 5 of variance between actual chain block and Splinterlands reference block*/;
+          let seconds = ((blocks * 3) % 60 > 0) ? ` ${(blocks * 3) % 60} seconds` : ``;
+          let minutes = (Math.round(blocks * 3 / 60) > 0) ? ` ${(Math.round(blocks * 3 / 60))} minutes` : ``;
+          let status_message = (blocks > 30) ? ` <span style="color: yellow">Splinterlands is around${minutes}${seconds} (${blocks} blocks) behind the Hive Blockchain.</span>` : ``;
+          document.getElementById('settings_data').innerHTML =
+              `Current price feeds - DEC: $${r['dec_price']}, SPS: $${r['sps_price']}.${status_message}`
+        });
   };
   update_prices();
-  setInterval(update_prices, 60 * 1000);
+  setInterval(update_prices, 30 * 1000);
 </script>
 
 
 <div id="menu">
-  <div class="w3-theme w3-hover-shadow w3-card" style="padding: 0">
-    <a style="text-decoration: none" href="seasonReportCard.html">
-      <div style="margin: 0; min-width: 100%; min-height: 100%">
-        <h3>Season Report Card</h3>
-        <p>A tool for reflecting on and sharing your Splinterlands season play. Requires Hive Keychain.</p>
-      </div>
-    </a>
-  </div>
-  <div class="w3-theme w3-hover-shadow w3-card" style="padding: 0">
-    <a style="text-decoration: none" href="rewardCards.html">
-      <div style="margin: 0; min-width: 100%; min-height: 100%">
-        <h3>Rewards Cards</h3>
-        <p>Data regarding the remaining reward edition cards for Splinterlands.</p>
-      </div>
-    </a>
-  </div>
-  <div class="w3-theme w3-hover-shadow w3-card" style="padding: 0">
-    <a style="text-decoration: none" href="cardsByLeagueCap.html">
-      <div style="margin: 0; min-width: 100%; min-height: 100%">
-        <h3>Cards by League Cap</h3>
-        <p>A system to filter and sort Splinterlands Cards based on League Cap and other attributes.</p>
-      </div>
-    </a>
-  </div>
-  <div class="w3-theme w3-hover-shadow w3-card" style="padding: 0">
-    <a style="text-decoration: none" href="richList.html">
-      <div style="margin: 0; min-width: 100%; min-height: 100%">
-        <h3>Rich List</h3>
-        <p>Splinterlands Rich List tool for assets held in-game.</p>
-      </div>
-    </a>
-  </div>
+    <div class="w3-theme w3-hover-shadow w3-card" style="padding: 0">
+        <a style="text-decoration: none" href="seasonReportCard.html">
+            <div style="margin: 0; min-width: 100%; min-height: 100%">
+                <h3>Season Report Card</h3>
+                <p>A tool for reflecting on and sharing your Splinterlands season play. Requires Hive Keychain.</p>
+            </div>
+        </a>
+    </div>
+    <div class="w3-theme w3-hover-shadow w3-card" style="padding: 0">
+        <a style="text-decoration: none" href="rewardCards.html">
+            <div style="margin: 0; min-width: 100%; min-height: 100%">
+                <h3>Rewards Cards</h3>
+                <p>Data regarding the remaining reward edition cards for Splinterlands.</p>
+            </div>
+        </a>
+    </div>
+    <div class="w3-theme w3-hover-shadow w3-card" style="padding: 0">
+        <a style="text-decoration: none" href="cardsByLeagueCap.html">
+            <div style="margin: 0; min-width: 100%; min-height: 100%">
+                <h3>Cards by League Cap</h3>
+                <p>A system to filter and sort Splinterlands Cards based on League Cap and other attributes.</p>
+            </div>
+        </a>
+    </div>
+    <div class="w3-theme w3-hover-shadow w3-card" style="padding: 0">
+        <a style="text-decoration: none" href="richList.html">
+            <div style="margin: 0; min-width: 100%; min-height: 100%">
+                <h3>Rich List</h3>
+                <p>Splinterlands Rich List tool for assets held in-game.</p>
+            </div>
+        </a>
+    </div>
 </div>
 
 </body>
