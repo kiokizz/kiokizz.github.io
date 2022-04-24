@@ -2,7 +2,8 @@ let pages = {
   "seasonReportCard.html": "Season Report Card",
   "rewardCards.html": "Rewards Cards",
   "cardsByLeagueCap.html": "Cards by League Cap",
-  "richList.html": "Rich List"
+  "richList.html": "Rich List",
+  "bites.html": "Splinter Bites"
 };
 
 document.getElementById("nav_div").innerHTML =
