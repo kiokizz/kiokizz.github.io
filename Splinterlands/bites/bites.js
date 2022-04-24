@@ -420,7 +420,7 @@ document.addEventListener('webkitfullscreenchange', re_enable_divs, false);
 
 function re_enable_divs() {
   if (!document.webkitIsFullScreen || !document.mozFullScreen  || !document.msFullscreenElement ) {
-    main.style.height = "80vh";
+    main.style.height = "77vh";
     header.style.display = "block";
     footer.style.display = "block";
   }
