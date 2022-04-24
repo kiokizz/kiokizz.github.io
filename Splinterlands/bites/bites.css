@@ -66,3 +66,37 @@ footer {
     opacity: 1 !important;
     background-color: #cfe0e8;
 }
+
+/*Full Screen CSS W3Schools https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_fullscreen2 */
+.btn {
+    border: none;
+    background-color: inherit;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background: rgb(202, 189, 189);
+}
+
+
+/* Safari syntax */
+:-webkit-full-screen {
+    background-color: yellow;
+}
+
+/* IE11 */
+:-ms-fullscreen {
+    background-color: yellow;
+}
+
+/* Standard syntax */
+:fullscreen {
+    background-color: yellow;
+}
+
+/* Style the button */
+button {
+    padding: 20px;
+    font-size: 20px;
+}

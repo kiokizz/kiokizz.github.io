@@ -384,6 +384,9 @@ Void Dragons spend most of their time hidden within the clouds. They have a stro
 "Zyvax Vuul has dedicated his life to the arcane, covering his body in runes that give him unnatural strength. His unrivalled knowledge of dragon magic has earned him the moniker ""The Keeper of Dragons,"" but rumor also has it that he has a voracious, cannibalistic appetite."`.split(`\n`);
 
 let quote = document.getElementById(`quote`);
+let header = document.getElementById(`header`);
+let footer = document.getElementById(`footer`);
+let main = document.getElementById(`main`);
 
 quote.innerHTML = Bites[Math.floor(Math.random() * Bites.length - 1)];
 setInterval(function () {
@@ -393,3 +396,32 @@ setInterval(function () {
     quote.classList.toggle('fade');
   }, 1500)
 }, 30 * 1000)
+
+/*Full Screen JS W3Schools https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_fullscreen2 */
+let elem = document.documentElement;
+function openFullscreen() {
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) { /* Safari */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { /* IE11 */
+    elem.msRequestFullscreen();
+  }
+  main.style.height = "100vh";
+  header.style.display = "none";
+  footer.style.display = "none";
+}
+
+// Modified full screen checker from: https://stackoverflow.com/a/43717157
+document.addEventListener('fullscreenchange', re_enable_divs, false);
+document.addEventListener('mozfullscreenchange', re_enable_divs, false);
+document.addEventListener('MSFullscreenChange', re_enable_divs, false);
+document.addEventListener('webkitfullscreenchange', re_enable_divs, false);
+
+function re_enable_divs() {
+  if (!document.webkitIsFullScreen || !document.mozFullScreen  || !document.msFullscreenElement ) {
+    main.style.height = "80vh";
+    header.style.display = "block";
+    footer.style.display = "block";
+  }
+}

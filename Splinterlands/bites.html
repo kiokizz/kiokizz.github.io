@@ -14,7 +14,7 @@
 </head>
 
 <body>
-<div class="page_header w3-theme">
+<div id="header" class="page_header w3-theme">
     <div class="w3-container w3-margin-bottom">
         <h1><a href='index.html'>SplinterStats</a> - Splinter Bites</h1>
         <sub>A viewer for Splinterlands Splinter Bites.</sub>
@@ -23,13 +23,14 @@
     <script src="scripts/navigation_loader.js" defer></script>
 </div>
 
-<div class="main" class="w3-container">
+<div id="main" class="main" class="w3-container">
     <div id="quote" class="content">
         Loading...
     </div>
 </div>
 
-<footer>
+<footer id="footer">
+    <button id="full_screen" onclick="openFullscreen();" class="btn">Full Screen</button>
     <p>
         Source: Splinterlands<br>
         <a href="https://github.com/kiokizz">GitHub</a>
