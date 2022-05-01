@@ -231,7 +231,7 @@ function report_controller() {
           Please refresh the page before proceeding.`);
       }
       console.log(`Season data exists.`);
-      //TODO Continue from here.
+      report_array.season_rewards_claim_tx = season_details.reward_claim_tx;
       report_array.matches.guild = season_details.guild_name;
       report_array.matches.league = rankings[season_details.league].name;
       report_array.matches.league_name = rankings[season_details.league].group;
@@ -372,7 +372,7 @@ function report_controller() {
       if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
       if (tx.type === "claim_reward") {
         let json = JSON.parse(tx.data);
-        if (json.type === "league_season" && created_date > report_array.season_end) valid = true;
+        if (json.type === "league_season" && report_array.season_rewards_claim_tx === tx.id/*created_date > report_array.season_end*/) valid = true;
         else if (json.type === "league_season") valid = false;
       } else if (tx.type === `enter_tournament` && created_date < report_array.season_end) valid = true;
       if (!valid) return;
