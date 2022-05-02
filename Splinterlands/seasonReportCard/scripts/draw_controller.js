@@ -42,23 +42,6 @@ ${(report_array.matches.Tournament.ids.length > 0) ? `|Tournament Ratio (Win/Los
 
 ${document.getElementById('performance').value}
 
-#### Top 10 Summoner Usage
-
-<b>Offline</b>` + /*${report_array.matches.summoner_frequency_table}*/`
-
-${document.getElementById('top10summoners').value}
-
-#### Top 100 Monster Usage
-
-<b>Offline</b>` + /*${report_array.matches.monster_frequency_table}*/`
-
-${document.getElementById('top100monsters').value}
-
-#### Win Rate by Ruleset
-
-<b>Offline</b>` + /*${report_array.matches.ruleset_frequency_table}*/`
-
-${document.getElementById('winratebyruleset').value}
 
 ${divider}${(report_array.matches.Tournament.prize_list.length > 0) ? `\n\n### Tournaments Report\n\n${report_array.matches.Tournament.winnings_table}\n\n${report_array.matches.Tournament.prizes_table}\n${document.getElementById('tournamentResults').value}\n${divider}` : ``}
 
