@@ -63,6 +63,16 @@ let report_array = {
           count: 0,
           quantity: 0
         },
+        STMINI: {
+          name: `Spring Training 2022 Mini Pack (STMINI)`,
+          count: 0,
+          quantity: 0
+        },
+        MYTH: {
+          name: `MYTHICAL Farm (MYTH)`,
+          count: 0,
+          quantity: 0
+        },
         CUSTOM: {
           name: `Custom Prizes`,
           count: 0,
@@ -76,7 +86,8 @@ let report_array = {
         0: 0
       },
       match_data: [],
-      match_data_tally: 0
+      match_data_tally: 0,
+      fees: []
     },
     total_matches: 0,
     teams_fielded: 0,

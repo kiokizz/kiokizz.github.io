@@ -631,10 +631,6 @@ function report_controller() {
         if (tournament.status === 2) {
           if (report_array.season_end > Date.parse(tournament.rounds[tournament.rounds.length - 1].start_date) + (tournament.data.duration_blocks ? (3000 * tournament.data.duration_blocks) : 0)) {
             for (let player of tournament.players) {
-              //TODO accumulate entry fees to list on report
-              /* //TODO Add Entry Fees to offset tournament prizes.
-              console.log(`Entry fee... ${player.fee_amount}`);
-              */
               if (player.player === report_array.player) {
                 //Prizes
                 tournament.data.prizes.payouts.forEach(group => {
@@ -642,6 +638,13 @@ function report_controller() {
                     add_to_prizeList(player, tournament, group.items);
                   }
                 });
+                //TODO accumulate entry fees to list on report
+                let player_league = report_array.matches.league;
+                let fee = ``;
+                if (player_league >= tournament.data.alternate_fee.min_league && player_league <= tournament.data.alternate_fee.max_league) fee = tournament.data.alternate_fee.value;
+                else fee = tournament.entry_fee;
+                report_array.matches.Tournament.fees.push(fee)
+                console.log(`Entry fee... ${fee}`);
                 /* Commented out as already doing when gathering data.
                 // W/L/D
                 // report_array.matches.Tournament.wins += player.wins;
@@ -672,7 +675,7 @@ function report_controller() {
           Tournament: `${tournament.name}`,
           num_players: `${tournament.num_players}`,
           League: `${rating_level[tournament.data.rating_level]}`,
-          Editions: `${(tournament.data.allowed_cards.editions.length === 0 || tournament.data.allowed_cards.editions.length === 6) ? `Open` : `${tournament.data.allowed_cards.editions.reduce((list, ed) => list + editions[ed], ``)}`}`,
+          Editions: `${(tournament.data.allowed_cards.editions.length === 0 || tournament.data.allowed_cards.editions.length === 7) ? `Open` : `${tournament.data.allowed_cards.editions.reduce((list, ed) => list + editions[ed], ``)}`}`,
           Gold: ``,
           Card_Limits: ``,
           Placement: `${player.finish}`,
@@ -680,7 +683,10 @@ function report_controller() {
         });
         // Tally identical prizes:
         prizeArray.forEach(prize => {
-          if (prize.type !== `CUSTOM`) report_array.matches.Tournament.prize_tally[prize.type].quantity += prize.qty;
+          if (prize.type !== `CUSTOM`) {
+            if (!report_array.matches.Tournament.prize_tally[prize.type]) report_array.matches.Tournament.prize_tally[prize.type] = {quantity: 0}
+            report_array.matches.Tournament.prize_tally[prize.type].quantity += prize.qty;
+          }
           report_array.matches.Tournament.prize_tally[prize.type].count++;
         });
       }
@@ -691,9 +697,20 @@ function report_controller() {
       report_array.matches.Tournament.winnings_table =
           `### Prizes\n|Tournament|League|Editions|Placement/#entrants|Ratio (Win/Loss+Draw)|Prize|\n|-|-|-|-|-|-|\n${tournament_winnings_table_body}`;
 
+      let fee_tally = {};
+      report_array.matches.Tournament.fees.forEach((item)=>{
+        let parts = item.split(` `);
+        if (!fee_tally[parts[1]]) fee_tally[parts[1]] = 0;
+        fee_tally[parts[1]] += parseFloat(parts[0]);
+      })
+      let fee_tally_array = Object.values(fee_tally);
+      let fee_tally_tokens = Object.keys(fee_tally);
+
+      let fee_tally_rows = fee_tally_array.reduce((body, row, i) => `${body}|${fee_tally_tokens[i]}|${row.toFixed(0)}|\n`, `|Fees (estimate)|Quantity|\n|-|-|\n`);
+
       let tournament_winnings_prize_summary_table_body = Object.values(report_array.matches.Tournament.prize_tally).reduce((body, row) => `${body}${(row.count > 0) ? `${`|${row.name}|${row.count}|${row.quantity}|\n`}` : ``}`, ``);
       report_array.matches.Tournament.prizes_table =
-          `### Summary\n|Reward|Count|Quantity|\n|-|-|-|\n${tournament_winnings_prize_summary_table_body}`;
+          `### Summary\n|Reward|Count|Quantity|\n|-|-|-|\n${tournament_winnings_prize_summary_table_body}\n\n${fee_tally_rows}`;
 
       context.rewardsData();
     }
