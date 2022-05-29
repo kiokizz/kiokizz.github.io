@@ -32,7 +32,8 @@ function data_collector() {
     BLDSTONE: "Blood Stone",
     PWRSTONE: "Power Stone",
     CHAOS: "CHAOS",
-    VOUCHER: "Vouchers"
+    VOUCHER: "Vouchers",
+    LICENSE: "Validator Licenses"
   }
 
   this.generate = function () {
