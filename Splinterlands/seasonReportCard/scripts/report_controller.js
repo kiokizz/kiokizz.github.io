@@ -128,7 +128,7 @@ function report_controller() {
 
     report_array.permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
     report_array.static_title = `Splinter Stats ${report_array.season.name} Report Card`;
-    if (report_array.season.nameNum === 75) report_array.static_title = `Splinter Stats Ranked Rewards Season 1 Report Card`;
+    if (report_array.season.nameNum === 74) report_array.static_title = `Splinter Stats Ranked Rewards Season 1 Report Card`;
 
     console.log(`Season: ${report_array.season.nameNum}`);
 
