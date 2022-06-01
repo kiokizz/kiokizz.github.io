@@ -1,5 +1,6 @@
 function get_season_string(settings) {
   let season = settings.season["name"].substr(-2);
+  if (season === "74") season = 75;
 
   let next_season = Date.parse(settings.season["ends"]);
   let remaining_time = next_season - new Date().getTime();

@@ -292,4 +292,5 @@ function generateSeasonEndTimes(params) {
   report_array.season.season_end_times[68] = "2021-08-16T20:00:00.000Z";
   // we have changed it to make seasons not end on weekends or holidays since there have been technical issues recently and we want the team to be available
   report_array.season.season_end_times[86] = "2022-05-16T14:00:00.000Z";
+  report_array.season.season_end_times[88] = "2022-06-15T14:00:00.000Z"
 }
