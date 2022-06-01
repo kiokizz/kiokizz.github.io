@@ -2,7 +2,7 @@ function report_controller() {
   let el = id => document.getElementById(id);
 
   let context = this;
-  let testing = true;
+  let testing = false;
 
   let prices = {
     LEGENDARY: 40,
