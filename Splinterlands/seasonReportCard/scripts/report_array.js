@@ -284,7 +284,8 @@ function generateSeasonEndTimes(params) {
     }
     //HH
     let cycle = hours.indexOf(x.HH);
-    x.HH = (cycle == 3) ? hours[0] : hours[cycle + 1];
+    // From Season 88(?), seasons end on 14:00 hours.
+    // x.HH = (cycle == 3) ? hours[0] : hours[cycle + 1];
   }
 
   // Manual overrides for adjustments
@@ -292,5 +293,12 @@ function generateSeasonEndTimes(params) {
   report_array.season.season_end_times[68] = "2021-08-16T20:00:00.000Z";
   // we have changed it to make seasons not end on weekends or holidays since there have been technical issues recently and we want the team to be available
   report_array.season.season_end_times[86] = "2022-05-16T14:00:00.000Z";
+
+  // Times provided by @yabapmatt
+  report_array.season.season_end_times[93] = "2022-08-31T14:00:00.000Z"
+  report_array.season.season_end_times[92] = "2022-08-16T14:00:00.000Z"
+  report_array.season.season_end_times[91] = "2022-08-01T14:00:00.000Z"
+  report_array.season.season_end_times[90] = "2022-07-15T14:00:00.000Z"
+  report_array.season.season_end_times[89] = "2022-06-30T14:00:00.000Z"
   report_array.season.season_end_times[88] = "2022-06-15T14:00:00.000Z"
 }
