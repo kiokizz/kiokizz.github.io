@@ -2,7 +2,7 @@ function report_controller() {
   let el = id => document.getElementById(id);
 
   let context = this;
-  let testing = false;
+  let testing = true;
 
   let prices = {
     LEGENDARY: 40,
@@ -122,13 +122,13 @@ function report_controller() {
     console.log(data);
     report_array.season.id = data.season.id;
     report_array.season.name = data.season.name;
-    report_array.season.nameNum = data.season.name.substring(data.season.name.length - 2, data.season.name.length);
-    if (report_array.season.nameNum === "74") report_array.season.nameNum = "75";
+    report_array.season.nameNum = data.season.id - 13;
     report_array.season_start = Date.parse(report_array.season.season_end_times[report_array.season.id - 2]);
     report_array.season_end = Date.parse(report_array.season.season_end_times[report_array.season.id - 1]);
 
     report_array.permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
-    report_array.static_title = `Splinter Stats Season ${report_array.season.nameNum - 1} Report Card`;
+    report_array.static_title = `Splinter Stats ${report_array.season.name} Report Card`;
+    if (report_array.season.nameNum === 75) report_array.static_title = `Splinter Stats Ranked Rewards Season 1 Report Card`;
 
     console.log(`Season: ${report_array.season.nameNum}`);
 
