@@ -350,16 +350,16 @@ function report_controller() {
       } //else console.log(`${i}: ${e.id}`);
     });
     //throw 'error';
-    console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.voucher_transfers.length}`);
+    console.log(`a Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.voucher_transfers.length}`);
     if (limit === data.length) {
       offset = 500 * Math.ceil(report_array.voucher_transfers.length / 500);
       update_status(`Getting player VOUCHER transactions with offset: ${offset}.`);
       request(
           `https://api2.splinterlands.com/players/balance_history?token_type=VOUCHER&offset=${offset}&limit=${limit}&username=${report_array.player}`,
           0,
-          context.playerSPSBalanceHistory);
+          context.playerVOUCHERBalanceHistory);
     } else {
-      console.log(`VOUCHER Transfers`, report_array.voucher_transfer_types);
+      console.log(`VOUCHER Transfers`, report_array.voucher_transfer_types, report_array.voucher_transfers);
       context.sortHistory();
     }
   };
@@ -601,6 +601,7 @@ function report_controller() {
       if (valid) {
         let amount = parseFloat(tx.amount);
         if (tx.type === "voucher_drop") report_array.voucher_balance += amount;
+        if (tx.type === "claim_staking_rewards") report_array.voucher_balance += amount;
         else console.log(`Unexpected VOUCHER Type: ${tx.type}`);
       }
     });
