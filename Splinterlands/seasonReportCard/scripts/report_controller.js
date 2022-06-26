@@ -122,11 +122,13 @@ function report_controller() {
     console.log(data);
     report_array.season.id = data.season.id;
     report_array.season.name = data.season.name;
-    report_array.season.nameNum = data.season.id - 12;
+    report_array.season.nameNum = data.season.id - 13;
     report_array.season_start = Date.parse(report_array.season.season_end_times[report_array.season.id - 2]);
     report_array.season_end = Date.parse(report_array.season.season_end_times[report_array.season.id - 1]);
 
     report_array.permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
+    if (report_array.season.nameNum === 76) report_array.permlink = `splinterstats-season-76a-report-card`;
+
     let new_season_names_start = 88;
     report_array.static_title = `Splinter Stats Ranked Rewards Season ${report_array.season.id - new_season_names_start} Report Card`;
 
