@@ -247,10 +247,10 @@ function makeTable(data) {
     +"<h3></h3></span></a>";
 
     let rowData =
-      "<tr class=\"trcard\"><td " + cardCss + ">" + cardToolTip + "</td><td>" + e.rarity +
-      "</td><td>" + e.bcxNormExist + "</td><td>" + e.bcxGoldExist + "</td><td>" + burnedToolTip +
-      "</td><td>" +
-      e.bcxTotal + "</td><td>" + e.bcxPercent + "</td><td> $" + priceToolTip + "</td></tr>";
+      "<tr class=\"trcard\"><td " + cardCss + ">" + cardToolTip + "</td><td class='cell'>" + e.rarity +
+      "</td><td class='cell'>" + e.bcxNormExist + "</td><td class='cell'>" + e.bcxGoldExist + "</td><td class='cell'>" + burnedToolTip +
+      "</td><td class='cell'>" +
+      e.bcxTotal + "</td><td class='cell'>" + e.bcxPercent + "</td><td class='cell'> $" + priceToolTip + "</td></tr>";
 
     if (hidden.complete && e.bcxPercent.slice(0, -1) >= 100) rowData = "", hidden.length++, hiddenString += " | " + e.card;
 
@@ -259,12 +259,12 @@ function makeTable(data) {
 
   //Footer
   let footer = "";
-  if (hidden.complete) footer = "<tr><td colspan=\"8\"><button id=\"toggleReveal_btn\" class=\"btnBordered\">Hide / Reveal Complete</button> ... " + hidden.length + " hidden " + hiddenString + "</td></tr>";
+  if (hidden.complete) footer = "<tr class='cell'><td colspan=\"8\"><button id=\"toggleReveal_btn\" class=\"btnBordered\">Hide / Reveal Complete</button> ... " + hidden.length + " hidden " + hiddenString + "</td></tr>";
   else footer = "<tr><td colspan=\"8\"><button id=\"toggleReveal_btn\" class=\"btnBordered\">Hide / Reveal Complete</button> ... All shown.</td></tr>";
 
   //Global Stats
   let stats =
-    "<table>" +
+    "<table class='cell'>" +
     "<th>Global Rewards Stats 'Beta'</th><th>Normal</th><th>Gold</th><th>Total</th>" +
     "<tr><td>BCX Existing</td><td>" + global.totalNormalBCX + "</td><td>" + global.totalGoldBCX + "</td><td><b>" + (global.totalNormalBCX + global.totalGoldBCX) + "</b></td></tr>" +
     "<tr><td>BCX Burnt</td><td>" + global.totalNormalBurnt + "</td><td>" + global.totalGoldBurnt + "</td><td><b>" + (global.totalNormalBurnt + global.totalGoldBurnt) + "</b></td></tr>" +

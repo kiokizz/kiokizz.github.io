@@ -87,3 +87,51 @@ a:hover, a:active {
     color: white;
     text-decoration: underline;
 }
+
+/*#nav_div {*/
+/*    background-color: #4CAF50 !important;*/
+/*}*/
+
+/* Colour Scheme alternative altered from example: https://webdesign.tutsplus.com/tutorials/color-schemes-with-css-variables-and-javascript--cms-36989*/
+.theme-btn.light {
+    display: none;
+}
+
+.dark .theme-btn.light {
+    display: block;
+    background-color: #607d8b;
+}
+
+.theme-btn.dark {
+    background-color: #058C42;
+}
+
+.dark .theme-btn.dark {
+    display: none;
+}
+
+:root.dark {
+    background-color: #020202;
+}
+
+.dark .cell, .dark a:link, .dark a:visited, .dark p {
+    color: #dadada;
+}
+
+.dark table, th, td {
+    border-color: #144227 !important;
+}
+
+.dark .trcard:hover {
+    background-color: #058C42;
+    /*color: aqua !important;*/
+}
+
+.dark th {
+    background-color: #058C42;
+}
+
+.dark #head_div, .dark #head_div a {
+    background-color: #058C42;
+    color: #020202;
+}
