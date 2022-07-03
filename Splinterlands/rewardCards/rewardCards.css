@@ -135,3 +135,7 @@ a:hover, a:active {
     background-color: #058C42;
     color: #020202;
 }
+
+.dark .darken {
+    background-color: #23653b !important;
+}

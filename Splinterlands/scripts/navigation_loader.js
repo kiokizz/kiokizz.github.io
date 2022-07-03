@@ -18,6 +18,6 @@ let rewards_cards_experimental_colour = `<div class="toggle-container">
 document.getElementById("nav_div").innerHTML =
   Object.keys(pages).reduce((html, href) => {
     let classes = "buttons w3-bar-item w3-button w3-text-white w3-border-right"
-      + (location.pathname.split("/").pop() === href ? " w3-theme-d3" : "");
+      + (location.pathname.split("/").pop() === href ? `${localStorage.theme !== 'dark' ? " w3-theme-d3" : " darken"}` : "");
     return html + `<a id="${href}" href="${href}" class="${classes}">${pages[href]}</a>`;
   }, '<div class="w3-bar w3-border-top">') + `${(location.pathname.split("/").pop() === "rewardCards.html" ? rewards_cards_experimental_colour : "")}</div>`;
