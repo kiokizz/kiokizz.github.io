@@ -376,3 +376,21 @@ function download() {
 
   document.body.removeChild(csvTXT);
 }
+
+// Theme
+let head_div = document.getElementById("head_div");
+let nav_buttons = document.getElementsByClassName("buttons");
+const setTheme = function (theme) {
+  localStorage.theme = theme;
+  console.log(`cooke: ${document.cookie}. Should be ${theme}`)
+  head_div.classList.toggle("w3-theme");
+  console.log(typeof nav_buttons, nav_buttons)
+
+  for (let i = 0; i < nav_buttons.length; i++) {
+    console.log(location.pathname.split("/").pop(), nav_buttons[i].id)
+    if (location.pathname.split("/").pop() === nav_buttons[i].id) nav_buttons[i].classList.toggle("w3-theme-d3");
+    nav_buttons[i].classList.toggle("w3-text-white")
+  }
+  document.documentElement.className = theme;
+}
+if (localStorage.theme === 'dark') setTheme(localStorage.theme);
