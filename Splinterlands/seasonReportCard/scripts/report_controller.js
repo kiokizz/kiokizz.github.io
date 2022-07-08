@@ -416,7 +416,7 @@ function report_controller() {
     let win = (json.winner === report_array.player);
     if (match_type === `Ranked`) tally_wdl(match_type);
     else if (match_type === `Tournament`) {
-      tally_wdl(match_type);
+      // tally_wdl(match_type);
       report_array.matches.Tournament.match_data.push(tx);
       report_array.matches.Tournament.match_data_tally++;
     } else if (match_type === `Practice`) {
@@ -649,13 +649,11 @@ function report_controller() {
                 else fee = tournament.entry_fee;
                 report_array.matches.Tournament.fees.push(fee)
                 console.log(`Entry fee... ${fee}`);
-                /* Commented out as already doing when gathering data.
                 // W/L/D
-                // report_array.matches.Tournament.wins += player.wins;
-                // report_array.matches.Tournament.loss += player.losses;
-                // report_array.matches.Tournament.draws += player.draws;
-                // console.log(`---`);
-                */
+                report_array.matches.Tournament.wins += player.wins;
+                report_array.matches.Tournament.loss += player.losses;
+                report_array.matches.Tournament.draws += player.draws;
+                console.log(`---`);
                 break;
               }
             }
