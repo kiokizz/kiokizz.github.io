@@ -134,13 +134,12 @@ function report_controller() {
 
     console.log(`Season: ${report_array.season.nameNum}`);
 
-    var permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
     hive.api.getDiscussionsByAuthorBeforeDate(report_array.player, null,
         new Date().toISOString().split('.')[0], 100, function (err, result) {
           console.log(err, result);
-          console.log(permlink);
+          console.log(report_array.permlink);
           result.forEach(post => {
-            if (post.permlink === permlink && !testing)
+            if (post.permlink === report_array.permlink && !testing)
               stop_on_error(`@${report_array.player}'s Season Report has already 
           been posted. Please go to 
           www.splintertalk.io/@${report_array.player}/${permlink}`);
