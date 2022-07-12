@@ -127,7 +127,7 @@ function report_controller() {
     report_array.season_end = Date.parse(report_array.season.season_end_times[report_array.season.id - 1]);
 
     report_array.permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
-    if (report_array.season.nameNum === 77) report_array.permlink = `splinterstats-season-76a-report-card`;
+    if (report_array.season.nameNum === 77) report_array.permlink = `splinterstats-season-7b-report-card`;
 
     let new_season_names_start = 88;
     report_array.static_title = `Splinter Stats Ranked Rewards Season ${report_array.season.id - new_season_names_start} Report Card`;
@@ -139,10 +139,10 @@ function report_controller() {
           console.log(err, result);
           console.log(report_array.permlink);
           result.forEach(post => {
-            if (post.permlink === report_array.permlink && !testing)
+            if (post.permlink === report_array.permlink /*&& !testing*/)
               stop_on_error(`@${report_array.player}'s Season Report has already 
           been posted. Please go to 
-          www.splintertalk.io/@${report_array.player}/${permlink}`);
+          www.splintertalk.io/@${report_array.player}/${report_array.permlink}`);
           });
 
           update_status(`Getting all card details.`);
