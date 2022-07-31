@@ -218,33 +218,72 @@ function report_controller() {
 
   this.lastSeason = function (data) {
     console.log(data);
+    if (!report_array.player_season) {
+      report_array.player_season = {
+        wild: data.player
+      }
+      let url = `https://cache-api.splinterlands.com/players/leaderboard_with_player`
+          + `?season=${report_array.season.id - 1}`
+          + `&username=${report_array.player}&format=modern`;
+      request(url, 0, context.lastSeason);
+    } else report_array.player_season.modern = data.player;
+
     let season_details = data.player;
     if (data.error) stop_on_error(data.error);
 
-    if (season_details === null) {
+    if (report_array.player_season.modern === null && report_array.player_season.wild === null) {
       stop_on_error(`No player records found for the previous season.`);
-    } else if (season_details.season !== report_array.season.id - 1) {
+    } else if (report_array.player_season.modern.season !== report_array.season.id - 1 && report_array.player_season.wild.season !== report_array.season.id - 1) {
       console.log(season_details);
       stop_on_error(`Incorrect Season Data.`);
     } else {
-      if (season_details.reward_claim_tx === null) {
-        stop_on_error(`Season rewards have not been claimed. 
+      if (report_array.player_season.modern.reward_claim_tx === null && report_array.player_season.wild.reward_claim_tx === null) {
+        stop_on_error(`Season rewards have not been claimed.
           Please claim before proceeding.
           Please refresh the page before proceeding.`);
       }
       console.log(`Season data exists.`);
-      report_array.season_rewards_claim_tx = season_details.reward_claim_tx;
-      report_array.matches.guild = season_details.guild_name;
-      report_array.matches.league = rankings[season_details.league].name;
-      report_array.matches.league_name = rankings[season_details.league].group;
-      report_array.matches.rank = season_details.rank;
-      report_array.matches.rating = season_details.rating;
-      report_array.matches.highRating = season_details.max_rating;
-      report_array.matches.longestStreak = season_details.longest_streak;
-      report_array.matches.api_battles_count = season_details.battles;
-      report_array.matches.api_wins_count = season_details.wins;
-      report_array.matches.api_loss_count = report_array.matches.api_battles_count - report_array.matches.api_wins_count;
-      report_array.matches.api_draw_count = `n/a`;
+
+      let season_details_to_display = [];
+      if (report_array.player_season.wild.rating) season_data_format(`wild`);
+      if (report_array.player_season.modern.rating) season_data_format(`modern`);
+
+      function season_data_format(format) {
+        season_details_to_display.push(format)
+        report_array.season_rewards_claim_tx = report_array.player_season[format].reward_claim_tx;
+        report_array.matches[`${format}_guild`] = report_array.player_season[format].guild_name;
+        report_array.matches[`${format}_league`] = rankings[report_array.player_season[format].league].name;
+        report_array.matches[`${format}_league_name`] = rankings[report_array.player_season[format].league].group;
+        report_array.matches[`${format}_rank`] = report_array.player_season[format].rank;
+        report_array.matches[`${format}_rating`] = report_array.player_season[format].rating;
+        report_array.matches[`${format}_highRating`] = report_array.player_season[format].max_rating;
+        report_array.matches[`${format}_longestStreak`] = report_array.player_season[format].longest_streak;
+        report_array.matches[`${format}_api_battles_count`] = report_array.player_season[format].battles;
+        report_array.matches[`${format}_api_wins_count`] = report_array.player_season[format].wins;
+        report_array.matches[`${format}_api_loss_count`] = report_array.matches[`${format}_api_battles_count`] - report_array.matches[`${format}_api_wins_count`];
+        report_array.matches[`${format}_api_draw_count`] = `n/a`;
+      }
+
+      if (season_details_to_display.length === 1) report_array.stats =
+          `|Stat|#${season_details_to_display[0]}|
+|-|-|
+|${report_array.matches[`${season_details_to_display[0]}_league_name`]} Rank|${report_array.matches[`${season_details_to_display[0]}_rank`]}|
+|Rating|${report_array.matches[`${season_details_to_display[0]}_rating`]} - ${report_array.matches[`${season_details_to_display[0]}_league`]}|
+|Rating High|${report_array.matches[`${season_details_to_display[0]}_highRating`]}|
+|Ratio (Win/Loss)|${(report_array.matches[`${season_details_to_display[0]}_api_wins_count`] / (report_array.matches[`${season_details_to_display[0]}_api_loss_count`] + 0)).toFixed(2)} (${report_array.matches[`${season_details_to_display[0]}_api_wins_count`]}/${report_array.matches[`${season_details_to_display[0]}_api_loss_count`]})|
+${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/Loss+Draw)|${(!isNaN(report_array.matches[`Tournament`].wins / (report_array.matches[`Tournament`].loss + report_array.matches[`Tournament`].draws)) ? (report_array.matches[`Tournament`].wins / (report_array.matches[`Tournament`].loss + report_array.matches[`Tournament`].draws)).toFixed(2) : 0)} (${report_array.matches[`Tournament`].wins}/${report_array.matches[`Tournament`].loss}/${report_array.matches[`Tournament`].draws})|\n|Tournament Reward Placements|${report_array.matches[`Tournament`].prize_list.length}/${report_array.matches[`Tournament`].ids.length}|\n` : ``}|Longest Streak|${report_array.matches[`${season_details_to_display[0]}_longestStreak`]}|`
+
+      if (season_details_to_display.length === 2) report_array.stats =
+          `|Stat|#Wild|#Modern|
+|-|-|-|
+|Rank|${report_array.matches[`${season_details_to_display[0]}_league_name`]} #${report_array.matches[`${season_details_to_display[0]}_rank`]}|${report_array.matches[`${season_details_to_display[1]}_league_name`]} #${report_array.matches[`${season_details_to_display[1]}_rank`]}|
+|Rating|${report_array.matches[`${season_details_to_display[0]}_rating`]} - ${report_array.matches[`${season_details_to_display[0]}_league`]}|${report_array.matches[`${season_details_to_display[1]}_rating`]} - ${report_array.matches[`${season_details_to_display[1]}_league`]}|
+|Rating High|${report_array.matches[`${season_details_to_display[0]}_highRating`]}|${report_array.matches[`${season_details_to_display[1]}_highRating`]}|
+|Ratio (Win/Loss)|${(report_array.matches[`${season_details_to_display[0]}_api_wins_count`] / (report_array.matches[`${season_details_to_display[0]}_api_loss_count`] + 0)).toFixed(2)} (${report_array.matches[`${season_details_to_display[0]}_api_wins_count`]}/${report_array.matches[`${season_details_to_display[0]}_api_loss_count`]})|` +
+          `${(report_array.matches[`${season_details_to_display[1]}_api_wins_count`] / (report_array.matches[`${season_details_to_display[1]}_api_loss_count`] + 0)).toFixed(2)} (${report_array.matches[`${season_details_to_display[1]}_api_wins_count`]}/${report_array.matches[`${season_details_to_display[1]}_api_loss_count`]})|
+${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/Loss+Draw)|${(!isNaN(report_array.matches[`Tournament`].wins / (report_array.matches[`Tournament`].loss + report_array.matches[`Tournament`].draws)) ? (report_array.matches[`Tournament`].wins / (report_array.matches[`Tournament`].loss + report_array.matches[`Tournament`].draws)).toFixed(2) : 0)} (${report_array.matches[`Tournament`].wins}/${report_array.matches[`Tournament`].loss}/${report_array.matches[`Tournament`].draws})|\n|Tournament Reward Placements|${report_array.matches[`Tournament`].prize_list.length}/${report_array.matches[`Tournament`].ids.length}|\n` : ``}|Longest Streak|${report_array.matches[`${season_details_to_display[0]}_longestStreak`]}|${report_array.matches[`${season_details_to_display[1]}_longestStreak`]}|`
+
+
       update_status(`Getting player transactions before block: n/a.`);
       report_array.general_query_types = `&types=market_purchase,market_sale,
         gift_packs,card_award,claim_reward,sm_battle,enter_tournament,
@@ -258,7 +297,7 @@ function report_controller() {
     }
   };
 
-  //Get player general Transaction history
+//Get player general Transaction history
   this.playerHistory = function (data) {
     console.log(data);
     let before_block;
@@ -284,7 +323,7 @@ function report_controller() {
     }
   };
 
-  //Get player DEC history
+//Get player DEC history
   this.playerDECBalanceHistory = function (data) {
     //console.log(data);
     let offset = 0;
@@ -311,7 +350,7 @@ function report_controller() {
     }
   };
 
-  //Get player SPS history
+//Get player SPS history
   this.playerSPSBalanceHistory = function (data) {
     //console.log(data);
     let offset = 0;
@@ -338,7 +377,7 @@ function report_controller() {
     }
   };
 
-  //Get player VOUCHER history
+//Get player VOUCHER history
   this.playerVOUCHERBalanceHistory = function (data) {
     //console.log(data);
     let offset = 0;
@@ -492,9 +531,9 @@ function report_controller() {
         if (chest.type === `potion`) {
           //console.log(`Loot: ${chest.potion_type} Potion x ${chest.quantity}`);
           if (chest.potion_type === `legendary`) {
-            report_array.earnings.loot_chests[dailyOrSeason].legendary_potion++;
+            report_array.earnings.loot_chests[dailyOrSeason].legendary_potion += chest.quantity;
           } else if (chest.potion_type === `gold`) {
-            report_array.earnings.loot_chests[dailyOrSeason].alchemy_potion++;
+            report_array.earnings.loot_chests[dailyOrSeason].alchemy_potion += chest.quantity;
           }
         } else if (chest.type === `reward_card`) {
           //console.log(`Loot: ${chest.card.uid} Gold: ${chest.card.gold} x ${chest.quantity}`);
@@ -510,6 +549,9 @@ function report_controller() {
         } else if (chest.type === `credits`) {
           //console.log(`Loot: ${chest.quantity} DEC`);
           report_array.earnings.loot_chests[dailyOrSeason].credits += chest.quantity;
+        } else if (chest.type === `merits`) {
+          //console.log(`Loot: ${chest.quantity} merits`);
+          report_array.earnings.loot_chests[dailyOrSeason].merits += chest.quantity;
         } else if (chest.type === `pack`) {
           //console.log(`Loot: UNTAMED ${chest.quantity}`);
           report_array.earnings.loot_chests[dailyOrSeason].chaos_packs++;
@@ -699,7 +741,7 @@ function report_controller() {
           `### Prizes\n|Tournament|League|Editions|Placement/#entrants|Ratio (Win/Loss+Draw)|Prize|\n|-|-|-|-|-|-|\n${tournament_winnings_table_body}`;
 
       let fee_tally = {};
-      report_array.matches.Tournament.fees.forEach((item)=>{
+      report_array.matches.Tournament.fees.forEach((item) => {
         let parts = item.split(` `);
         if (!fee_tally[parts[1]]) fee_tally[parts[1]] = 0;
         fee_tally[parts[1]] += parseFloat(parts[0]);
@@ -768,7 +810,7 @@ function report_controller() {
       total_dailies_dec: daily_cards.stand.total.dec + daily_cards.gold.total.dec,
       //Season Totals
       total_season_count: season_cards.stand.total.count + season_cards.gold.total.count,
-      total_season_dec: season_cards.stand.total.dec + season_cards.gold.total.dec
+      total_season_dec: season_cards.stand.total.dec + season_cards.gold.total.dec,
     };
 
     //Cards Total DEC
@@ -799,6 +841,9 @@ function report_controller() {
         + calc.total_legendary_potions_credits + calc.total_alchemy_potions_credits;
     calc.total_dec = calc.total_all_dec
         + calc.total_loot_dec + report_array.dec_balances.dec_reward/*report_array.earnings.matches*/;
+
+    // Calculations for Merits
+    calc.total_loot_merits = sum_loot_chests(`merits`)
     return calc;
   }
 
@@ -836,6 +881,10 @@ function report_controller() {
         + `|${loot_chests.daily.credits}`
         + `|${loot_chests.season.credits}|-`
         + `|🟡 ${calc.total_loot_credits}|`
+        + `\n|Merits`
+        + `|${loot_chests.daily.merits}`
+        + `|${loot_chests.season.merits}|-`
+        + `|🎀 ${calc.total_loot_merits}|`
         + `\n|CHAOS Packs`
         + `|${loot_chests.daily.chaos_packs}`
         + `|${loot_chests.season.chaos_packs}`

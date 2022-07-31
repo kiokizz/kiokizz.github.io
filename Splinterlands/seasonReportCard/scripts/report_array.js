@@ -118,6 +118,7 @@ let report_array = {
         count: 0,
         dec: 0,
         credits: 0,
+        merits: 0,
         legendary_potion: 0,
         alchemy_potion: 0,
         cards: {
@@ -172,6 +173,7 @@ let report_array = {
         count: 0,
         dec: 0,
         credits: 0,
+        merits: 0,
         legendary_potion: 0,
         alchemy_potion: 0,
         cards: {
