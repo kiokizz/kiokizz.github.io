@@ -139,7 +139,7 @@ function report_controller() {
           console.log(err, result);
           console.log(report_array.permlink);
           result.forEach(post => {
-            if (post.permlink === report_array.permlink /*&& !testing*/)
+            if (post.permlink === report_array.permlink && !testing)
               stop_on_error(`@${report_array.player}'s Season Report has already 
           been posted. Please go to 
           www.splintertalk.io/@${report_array.player}/${report_array.permlink}`);
@@ -600,16 +600,12 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         else console.log(`Unexpected DEC: ${tx.type}`);
       }
     });
-    // Manually calculated fees paid to factor in.
-    report_array.dec_balances.rentals.fees = (report_array.dec_balances.rentals.in * -0.05);
-    if (report_array.dec_balances.rentals.out !== 0) report_array.dec_balances.rentals.out = report_array.dec_balances.rentals.out - report_array.dec_balances.rentals.fees;
-
     console.log(`DEC Transactions to report:`, report_array.dec_balances);
     if (report_array.dec_balances.rentals.count > 0) {
       let net_rentals_dec = report_array.dec_balances.rentals.in + report_array.dec_balances.rentals.fees + report_array.dec_balances.rentals.out + report_array.dec_balances.rentals.refund;
       let net_rentals = (net_rentals_dec).toFixed(3);
       if (parseFloat(net_rentals) < 0) net_rentals = `(${(net_rentals_dec * -1).toFixed(3)})`;
-      report_array.rentals_table = `|Type|DEC (fees)|\n|-|-|\n|Revenue|${report_array.dec_balances.rentals.in.toFixed(3)} (${(report_array.dec_balances.rentals.fees * -1).toFixed(3)})|\n|Expenses|(${(report_array.dec_balances.rentals.out * -1).toFixed(3)})|\n|Cancellation Refunds|${report_array.dec_balances.rentals.refund.toFixed(3)}|\n|NET|${net_rentals}|`;
+      report_array.rentals_table = `|Type|DEC|\n|-|-|\n|Revenue|${report_array.dec_balances.rentals.in.toFixed(3)}|\n|Expenses (inc. fees)|(${(report_array.dec_balances.rentals.out * -1).toFixed(3)})|\n|Cancellation Refunds|${report_array.dec_balances.rentals.refund.toFixed(3)}|\n|NET|${net_rentals}|`;
     }
     if (report_array.dec_balances.leaderboard_prize > 0) report_array.leaderboard_table = `|Prize|\n|-|\n|${report_array.dec_balances.leaderboard_prize} DEC|`;
   }
