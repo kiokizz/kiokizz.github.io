@@ -590,8 +590,9 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         // rental_refund
         let amount = parseFloat(tx.amount);
         if (["rental_payment", "rental_payment_fees", "market_rental"].includes(tx.type)) report_array.dec_balances.rentals.count++;
-        if (tx.type === "rental_payment") report_array.dec_balances.rentals.in += amount;
-        else if (tx.type === "rental_payment_fees") report_array.dec_balances.rentals.fees += amount;
+        if (tx.type === "rental_payment" && amount > 0) report_array.dec_balances.rentals.in += amount;
+        else if (tx.type === "rental_payment" && amount < 0) report_array.dec_balances.rentals.out += amount;
+        else if (tx.type === "rental_payment_fees" && amount < 0) report_array.dec_balances.rentals.out += amount;
         else if (tx.type === "market_rental") report_array.dec_balances.rentals.out += amount;
         else if (tx.type === "rental_refund") report_array.dec_balances.rentals.refund += amount;
         else if (tx.type === "leaderboard_prizes") report_array.dec_balances.leaderboard_prize += amount;
@@ -599,6 +600,10 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         else console.log(`Unexpected DEC: ${tx.type}`);
       }
     });
+    // Manually calculated fees paid to factor in.
+    report_array.dec_balances.rentals.fees = (report_array.dec_balances.rentals.in * -0.05);
+    if (report_array.dec_balances.rentals.out !== 0) report_array.dec_balances.rentals.out = report_array.dec_balances.rentals.out - report_array.dec_balances.rentals.fees;
+
     console.log(`DEC Transactions to report:`, report_array.dec_balances);
     if (report_array.dec_balances.rentals.count > 0) {
       let net_rentals_dec = report_array.dec_balances.rentals.in + report_array.dec_balances.rentals.fees + report_array.dec_balances.rentals.out + report_array.dec_balances.rentals.refund;
