@@ -335,9 +335,12 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         report_array.dec_transfers.push(e);
       } //else console.log(`${i}: ${e.id}`);
     });
-    //throw 'error';
+    let trx_date = new Date(data[0].created_date).getTime();
+    let season_start = report_array.season_start;
+    let trx_too_old = (trx_date < season_start - (3 * 86400000)); /*Season end + 3 days for errors */
+
     console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.dec_transfers.length}`);
-    if (limit === data.length) {
+    if (limit === data.length && !trx_too_old) {
       offset = 500 * Math.ceil(report_array.dec_transfers.length / 500);
       update_status(`Getting player DEC transactions with offset: ${offset}.`);
       request(
