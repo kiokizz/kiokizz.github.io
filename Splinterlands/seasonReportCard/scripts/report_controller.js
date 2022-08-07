@@ -900,7 +900,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         + `\n#### Captured DEC (Ranked Rewards)\n`
         + `\n|Ranked Play Wins|DEC Earned|`
         + `\n|-|-|`
-        + `\n|${report_array.matches.api_wins_count}|`
+        + `\n|${report_array.matches.wild_api_wins_count + report_array.matches.modern_api_wins_count}|`
         + `🟣 ${report_array.dec_balances.dec_reward.toFixed(0)}|`
         + `\n#### Total Ranked Play Rewards\n`
         + `\n|Total Ranked Play Earnings|`
