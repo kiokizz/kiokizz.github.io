@@ -1098,7 +1098,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
       el(text_field).disabled = false;
       //console.log(`Enabling ${text_field}`);
     });
-    if (report_array.matches.Tournament.ids.length > 0) {
+    if (report_array.matches.Tournament.prize_list.length > 0) {
       el(`tournamentResults`).disabled = false;
       el(`tournament`).style.display = "inline";
     }
