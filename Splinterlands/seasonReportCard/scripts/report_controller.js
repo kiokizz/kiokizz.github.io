@@ -245,6 +245,7 @@ function report_controller() {
       console.log(`Season data exists.`);
 
       let season_details_to_display = [];
+      report_array.matches.api_wins_count_total = 0;
       if (report_array.player_season.wild.rating) season_data_format(`wild`);
       if (report_array.player_season.modern.rating) season_data_format(`modern`);
 
@@ -262,6 +263,7 @@ function report_controller() {
         report_array.matches[`${format}_api_wins_count`] = report_array.player_season[format].wins;
         report_array.matches[`${format}_api_loss_count`] = report_array.matches[`${format}_api_battles_count`] - report_array.matches[`${format}_api_wins_count`];
         report_array.matches[`${format}_api_draw_count`] = `n/a`;
+        report_array.matches.api_wins_count_total += report_array.player_season[format].wins;
       }
 
       if (season_details_to_display.length === 1) report_array.stats =
@@ -403,6 +405,30 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
           context.playerVOUCHERBalanceHistory);
     } else {
       console.log(`VOUCHER Transfers`, report_array.voucher_transfer_types, report_array.voucher_transfers);
+      request(`https://api2.splinterlands.com/players/unclaimed_balance_history?token_type=SPS&offset=0&limit=${limit}&username=${report_array.player}`, 0, context.playerSTAKEREWARDSBalanceHistory);
+    }
+  };
+
+  //Get player VOUCHER history
+  this.playerSTAKEREWARDSBalanceHistory = function (data) {
+    //console.log(data);
+    let offset = 0;
+    let limit = 500;
+    data.forEach((e) => {
+      if (!report_array.STAKEREWARDS_transfer_types.includes(e.type)) report_array.STAKEREWARDS_transfer_types.push(e.type);
+      if (!report_array.STAKEREWARDS_transfers.includes(e)) {
+        report_array.STAKEREWARDS_transfer_ids.push(e.trx_id);
+        report_array.STAKEREWARDS_transfers.push(e);
+      } //else console.log(`${i}: ${e.id}`);
+    });
+    //throw 'error';
+    console.log(`a Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.STAKEREWARDS_transfers.length}`);
+    if (limit === data.length) {
+      offset = 500 * Math.ceil(report_array.voucher_transfers.length / 500);
+      update_status(`Getting player VOUCHER transactions with offset: ${offset}.`);
+      request(`https://api2.splinterlands.com/players/unclaimed_balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}`, 0, context.playerSTAKEREWARDSBalanceHistory);
+    } else {
+      console.log(`STAKEREWARDS Transfers`, report_array.voucher_transfer_types, report_array.voucher_transfers);
       context.sortHistory();
     }
   };
@@ -445,6 +471,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
     sortDecHistory();
     sortSpsHistory();
     sortVoucherHistory();
+    sortSTAKEREWARDSHistory();
 
     if (report_array.matches.Tournament.ids.length > 0) context.tournamentData(0);
     else context.rewardsData();
@@ -549,9 +576,9 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         } else if (chest.type === `dec`) {
           //console.log(`Loot: ${chest.quantity} DEC`);
           report_array.earnings.loot_chests[dailyOrSeason].dec += chest.quantity;
-        } else if (chest.type === `credits`) {
-          //console.log(`Loot: ${chest.quantity} DEC`);
-          report_array.earnings.loot_chests[dailyOrSeason].credits += chest.quantity;
+        } else if (chest.type === `sps`) {
+          // console.log(`Loot: ${chest.quantity} SPS`,chest);
+          report_array.earnings.loot_chests[dailyOrSeason].sps += chest.quantity;
         } else if (chest.type === `merits`) {
           //console.log(`Loot: ${chest.quantity} merits`);
           report_array.earnings.loot_chests[dailyOrSeason].merits += chest.quantity;
@@ -656,6 +683,23 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
     if (report_array.voucher_balance > 0) {
       report_array.sps_table += `\n|+ *Voucher Drops*|${report_array.voucher_balance.toFixed(3)} 🎟️|`;
     }
+  }
+
+  function sortSTAKEREWARDSHistory() {
+    console.log(report_array.STAKEREWARDS_transfers);
+    report_array.STAKEREWARDS_balance = 0;
+    report_array.STAKEREWARDS_transfers.forEach((tx) => {
+      let created_date = Date.parse(tx.created_date);
+      let valid = false;
+      if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
+
+      if (valid) {
+        let amount = parseFloat(tx.amount);
+        if (tx.type === "wild") report_array.wild_stake_rewards += amount;
+        if (tx.type === "modern") report_array.modern_stake_rewards += amount;
+        else console.log(`Unexpected STAKEREWARDS Type: ${tx.type}`);
+      }
+    });
   }
 
   this.tournamentData = function (data) {
@@ -841,10 +885,12 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
     //Calculations for Loot Chest DEC
     calc.total_loot_dec = sum_loot_chests('dec');
     calc.total_loot_credits = sum_loot_chests('credits');
+    calc.total_loot_sps = sum_loot_chests('sps');
     calc.toal_credits = calc.total_loot_credits + calc.total_chaos_packs_credits
         + calc.total_legendary_potions_credits + calc.total_alchemy_potions_credits;
     calc.total_dec = calc.total_all_dec
-        + calc.total_loot_dec + report_array.dec_balances.dec_reward/*report_array.earnings.matches*/;
+        + calc.total_loot_dec + report_array.dec_balances.dec_reward;
+    calc.total_sps = calc.total_loot_sps + report_array.modern_stake_rewards + report_array.wild_stake_rewards;
 
     // Calculations for Merits
     calc.total_loot_merits = sum_loot_chests(`merits`)
@@ -881,10 +927,10 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         + `|${loot_chests.season.alchemy_potion}|${calc.total_alchemy_potions_count}`
         + `|🟡 ${calc.total_alchemy_potions_credits}|`
         + `\n|DEC|${loot_chests.daily.dec}|${loot_chests.season.dec}|-|🟣 ${calc.total_loot_dec}|`
-        + `\n|CREDITS`
-        + `|${loot_chests.daily.credits}`
-        + `|${loot_chests.season.credits}|-`
-        + `|🟡 ${calc.total_loot_credits}|`
+        + `\n|SPS`
+        + `|${loot_chests.daily.sps.toFixed(3)}`
+        + `|${loot_chests.season.sps.toFixed(3)}|-`
+        + `|⭐ ${calc.total_loot_sps.toFixed(3)}|`
         + `\n|Merits`
         + `|${loot_chests.daily.merits}`
         + `|${loot_chests.season.merits}|-`
@@ -901,16 +947,17 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         + `|🟣 ${calc.total_all_dec}|`
         // +`${(!(report_array.dec_balances.leaderboard_prize <= 0) ? `\n` :
         //   `\n### Leaderboard Prizes\n\n${report_array.leaderboard_table}\n\n`)}
-        + `\n#### Captured DEC (Ranked Rewards)\n`
+        + `\n#### Captured DEC/SPS (Ranked Rewards)\n`
         + `\n|Ranked Play Wins|DEC Earned|`
         + `\n|-|-|`
-        + `\n|${report_array.matches.wild_api_wins_count + report_array.matches.modern_api_wins_count}|`
-        + `🟣 ${report_array.dec_balances.dec_reward.toFixed(0)}|`
+        + `\n|${report_array.matches.api_wins_count_total}|`
+        + `🟣 ${report_array.dec_balances.dec_reward.toFixed(0)} + ⭐${(report_array.modern_stake_rewards + report_array.wild_stake_rewards).toFixed(3)}|`
         + `\n#### Total Ranked Play Rewards\n`
         + `\n|Total Ranked Play Earnings|`
         + `\n|-|`
         + `\n|🟣 ${(calc.total_dec + report_array.dec_balances.leaderboard_prize).toFixed(0)} DEC|`
-        + `\n|🟡 ${calc.toal_credits} CREDITS|`;
+        + `\n|🟡 ${calc.toal_credits} CREDITS|`
+        + `\n|⭐ ${calc.total_sps.toFixed(3)} SPS|`;
   }
 
   this.cardUsageData = function (data) {

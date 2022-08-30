@@ -117,6 +117,7 @@ let report_array = {
       daily: {
         count: 0,
         dec: 0,
+        sps: 0,
         credits: 0,
         merits: 0,
         legendary_potion: 0,
@@ -174,6 +175,7 @@ let report_array = {
         dec: 0,
         credits: 0,
         merits: 0,
+        sps: 0,
         legendary_potion: 0,
         alchemy_potion: 0,
         cards: {
@@ -247,14 +249,19 @@ let report_array = {
   dec_transfer_types: [],
   sps_transfer_types: [],
   voucher_transfer_types: [],
+  STAKEREWARDS_transfer_types: [],
   tx_ids: [],
   dec_transfer_ids: [],
   sps_transfer_ids: [],
   voucher_transfer_ids: [],
+  STAKEREWARDS_transfer_ids: [],
   txs: [],
   dec_transfers: [],
   sps_transfers: [],
   voucher_transfers: [],
+  STAKEREWARDS_transfers: [],
+  modern_stake_rewards: 0,
+  wild_stake_rewards: 0,
   allCards: []
 }
 
