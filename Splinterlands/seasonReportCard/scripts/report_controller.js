@@ -320,6 +320,9 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
     });
     if (limit === data.length) {
       update_status(`Getting player transactions before block: ${before_block}.`);
+      report_array.general_query_types = `&types=market_purchase,market_sale,
+        gift_packs,card_award,claim_reward,sm_battle,enter_tournament,
+        leave_tournament,token_transfer`;
       request(
           `https://api.steemmonsters.io/players/history?username=${report_array.player}&from_block=-1&before_block=${before_block}&limit=500${report_array.general_query_types}`,
           0,
