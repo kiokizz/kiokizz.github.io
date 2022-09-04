@@ -262,7 +262,8 @@ let report_array = {
   STAKEREWARDS_transfers: [],
   modern_stake_rewards: 0,
   wild_stake_rewards: 0,
-  allCards: []
+  allCards: [],
+  rental_report_only: false
 }
 
 generateSeasonEndTimes();

@@ -10,7 +10,7 @@ function posting_controller() {
         document.getElementById(field).style.color = "#ff0000";
       }
     });
-    if (count > 1) {
+    if (count > 1 && !report_array.rental_report_only) {
       document.getElementById('post').disabled = false;
       stop_on_error(`Please include more writing in your post.`)
     } else context.post_details();

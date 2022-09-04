@@ -140,9 +140,8 @@ function report_controller() {
           console.log(report_array.permlink);
           result.forEach(post => {
             if (post.permlink === report_array.permlink && !testing)
-              stop_on_error(`@${report_array.player}'s Season Report has already 
-          been posted. Please go to 
-          www.splintertalk.io/@${report_array.player}/${report_array.permlink}`);
+              stop_on_error(`@${report_array.player}'s Season Report has already ` +
+                  ` been posted. Please go to www.splintertalk.io/@${report_array.player}/${report_array.permlink}`);
           });
 
           update_status(`Getting all card details.`);
@@ -235,7 +234,14 @@ function report_controller() {
       stop_on_error(`No player records found for the previous season.`);
     } else if (report_array.player_season.modern.season !== report_array.season.id - 1 && report_array.player_season.wild.season !== report_array.season.id - 1) {
       console.log(season_details);
-      stop_on_error(`Incorrect Season Data.`);
+      alert(`No ranked play detected. Attempting to generate provide any tournament/rental statistics..`);
+      report_array.rental_report_only = true;
+      let url = `https://api.steemmonsters.io/players/history`
+          + `?username=${report_array.player}`
+          + `&from_block=-1`
+          + `&limit=500`
+          + `${report_array.general_query_types}`;
+      request(url, 0, context.playerHistory);
     } else {
       if (report_array.player_season.modern.reward_claim_tx === null && report_array.player_season.wild.reward_claim_tx === null) {
         stop_on_error(`Season rewards have not been claimed.
@@ -327,21 +333,24 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
 
 //Get player DEC history
   this.playerDECBalanceHistory = function (data) {
-    //console.log(data);
+    let trx_too_old = false;
     let offset = 0;
     let limit = 500;
-    data.forEach((e) => {
-      if (!report_array.dec_transfer_types.includes(e.type)) report_array.dec_transfer_types.push(e.type);
-      if (!report_array.dec_transfers.includes(e)) {
-        report_array.dec_transfer_ids.push(e.trx_id);
-        report_array.dec_transfers.push(e);
-      } //else console.log(`${i}: ${e.id}`);
-    });
-    let trx_date = new Date(data[0].created_date).getTime();
-    let season_start = report_array.season_start;
-    let trx_too_old = (trx_date < season_start - (3 * 86400000)); /*Season end + 3 days for errors */
+    if (data.length !== 0) {
+      //console.log(data);
+      data.forEach((e) => {
+        if (!report_array.dec_transfer_types.includes(e.type)) report_array.dec_transfer_types.push(e.type);
+        if (!report_array.dec_transfers.includes(e)) {
+          report_array.dec_transfer_ids.push(e.trx_id);
+          report_array.dec_transfers.push(e);
+        } //else console.log(`${i}: ${e.id}`);
+      });
+      let trx_date = new Date(data[0].created_date).getTime();
+      let season_start = report_array.season_start;
+      trx_too_old = (trx_date < season_start - (3 * 86400000)); /*Season end + 3 days for errors */
 
-    console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.dec_transfers.length}`);
+      console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.dec_transfers.length}`);
+    }
     if (limit === data.length && !trx_too_old) {
       offset = 500 * Math.ceil(report_array.dec_transfers.length / 500);
       update_status(`Getting player DEC transactions with offset: ${offset}.`);
@@ -357,18 +366,20 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
 
 //Get player SPS history
   this.playerSPSBalanceHistory = function (data) {
-    //console.log(data);
     let offset = 0;
     let limit = 500;
-    data.forEach((e) => {
-      if (!report_array.sps_transfer_types.includes(e.type)) report_array.sps_transfer_types.push(e.type);
-      if (!report_array.sps_transfers.includes(e)) {
-        report_array.sps_transfer_ids.push(e.trx_id);
-        report_array.sps_transfers.push(e);
-      } //else console.log(`${i}: ${e.id}`);
-    });
-    //throw 'error';
-    console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.sps_transfers.length}`);
+    if (data.length !== 0) {
+      //console.log(data);
+      data.forEach((e) => {
+        if (!report_array.sps_transfer_types.includes(e.type)) report_array.sps_transfer_types.push(e.type);
+        if (!report_array.sps_transfers.includes(e)) {
+          report_array.sps_transfer_ids.push(e.trx_id);
+          report_array.sps_transfers.push(e);
+        } //else console.log(`${i}: ${e.id}`);
+      });
+      //throw 'error';
+      console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.sps_transfers.length}`);
+    }
     if (limit === data.length) {
       offset = 500 * Math.ceil(report_array.sps_transfers.length / 500);
       update_status(`Getting player SPS transactions with offset: ${offset}.`);
@@ -387,15 +398,17 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
     //console.log(data);
     let offset = 0;
     let limit = 500;
-    data.forEach((e) => {
-      if (!report_array.voucher_transfer_types.includes(e.type)) report_array.voucher_transfer_types.push(e.type);
-      if (!report_array.voucher_transfers.includes(e)) {
-        report_array.voucher_transfer_ids.push(e.trx_id);
-        report_array.voucher_transfers.push(e);
-      } //else console.log(`${i}: ${e.id}`);
-    });
-    //throw 'error';
-    console.log(`a Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.voucher_transfers.length}`);
+    if (data.length !== 0) {
+      data.forEach((e) => {
+        if (!report_array.voucher_transfer_types.includes(e.type)) report_array.voucher_transfer_types.push(e.type);
+        if (!report_array.voucher_transfers.includes(e)) {
+          report_array.voucher_transfer_ids.push(e.trx_id);
+          report_array.voucher_transfers.push(e);
+        } //else console.log(`${i}: ${e.id}`);
+      });
+      //throw 'error';
+      console.log(`a Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.voucher_transfers.length}`);
+    }
     if (limit === data.length) {
       offset = 500 * Math.ceil(report_array.voucher_transfers.length / 500);
       update_status(`Getting player VOUCHER transactions with offset: ${offset}.`);
@@ -414,15 +427,17 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
     //console.log(data);
     let offset = 0;
     let limit = 500;
-    data.forEach((e) => {
-      if (!report_array.STAKEREWARDS_transfer_types.includes(e.type)) report_array.STAKEREWARDS_transfer_types.push(e.type);
-      if (!report_array.STAKEREWARDS_transfers.includes(e)) {
-        report_array.STAKEREWARDS_transfer_ids.push(e.trx_id);
-        report_array.STAKEREWARDS_transfers.push(e);
-      } //else console.log(`${i}: ${e.id}`);
-    });
-    //throw 'error';
-    console.log(`a Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.STAKEREWARDS_transfers.length}`);
+    if (data.length !== 0) {
+      data.forEach((e) => {
+        if (!report_array.STAKEREWARDS_transfer_types.includes(e.type)) report_array.STAKEREWARDS_transfer_types.push(e.type);
+        if (!report_array.STAKEREWARDS_transfers.includes(e)) {
+          report_array.STAKEREWARDS_transfer_ids.push(e.trx_id);
+          report_array.STAKEREWARDS_transfers.push(e);
+        } //else console.log(`${i}: ${e.id}`);
+      });
+      //throw 'error';
+      console.log(`a Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.STAKEREWARDS_transfers.length}`);
+    }
     if (limit === data.length) {
       offset = 500 * Math.ceil(report_array.voucher_transfers.length / 500);
       update_status(`Getting player VOUCHER transactions with offset: ${offset}.`);
@@ -1145,7 +1160,12 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
   };
 
   this.enable_text_fields_and_post_button = function () {
-    report_array.text_fields.forEach(text_field => {
+    if (report_array.rental_report_only)
+      ["title", "textOpening", "textClosing"].forEach(text_field => {
+        el(text_field).disabled = false;
+        //console.log(`Enabling ${text_field}`);
+      });
+    else report_array.text_fields.forEach(text_field => {
       el(text_field).disabled = false;
       //console.log(`Enabling ${text_field}`);
     });
