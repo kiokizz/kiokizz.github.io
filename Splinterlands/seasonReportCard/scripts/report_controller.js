@@ -713,8 +713,9 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
 
       if (valid) {
         let amount = parseFloat(tx.amount);
-        if (tx.type === "wild") report_array.wild_stake_rewards += amount;
-        if (tx.type === "modern") report_array.modern_stake_rewards += amount;
+        if (amount < 0);
+        else if (tx.type === "wild") report_array.wild_stake_rewards += amount;
+        else if (tx.type === "modern") report_array.modern_stake_rewards += amount;
         else console.log(`Unexpected STAKEREWARDS Type: ${tx.type}`);
       }
     });
