@@ -260,6 +260,7 @@ let report_array = {
   sps_transfers: [],
   voucher_transfers: [],
   STAKEREWARDS_transfers: [],
+  STAKEREWARDS_count: 0,
   modern_stake_rewards: 0,
   wild_stake_rewards: 0,
   allCards: [],

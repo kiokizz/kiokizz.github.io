@@ -431,22 +431,23 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
     let offset = 0;
     let limit = 500;
     if (data.length !== 0) {
+      report_array.STAKEREWARDS_count += data.length;
       data.forEach((e) => {
         if (!report_array.STAKEREWARDS_transfer_types.includes(e.type)) report_array.STAKEREWARDS_transfer_types.push(e.type);
         if (!report_array.STAKEREWARDS_transfers.includes(e)) {
           report_array.STAKEREWARDS_transfer_ids.push(e.trx_id);
           report_array.STAKEREWARDS_transfers.push(e);
-        } //else console.log(`${i}: ${e.id}`);
+        }
       });
       //throw 'error';
       console.log(`a Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.STAKEREWARDS_transfers.length}`);
     }
     if (limit === data.length) {
-      offset = 500 * Math.ceil(report_array.voucher_transfers.length / 500);
-      update_status(`Getting player VOUCHER transactions with offset: ${offset}.`);
+      offset = 500 * Math.ceil(report_array.STAKEREWARDS_count / 500);
+      update_status(`Getting player (unclaimed) Staked Rewards transactions with offset: ${offset}.`);
       request(`https://api2.splinterlands.com/players/unclaimed_balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}`, 0, context.playerSTAKEREWARDSBalanceHistory);
     } else {
-      console.log(`STAKEREWARDS Transfers`, report_array.voucher_transfer_types, report_array.voucher_transfers);
+      console.log(`Staked Rewards Transfers`, report_array.voucher_transfer_types, report_array.voucher_transfers);
       context.sortHistory();
     }
   };
