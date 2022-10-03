@@ -33,7 +33,9 @@ function data_collector() {
     PWRSTONE: "Power Stone",
     CHAOS: "CHAOS",
     VOUCHER: "Vouchers",
-    LICENSE: "Validator Licenses"
+    LICENSE: "Validator Licenses",
+    RIFT: "RIFT",
+    NIGHTMARE: "NIGHTMARE (TD)"
   }
 
   this.generate = function () {
