@@ -21,6 +21,7 @@ function create_documentation_div(data) {
   // Create Divs
   let container_outer = document.createElement('div')
   let container_inner = document.createElement('div')
+  let header = document.createElement('h2')
   let end_point_div = document.createElement('div')
   let end_point_url = document.createElement('p')
   let end_point_description = document.createElement('p')
@@ -42,6 +43,7 @@ function create_documentation_div(data) {
   end_point_description.style.fontWeight = `bold`
 
   // Add content
+  header.innerText = data.name;
   end_point_url.innerHTML = `⧉ <a href="${data.link}" target="_blank">${data.link_text}</a>`
   end_point_description.innerText = data.description
 
@@ -59,6 +61,7 @@ function create_documentation_div(data) {
 
   // Join Divs
   container_outer.appendChild(container_inner)
+  container_inner.appendChild(header)
   container_inner.appendChild(end_point_div)
   end_point_div.appendChild(end_point_url)
   end_point_div.appendChild(end_point_description)
