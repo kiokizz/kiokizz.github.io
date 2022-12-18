@@ -39,7 +39,7 @@ ${report_array.earnings.template}
 
 ${document.getElementById('textRewards').value}
 
-${divider}${(report_array.dec_balances.rentals.count > 0) ? `\n\n### 🟣 Rental Report\n\n${report_array.rentals_table}\n\n${document.getElementById('rentals').value}\n${divider}` : ``}${(report_array.sps_balances.airdrop > 0 || report_array.sps_balances.staking > 0) ? `\n\n### ⭐ SPS Report\n\n${report_array.sps_table}\n\n${document.getElementById('sps').value}\n${divider}` : ``}
+${divider}${(report_array.dec_balances.rentals.count > 0) ? `\n\n### 🟣 Rental Report\n\n${report_array.rentals_table}\n\n${document.getElementById('rentals').value}\n${divider}` : ``}${(report_array.net_sps > 0) ? `\n\n### ⭐ SPS Report\n\n${report_array.sps_table}\n\n${document.getElementById('sps').value}\n${divider}` : ``}
 
 ${document.getElementById('textClosing').value}
 
@@ -61,7 +61,7 @@ Follow @splinterstats and come visit us in [Discord](https://discord.com/invite/
     if (report_array.matches.Tournament.prize_list.length === 0
         && report_array.dec_balances.rentals.count === 0
         && report_array.sps_balances.airdrop === 0
-        && report_array.sps_balances.staking === 0) stop_on_error(`There are no tournaments, rental or staking details found. Aborting.`);
+        && report_array.net_sps === 0) stop_on_error(`There are no tournaments, rental or staking details found. Aborting.`);
 
       if (!divider) divider = divider_images.userDefined;
     if (divider_images.userDefined === "") divider = divider_images.dec;
@@ -74,7 +74,7 @@ ${document.getElementById('textOpening').value}
 
 ${divider}${(report_array.matches.Tournament.prize_list.length > 0) ? `\n\n### Tournaments Report\n\n${report_array.matches.Tournament.winnings_table}\n\n${report_array.matches.Tournament.prizes_table}\n${document.getElementById('tournamentResults').value}\n${divider}` : ``}
 
-${(report_array.dec_balances.rentals.count > 0) ? `\n\n### 🟣 Rental Report\n\n${report_array.rentals_table}\n\n${document.getElementById('rentals').value}\n${divider}` : ``}${(report_array.sps_balances.airdrop > 0 || report_array.sps_balances.staking > 0) ? `\n\n### ⭐ SPS Report\n\n${report_array.sps_table}\n\n${document.getElementById('sps').value}\n${divider}` : ``}
+${(report_array.dec_balances.rentals.count > 0) ? `\n\n### 🟣 Rental Report\n\n${report_array.rentals_table}\n\n${document.getElementById('rentals').value}\n${divider}` : ``}${(report_array.net_sps > 0) ? `\n\n### ⭐ SPS Report\n\n${report_array.sps_table}\n\n${document.getElementById('sps').value}\n${divider}` : ``}
 
 ${document.getElementById('textClosing').value}
 

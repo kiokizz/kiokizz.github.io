@@ -263,6 +263,12 @@ let report_array = {
   STAKEREWARDS_count: 0,
   modern_stake_rewards: 0,
   wild_stake_rewards: 0,
+  season_stake_rewards: 0,
+  focus_stake_rewards: 0,
+  land_stake_rewards: 0,
+  brawl_stake_rewards: 0,
+  nightmare_stake_rewards: 0,
+  license_stake_rewards: 0,
   allCards: [],
   rental_report_only: false
 }

@@ -425,7 +425,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
     }
   };
 
-  //Get player VOUCHER history
+  //Get player Staked Rewards history
   this.playerSTAKEREWARDSBalanceHistory = function (data) {
     //console.log(data);
     let offset = 0;
@@ -487,10 +487,10 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
       }
     });
 
+    sortSTAKEREWARDSHistory();
     sortDecHistory();
     sortSpsHistory();
     sortVoucherHistory();
-    sortSTAKEREWARDSHistory();
 
     if (report_array.matches.Tournament.ids.length > 0) context.tournamentData(0);
     else context.rewardsData();
@@ -659,7 +659,8 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
   function sortSpsHistory() {
     report_array.sps_balances = {
       airdrop: 0,
-      staking: 0
+      staking: 0,
+      liquidity: 0
     };
     console.log(report_array.sps_transfers);
     report_array.sps_transfers.forEach((tx) => {
@@ -669,17 +670,44 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
 
       if (valid) {
         let amount = parseFloat(tx.amount);
-        if (tx.type === "token_award") report_array.sps_balances.airdrop += amount;
-        else if (tx.type === "claim_staking_rewards") report_array.sps_balances.staking += amount;
+        if (tx.type === "token_award") {
+          if (tx.counterparty === "$UNCLAIMED_UNISWAP_REWARDS") report_array.sps_balances.liquidity += amount;
+          else {
+            console.log(tx)
+            // throw 'debugging';
+          }
+        } else if (tx.type === "claim_staking_rewards") report_array.sps_balances.staking += amount;
         else if (!["token_transfer", "stake_tokens"].includes(tx.type))
           console.log(`Unexpected SPS Type: ${tx.type}`);
       }
     });
     console.log(`SPS Transactions to report:`, report_array.sps_balances);
     if (report_array.sps_balances.airdrop > 0 || report_array.sps_balances.staking > 0) {
-      let net_rentals_sps = report_array.sps_balances.airdrop + report_array.sps_balances.staking;
-      let net_sps = (net_rentals_sps).toFixed(3);
-      report_array.sps_table = `|Type|⭐ Amount Claimed|\n|-|-|\n|Staking Rewards|${report_array.sps_balances.staking.toFixed(3)}|\n|**NET SPS**|**${net_sps}**|`;
+      report_array.net_sps =
+          report_array.sps_balances.staking +
+          report_array.brawl_stake_rewards +
+          report_array.land_stake_rewards +
+          report_array.nightmare_stake_rewards +
+          report_array.sps_balances.liquidity +
+          report_array.license_stake_rewards;
+
+      console.log(report_array.sps_balances.airdrop)
+      report_array.sps_table = `|Type|⭐ Amount|\n|-|-|\n`;
+
+      if (report_array.sps_balances.staking > 0) report_array.sps_table += `|Staking Rewards|${report_array.sps_balances.staking.toFixed(3)}|\n`;
+
+      let chest_total = report_array.wild_stake_rewards + report_array.modern_stake_rewards + report_array.season_stake_rewards + report_array.focus_stake_rewards;
+      if (chest_total > 0) report_array.sps_table += `|Ranked Rewards <sup>as above</sup>|${chest_total.toFixed(3)}|\n`; // ToDo add chest/season/match
+      report_array.net_sps += chest_total;
+
+      if (report_array.brawl_stake_rewards > 0) report_array.sps_table += `|Brawl Rewards|${report_array.brawl_stake_rewards.toFixed(3)}|\n`;
+      if (report_array.land_stake_rewards > 0) report_array.sps_table += `|Land  Rewards|${report_array.land_stake_rewards.toFixed(3)}|\n`;
+      if (report_array.nightmare_stake_rewards > 0) report_array.sps_table += `|Tower Defense|${report_array.nightmare_stake_rewards.toFixed(3)}|\n`;
+      if (report_array.sps_balances.liquidity > 0) report_array.sps_table += `|Liquidity Rewards|${report_array.sps_balances.liquidity.toFixed(3)}|\n`;
+      if (report_array.license_stake_rewards > 0) report_array.sps_table += `|License Stake Rewards|${report_array.license_stake_rewards.toFixed(3)}|\n`;
+
+      report_array.sps_table += `|**NET SPS**|**${report_array.net_sps.toFixed(3)}**|`;
+      console.log(report_array.net_sps);
     }
   }
 
@@ -693,9 +721,9 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
 
       if (valid) {
         let amount = parseFloat(tx.amount);
-        if (tx.type === "voucher_drop") report_array.voucher_balance += amount;
+        if (tx.type === "token_award") report_array.voucher_balance += amount;
         if (tx.type === "claim_staking_rewards") report_array.voucher_balance += amount;
-        else console.log(`Unexpected VOUCHER Type: ${tx.type}`);
+        else console.log(`Unexpected VOUCHER Type: ${tx.type}`, tx);
       }
     });
     console.log(report_array.voucher_balance);
@@ -712,11 +740,22 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
       let valid = false;
       if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
 
+      if (tx.type === "season") {
+        if (report_array.season_rewards_claim_tx === tx.trx_id) valid = true;
+        else valid = false
+      }
+
       if (valid) {
         let amount = parseFloat(tx.amount);
-        if (amount < 0);
+        if (amount < 0) ;
         else if (tx.type === "wild") report_array.wild_stake_rewards += amount;
         else if (tx.type === "modern") report_array.modern_stake_rewards += amount;
+        else if (tx.type === "season") report_array.season_stake_rewards += amount;
+        else if (tx.type === "focus") report_array.focus_stake_rewards += amount;
+        else if (tx.type === "land") report_array.land_stake_rewards += amount;
+        else if (tx.type === "nightmare") report_array.nightmare_stake_rewards += amount;
+        else if (tx.type === "license") report_array.license_stake_rewards += amount;
+        else if (tx.type === "brawl") report_array.brawl_stake_rewards += amount;
         else console.log(`Unexpected STAKEREWARDS Type: ${tx.type}`);
       }
     });
