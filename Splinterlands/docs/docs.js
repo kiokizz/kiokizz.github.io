@@ -8,8 +8,9 @@ let navigation_div = document.getElementById(`navigation_div`)
 let categories = Object.keys(documentation)
 let nav_links_array = []
 
-categories.forEach((category) => {
+categories.forEach((category, index) => {
     generate_available_documentation(documentation[category])
+    if (index !== length - 1) documentation_div.appendChild(document.createElement(`hr`))
 })
 header_scroll_listener();
 
