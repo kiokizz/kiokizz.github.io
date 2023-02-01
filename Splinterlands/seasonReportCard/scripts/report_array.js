@@ -324,4 +324,5 @@ function generateSeasonEndTimes(params) {
   report_array.season.season_end_times[101] = "2022-12-30T14:00:00.000Z"
   report_array.season.season_end_times[102] = "2023-01-16T14:00:00.000Z"
   report_array.season.season_end_times[103] = "2023-01-31T14:00:00.000Z"
+  report_array.season.season_end_times[104] = "2023-02-14T14:00:00.000Z"
 }
