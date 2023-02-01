@@ -41,7 +41,7 @@ function getRewardCards() {
     if (data) {
       for (let i = 0; i < data.length; i++) {
         const e = data[i];
-        if (e.editions === "3") rewardCards.push(e);
+        if (["3", "10"].includes(e.editions)) rewardCards.push(e);
       }
     }
     getPrices();
@@ -129,9 +129,15 @@ function calculations() {
     if (e.id < 331) {
       c.complete = e.total_printed / oldCardCap[e.rarity] >= 1;
       c.bcxPercent = parseFloat(e.total_printed / oldCardCap[e.rarity] * 100).toFixed(2) + "%";
-    } else {
+    } else if ([331,334,337,340,343,349,].includes(e.id)) {
       c.complete = e.total_printed / newCardCap[e.rarity] >= 1;
       c.bcxPercent = parseFloat(e.total_printed / newCardCap[e.rarity] * 100).toFixed(2) + "%";
+    } else if (e.id < 463) {
+      c.complete = e.total_printed / newCardCap[e.rarity] >= 1;
+      c.bcxPercent = parseFloat(e.total_printed / newCardCap[e.rarity] * 100).toFixed(2) + "% 🚫";
+    } else {
+      c.complete = false
+      c.bcxPercent = "\t⌛"
     }
 
     if (c.bcxTotal !== c.yBCXTotal) console.log(c.card + " statistics incorrect. API delay possible. Discrepency = " + (c.bcxTotal - c.yBCXTotal));
@@ -249,13 +255,18 @@ function makeTable(data) {
     let priceToolTip = "<a href=\"https://peakmonsters.com/market?card=" + data[i].id + "&edition=reward\"  target=\"_blank\" class=\"tooltip\">" + e.price.toFixed(3) + "<span  style=\"color:white;width: 310px\">Low_BCX: Normal $" + e.price_bcx.toFixed(3) + " | Gold: $" + e.goldPrice_bcx.toFixed(3);
     +"<h3></h3></span></a>";
 
+    if (e.id > 462) {
+      priceToolTip = "<a href=\"https://peakmonsters.com/market?card=" + data[i].id + "&edition=reward\"  target=\"_blank\" class=\"tooltip\">-.--" +
+          "<span  style=\"color:white;width: 310px\">Not yet marketable.</span></a>";
+    }
+
     let rowData =
         "<tr class=\"trcard\"><td " + cardCss + ">" + cardToolTip + "</td><td class='cell'>" + e.rarity +
         "</td><td class='cell'>" + e.bcxNormExist + "</td><td class='cell'>" + e.bcxGoldExist + "</td><td class='cell'>" + burnedToolTip +
         "</td><td class='cell'>" +
         e.bcxTotal + "</td><td class='cell'>" + e.bcxPercent + "</td><td class='cell'> $" + priceToolTip + "</td></tr>";
 
-    if (hidden.complete && e.bcxPercent.slice(0, -1) >= 100) rowData = "", hidden.length++, hiddenString += " | " + e.card;
+    if (hidden.complete && e.id < 463) rowData = "", hidden.length++, hiddenString += " | " + e.card;
 
     rows += rowData;
   }
@@ -330,6 +341,8 @@ function sortTable(column) {
     if (column === "bcxPercent") {
       c = c.slice(0, -1);
       d = d.slice(0, -1);
+      if (c === "\t⌛") c = 0
+      if (d === "\t⌛") d = 0
     }
     if (column === "rarity") {
       c = rarity(c);
