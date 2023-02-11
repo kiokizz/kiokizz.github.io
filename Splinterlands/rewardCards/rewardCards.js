@@ -246,7 +246,9 @@ function makeTable(data) {
 
     //https://d36mxiodymuqjm.cloudfront.net/cards_by_level/reward/Creeping%20Ooze_lv1.png
     let urlName = e.card.replace(/\s/g, "%20");
-    let imageLink = "https://d36mxiodymuqjm.cloudfront.net/cards_by_level/reward/" + urlName + "_lv1.png";
+    let edition_name = "reward";
+    if (data[i].id >= 510 ) edition_name = "soulbound";
+    let imageLink = `https://d36mxiodymuqjm.cloudfront.net/cards_by_level/${edition_name}/${urlName}_lv1.png`;
     let cardToolTip = "<a class=\"tooltip\">" + e.card + "<span><img style=\"max-width:100%;height:auto;\" src=\"" + imageLink +
         "\"><h3></h3></span></a>";
 
