@@ -1,7 +1,5 @@
 function get_season_string(settings) {
-  let season_id = settings.season.id - 13;
-
-  let next_season = Date.parse(settings.season["ends"]);
+  let next_season = Date.parse(settings.season.ends);
   let remaining_time = next_season - new Date().getTime();
 
   let season_flavour_text = settings.season["name"];
