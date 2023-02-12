@@ -168,7 +168,7 @@ function report_controller() {
     data.forEach(e => {
       for (let i = 0; i < data.length; i++) {
         const card = e;
-        if (card.editions === "3") {
+        if (["3", "10"].includes(card.editions)) {
           rewardsCards.push(card);
           report_array.rewardsCards[data[i].id] = data[i];
         }
@@ -183,9 +183,12 @@ function report_controller() {
       } else if (e.id < 331) {
         c.edition = "untamed";
         c.dec = prices.decNormUntamedBurnRates[e.rarity];
-      } else {
+      } else if (e.id < 510) {
         c.edition = "chaos";
         c.dec = prices.decNormChaosBurnRates[e.rarity];
+      } else {
+        c.edition = "soulbound";
+        c.dec = 0;
       }
       c.card = e.name;
       c.rarity = rarities[e.rarity];
@@ -589,10 +592,10 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         } else if (chest.type === `reward_card`) {
           //console.log(`Loot: ${chest.card.uid} Gold: ${chest.card.gold} x ${chest.quantity}`);
           let gold = chest.card.gold ? 'gold' : 'stand';
-          report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].count++;
-          report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.count++;
-          console.log(chest)
-          report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * (chest.card.card_detail_id > 330 ? 25 : 50) : prices.cards[chest.card.card_detail_id].dec);          report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * (chest.card.card_detail_id > 330 ? 25 : 50) : prices.cards[chest.card.card_detail_id].dec);
+          report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].count+= chest.quantity;
+          report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.count+= chest.quantity;
+          report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * (chest.card.card_detail_id > 330 ? 25 : 50) : prices.cards[chest.card.card_detail_id].dec);
+          report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * (chest.card.card_detail_id > 330 ? 25 : 50) : prices.cards[chest.card.card_detail_id].dec);
           //Use ID to get DEC from prices array
         } else if (chest.type === `dec`) {
           //console.log(`Loot: ${chest.quantity} DEC`);
