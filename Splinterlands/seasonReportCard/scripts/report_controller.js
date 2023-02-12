@@ -2,7 +2,7 @@ function report_controller() {
   let el = id => document.getElementById(id);
 
   let context = this;
-  let testing = false;
+  let testing = true;
 
   let prices = {
     LEGENDARY: 40,
@@ -123,8 +123,8 @@ function report_controller() {
     report_array.season.id = data.season.id;
     report_array.season.name = data.season.name;
     report_array.season.nameNum = data.season.id - 13;
-    report_array.season_start = Date.parse(report_array.season.season_end_times[report_array.season.id - 2]);
-    report_array.season_end = Date.parse(report_array.season.season_end_times[report_array.season.id - 1]);
+    report_array.season_start = Date.parse(data.previous_season.ends);
+    report_array.season_end = Date.parse(data.season.ends);
 
     report_array.permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
     if (report_array.season.nameNum === 77) report_array.permlink = `splinterstats-season-7b-report-card`;
@@ -589,8 +589,8 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
           let gold = chest.card.gold ? 'gold' : 'stand';
           report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].count++;
           report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.count++;
-          report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * (chest.card.card_detail_id > 330 ? 25 : 50) : prices.cards[chest.card.card_detail_id].dec);
-          report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * (chest.card.card_detail_id > 330 ? 25 : 50) : prices.cards[chest.card.card_detail_id].dec);
+          console.log(chest)
+          report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * (chest.card.card_detail_id > 330 ? 25 : 50) : prices.cards[chest.card.card_detail_id].dec);          report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * (chest.card.card_detail_id > 330 ? 25 : 50) : prices.cards[chest.card.card_detail_id].dec);
           //Use ID to get DEC from prices array
         } else if (chest.type === `dec`) {
           //console.log(`Loot: ${chest.quantity} DEC`);
