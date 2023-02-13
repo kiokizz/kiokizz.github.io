@@ -103,7 +103,7 @@ function calculations() {
     c.id = e.id;
 
     //BCX
-    c.bcxGoldExist = 0, c.gBCXBurn = 0, c.bcxNormExist = 0, c.nBCXBurn = 0;
+    c.bcxGoldExist = 0, c.gBCXBurn = 0, c.bcxNormExist = 0, c.nBCXBurn = 0, c.totalNorm = 0, c.totalGold = 0;
     let distributions = e.distribution;
     distributions.forEach(dist => {
       if (!dist.gold) {
@@ -116,9 +116,11 @@ function calculations() {
         }
         c.bcxNormExist = parseInt(dist.total_xp) / xp[e.rarity] + addCardNum;
         c.nBCXBurn = parseInt(dist.total_burned_xp) / xp[e.rarity] + addBurntNum;
+        c.totalNorm = dist.num_cards;
       } else {
         c.bcxGoldExist = parseInt(dist.total_xp) / gxp[e.rarity];
         c.gBCXBurn = parseInt(dist.total_burned_xp) / gxp[e.rarity];
+        c.totalGold = dist.num_cards;
       }
     })
 
@@ -257,6 +259,9 @@ function makeTable(data) {
     let priceToolTip = "<a href=\"https://peakmonsters.com/market?card=" + data[i].id + "&edition=reward\"  target=\"_blank\" class=\"tooltip\">" + e.price.toFixed(3) + "<span  style=\"color:white;width: 310px\">Low_BCX: Normal $" + e.price_bcx.toFixed(3) + " | Gold: $" + e.goldPrice_bcx.toFixed(3);
     +"<h3></h3></span></a>";
 
+    let normToolTip = "<a class=\"tooltip\">" +e.bcxNormExist+  "<span  style=\"color:white;width: 205px\">Total cards: " + e.totalNorm;
+    let goldToolTip = "<a class=\"tooltip\">" + e.bcxGoldExist + "<span  style=\"color:white;width: 205px\">Total cards: " + e.totalGold;
+
     if (e.id > 462) {
       priceToolTip = "<a href=\"https://peakmonsters.com/market?card=" + data[i].id + "&edition=reward\"  target=\"_blank\" class=\"tooltip\">-.--" +
           "<span  style=\"color:white;width: 310px\">Not yet marketable.</span></a>";
@@ -264,7 +269,7 @@ function makeTable(data) {
 
     let rowData =
         "<tr class=\"trcard\"><td " + cardCss + ">" + cardToolTip + "</td><td class='cell'>" + e.rarity +
-        "</td><td class='cell'>" + e.bcxNormExist + "</td><td class='cell'>" + e.bcxGoldExist + "</td><td class='cell'>" + burnedToolTip +
+        "</td><td class='cell'>" +  normToolTip + "</td><td class='cell'>" + goldToolTip + "</td><td class='cell'>" + burnedToolTip +
         "</td><td class='cell'>" +
         e.bcxTotal + "</td><td class='cell'>" + e.bcxPercent + "</td><td class='cell'> $" + priceToolTip + "</td></tr>";
 
