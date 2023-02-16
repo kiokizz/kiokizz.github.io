@@ -81,7 +81,9 @@ let editions = {
   3: `R`,
   4: `U`,
   5: `D`,
-  7: `C`
+  7: `C`,
+  8: `rW`,
+  10: `sB`
 }
 
 let card_types = {
