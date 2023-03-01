@@ -592,8 +592,8 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         } else if (chest.type === `reward_card`) {
           //console.log(`Loot: ${chest.card.uid} Gold: ${chest.card.gold} x ${chest.quantity}`);
           let gold = chest.card.gold ? 'gold' : 'stand';
-          report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].count+= chest.quantity;
-          report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.count+= chest.quantity;
+          report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].count += chest.quantity;
+          report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.count += chest.quantity;
           report_array.earnings.loot_chests[dailyOrSeason].cards[gold][report_array.rewardsCards[chest.card.card_detail_id].rarity].dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * (chest.card.card_detail_id > 330 ? 25 : 50) : prices.cards[chest.card.card_detail_id].dec);
           report_array.earnings.loot_chests[dailyOrSeason].cards[gold].total.dec += (chest.card.gold ? prices.cards[chest.card.card_detail_id].dec * (chest.card.card_detail_id > 330 ? 25 : 50) : prices.cards[chest.card.card_detail_id].dec);
           //Use ID to get DEC from prices array
@@ -825,17 +825,27 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
           }
         //Add prize to culmulative earning for tournaments here...
         let ratio = (!isNaN(player.wins / (player.losses + player.draws)) ? (player.wins / (player.losses + player.draws)).toFixed(2) : 0);
+        // console.log(tournament.data.allowed_cards)
+
+        let editionsString = ``;
+        if (tournament.data.allowed_cards.sets) editionsString = `${(tournament.data.allowed_cards.sets.length === 0 || tournament.data.allowed_cards.sets.length === 4) ? `Open` : `${tournament.data.allowed_cards.sets.reduce((list, set) => list + editions[set.core], ``)}`}`
+        else editionsString = `${(tournament.data.allowed_cards.editions.length === 0 || tournament.data.allowed_cards.editions.length === 7) ? `Open` : `${tournament.data.allowed_cards.editions.reduce((list, ed) => list + editions[ed], ``)}`}`;
+
+        if (editionsString === `Open` && tournament.data.allowed_cards.epoch === `wild`) editionsString = `Wild Open`
+        else if (editionsString === `Open` && tournament.data.allowed_cards.epoch === `modern`) editionsString = `Modern Open`
+
         report_array.matches.Tournament.prize_list.push({
           Prize: prizeArray.reduce((string, prize, i) => `${string}${(prize.type === `CUSTOM`) ? prize.text : `${prize.qty} ${prize.type}`}${(prizeArray.length > 1 && i < prizeArray.length - 1) ? ` + ` : ``}`, ``),
           Tournament: `${tournament.name}`,
           num_players: `${tournament.num_players}`,
           League: `${rating_level[tournament.data.rating_level]}`,
-          Editions: `${(tournament.data.allowed_cards.editions.length === 0 || tournament.data.allowed_cards.editions.length === 7) ? `Open` : `${tournament.data.allowed_cards.editions.reduce((list, ed) => list + editions[ed], ``)}`}`,
+          Editions: editionsString,
           Gold: ``,
           Card_Limits: ``,
           Placement: `${player.finish}`,
           Ratio: `${(ratio.toString() !== `Infinity`) ? ratio : player.wins} (${player.wins}/${player.losses}/${player.draws})`
         });
+
         // Tally identical prizes:
         prizeArray.forEach(prize => {
           if (prize.type !== `CUSTOM`) {
@@ -854,6 +864,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
 
       let fee_tally = {};
       report_array.matches.Tournament.fees.forEach((item) => {
+        if (item === null) return
         let parts = item.split(` `);
         if (!fee_tally[parts[1]]) fee_tally[parts[1]] = 0;
         fee_tally[parts[1]] += parseFloat(parts[0]);
