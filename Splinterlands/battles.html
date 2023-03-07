@@ -1,0 +1,73 @@
+<!DOCtype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>SplinterStats - Battle Data</title>
+    <link rel="shortcut icon" href="resources/rose.jpg"/>
+    <!--    <link rel="stylesheet" type="text/css" href="bites/bites.css">-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="battles/battles.js" defer></script>
+
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+</head>
+
+<body>
+<div id="header" class="page_header w3-theme">
+    <div class="w3-container w3-margin-bottom">
+        <h1><a href='index.html'>SplinterStats</a> - Battle Data</h1>
+        <sub>Check which cards perform best in the Splinterlands ranked format.</sub>
+    </div>
+    <div id="nav_div"></div>
+    <script src="scripts/navigation_loader.js" defer></script>
+</div>
+
+<div id="main" class="main" class="w3-container">
+    <h2>Card Usage Statistics Trial Run - Ranked Rewards Season 17 (Season 91)</h2>
+    <h4>Format:</h4>
+    <div>
+        <input id="format_combined" class="w3-radio" type="radio" name="format" value="combined"
+               onchange="change_table()" checked>
+        <label>Combined</label>
+        <input id="format_modern" class="w3-radio" type="radio" name="format" value="modern" onchange="change_table()">
+        <label>Modern</label>
+        <input id="format_wild" class="w3-radio" type="radio" name="format" value="wild" onchange="change_table()">
+        <label>Wild</label>
+    </div>
+    <br>
+    <h4>League:</h4>
+    <div>
+        <input id="league_Bronze" class="w3-radio" type="radio" name="league" value="bronze" onchange="change_table()"
+               checked>
+        <label>Bronze</label>
+        <input id="league_Silver" class="w3-radio" type="radio" name="league" value="silver" onchange="change_table()">
+        <label>Silver</label>
+        <input id="league_Gold" class="w3-radio" type="radio" name="league" value="gold" onchange="change_table()">
+        <label>Gold</label>
+        <input id="league_Diamond" class="w3-radio" type="radio" name="league" value="diamond"
+               onchange="change_table()">
+        <label>Diamond</label>
+        <input id="league_Champ" class="w3-radio" type="radio" name="league" value="champion"
+               onchange="change_table()">
+        <label>Champion</label>
+    </div>
+    <br>
+    <!--    <label>Load</label>-->
+    <!--    <button onclick="load_season_data(`91`)">Click me</button>-->
+    <br>
+    <div id="data">Data..</div>
+    <br>
+    <br>
+</div>
+
+<footer id="footer">
+    <p>
+        <a href="https://github.com/kiokizz">GitHub</a>
+        | Check out my blogs <a href="https://hive.blog/@kiokizz">@kiokizz</a>
+        & <a href="https://hive.blog/@splinterstats">@splinterstats</a>
+    </p>
+</footer>
+
+</body>
+</html>
