@@ -790,11 +790,14 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
             for (let player of tournament.players) {
               if (player.player === report_array.player) {
                 //Prizes
+                let prize = false;
                 tournament.data.prizes.payouts.forEach(group => {
                   if (player.finish >= group.start_place && player.finish <= group.end_place) {
                     add_to_prizeList(player, tournament, group.items);
+                    prize = true
                   }
                 });
+                if (!prize) add_to_prizeList(player, tournament, [{type: "CUSTOM",text: "" }]);
                 //TODO accumulate entry fees to list on report
                 let player_league = report_array.matches.league;
                 let fee = ``;
