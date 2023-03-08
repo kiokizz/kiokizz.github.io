@@ -1,6 +1,7 @@
 let pages = {
   "seasonReportCard.html": "Season Report Card",
   "rewardCards.html": "Rewards Cards",
+  "battles.html": "Battles - Card Usage",
   "cardsByLeagueCap.html": "Cards by League Cap",
   "richList.html": "Rich List",
   "bites.html": "Splinter Bites"
