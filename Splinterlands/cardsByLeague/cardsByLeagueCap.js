@@ -462,11 +462,3 @@ function download() {
   csv_text.click();
   document.body.removeChild(csv_text);
 }
-
-function toggleSplinterImg(id) {
-  let e = el(id);
-  let clicked = e.checked ? `` : `_black`;
-  let path = `resources/${id}_symbol${clicked}.png`;
-  el(`${id}-img`).src = path;
-  calculations();
-}

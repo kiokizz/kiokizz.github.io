@@ -121,16 +121,16 @@ tr svg {
     bottom: 20px;
 }
 
-.edition_check {
+.filter_check {
     position:relative;
 }
 
-.edition_check, .edition_check_alt {
+.filter_check, .filter_check_alt {
     display: none;
     height: 30px;
 }
 
-.edition_check + label:hover, .edition_check_alt + label:hover {
+.filter_check + label:hover, .filter_check_alt + label:hover {
     height: 30px;
     fill-opacity: 100%;
     position:relative;
@@ -138,25 +138,25 @@ tr svg {
     top:0.5px;
 }
 
-.edition_check + label{
+.filter_check + label{
     fill-opacity: 50%;
     filter: invert(50%) sepia(100%) saturate(0.1);
 }
 
-.edition_check:checked + label{
+.filter_check:checked + label{
     fill: black;
     fill-opacity: 100%;
     filter: invert(100%);
 }
 
 
-.edition_check_alt + label{
+.filter_check_alt + label{
     fill-opacity: 50%;
     filter: invert(50%);
     /*filter: saturate(-5);*/
 }
 
-.edition_check_alt:checked + label{
+.filter_check_alt:checked + label{
     fill-opacity: 100%;
     filter: saturate(5);
 }
