@@ -7,7 +7,7 @@ init()
 
 async function init() {
   // ToDo cache loaded data??
-  await load_season_data(`104`)
+  await load_season_data(`106`)
   change_table()
 }
 
