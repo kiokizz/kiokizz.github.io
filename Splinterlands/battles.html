@@ -35,7 +35,6 @@
         <input id="format_wild" class="w3-radio" type="radio" name="format" value="wild" onchange="change_table()">
         <label>Wild</label>
     </div>
-    <br>
     <h4>League:</h4>
     <div>
         <input id="league_Bronze" class="w3-radio" type="radio" name="league" value="bronze" onchange="change_table()"
@@ -52,9 +51,15 @@
                onchange="change_table()">
         <label>Champion</label>
     </div>
-    <br>
-    <!--    <label>Load</label>-->
-    <!--    <button onclick="load_season_data(`91`)">Click me</button>-->
+    <h4>Card Type:</h4>
+    <div>
+        <input id="monsters" class="w3-radio" type="checkbox" name="type" value="bronze" onchange="change_table()"
+               checked>
+        <label>Monsters</label>
+        <input id="summoners" class="w3-radio" type="checkbox" name="type" value="silver" onchange="change_table()"
+               checked>
+        <label>Summoners</label>
+    </div>
     <br>
     <div id="data">Data..</div>
     <br>

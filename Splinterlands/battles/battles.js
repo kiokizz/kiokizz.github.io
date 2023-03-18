@@ -80,7 +80,7 @@ async function change_table(field = false) {
   }
 
   let report_mon = `<table class="w3-table w3-striped w3-bordered" id="monster"><tr><th onclick="change_table('usage_rate', 'monster')">Usage%</th><th onclick="change_table('name', 'monster')">Monster</th><th onclick="change_table('win_count', 'monster')">Win</th><th onclick="change_table('loss_count', 'monster')">Loss</th><th onclick="change_table('win_rate', 'monster')">Win Rate</th><th onclick="change_table('rating_movement', 'monster')">Rating Index</th></tr>`
-  let report_sum = `<table class="w3-table w3-striped w3-bordered" id="summoner"><tr><th onclick="change_table('usage_rate', 'summoner')">Usage%</th><th onclick="change_table('name', 'summoner')">Monster</th><th onclick="change_table('win_count', 'summoner')">Win</th><th onclick="change_table('loss_count', 'summoner')">Loss</th><th onclick="change_table('win_rate', 'summoner')">Win Rate</th><th onclick="change_table('rating_movement', 'summoner')">Rating Index</th></tr>`
+  let report_sum = `<table class="w3-table w3-striped w3-bordered" id="summoner"><tr><th onclick="change_table('usage_rate', 'summoner')">Usage%</th><th onclick="change_table('name', 'summoner')">Summoner</th><th onclick="change_table('win_count', 'summoner')">Win</th><th onclick="change_table('loss_count', 'summoner')">Loss</th><th onclick="change_table('win_rate', 'summoner')">Win Rate</th><th onclick="change_table('rating_movement', 'summoner')">Rating Index</th></tr>`
 
   for (let card of selected_data) {
     if (typeof card !== "object") continue
@@ -101,10 +101,19 @@ async function change_table(field = false) {
   report_mon += `</table>`
   report_sum += `</table>`
 
-  el(`data`).innerHTML =
-      `<h2>Summoners</h2>`
-      + report_sum
-      + `<br><br>`
-      + `<h2>Monsters</h2>`
-      + report_mon
+  let summoner_div = `<h2>🧙 Summoners</h2>` + report_sum
+  let monster_div = `<h2>👾 Monsters</h2>` + report_mon
+
+  let data_div = ``;
+  let monsters = el(`monsters`).checked
+  let summoners = el(`summoners`).checked
+
+  console.log(monsters, summoners)
+
+  if (monsters && summoners || !monsters && !summoners) data_div = summoner_div + `<br><br>` + monster_div
+  else if (monsters) data_div = monster_div
+  else if (summoners) data_div = summoner_div
+
+  el(`data`).innerHTML = data_div
+      
 }
