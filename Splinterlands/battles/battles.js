@@ -1,14 +1,35 @@
 const el = id => document.getElementById(id);
 
 let data = {}
-let tables = {}
+let cards = {}
+
+let emojis = {
+  Red: `🔴`,
+  Blue: `🔵`,
+  Green: `🟢`,
+  White: `⚪`,
+  Gray: `🌑`,
+  Black: `🟣`,
+  Gold: `🟡`
+}
 
 init()
 
 async function init() {
   // ToDo cache loaded data??
+  await get_card_details();
   await load_season_data(`106`)
   change_table()
+}
+
+async function get_card_details(name) {
+  let url = `https://api2.splinterlands.com/cards/get_details`
+  let raw_data = (await axios.get(url)).data;
+  let result_data = {};
+  raw_data.forEach((card) => result_data[card.id] = card);
+  // console.log(result_data)
+  cards = result_data
+  console.log(cards)
 }
 
 async function load_season_data(name) {
@@ -88,7 +109,7 @@ async function change_table(field = false) {
     let row =
         `<tr>`
         + `<td>${card.usage_rate.toFixed(2)}%</td>`
-        + `<td>${card.name}</td>`
+        + `<td>${emojis[cards[card.id].color]} ${card.name}</td>`
         + `<td>${card.win_count}</td>`
         + `<td>${card.play_count - card.win_count}</td>`
         + `<td>${card.win_rate.toFixed(2)}%</td>`
@@ -115,5 +136,4 @@ async function change_table(field = false) {
   else if (summoners) data_div = summoner_div
 
   el(`data`).innerHTML = data_div
-      
 }
