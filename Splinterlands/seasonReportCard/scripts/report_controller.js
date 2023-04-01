@@ -785,10 +785,13 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
       console.log(`Tournament Data: (${report_array.matches.Tournament.data.length}/${report_array.matches.Tournament.ids.length})`, report_array.matches.Tournament.data);
 
       report_array.matches.Tournament.data.forEach((tournament) => {
+        console.log(tournament.status)
         if (tournament.status === 2) {
           if (report_array.season_end > Date.parse(tournament.rounds[tournament.rounds.length - 1].start_date) + (tournament.data.duration_blocks ? (3000 * tournament.data.duration_blocks) : 0)) {
+            console.log(`Tournament valid time period`)
             for (let player of tournament.players) {
               if (player.player === report_array.player) {
+                console.log(`Player found`)
                 //Prizes
                 let prize = false;
                 tournament.data.prizes.payouts.forEach(group => {
@@ -815,6 +818,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
             }
           }
         }
+        console.log(`Tournament Data`, tournament)
       });
 
       function add_to_prizeList(player, tournament, prizeArray) {
