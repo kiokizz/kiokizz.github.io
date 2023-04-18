@@ -18,7 +18,7 @@ init()
 async function init() {
   // ToDo cache loaded data??
   await get_card_details();
-  await load_season_data(`107`)
+  await load_season_data(`108`)
   change_table()
 }
 
