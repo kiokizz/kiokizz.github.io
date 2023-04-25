@@ -118,15 +118,19 @@ function report_controller() {
     request(url, 0, context.seasonNum);
   };
 
-  this.seasonNum = function (data) {
+  this.seasonNum = async function (data) {
     console.log(data);
     report_array.season.id = data.season.id;
     report_array.season.name = data.season.name;
     report_array.season.nameNum = data.season.id - 13;
-    report_array.season_start = Date.parse(report_array.season.season_end_times[report_array.season.id - 2]);
-    report_array.season_end = Date.parse(report_array.season.season_end_times[report_array.season.id - 1]);
+    report_array.season_start = (await axios.get(`https://api2.splinterlands.com/season?id=${report_array.season.id - 2}`)).data.ends
+    report_array.season_end = (await axios.get(`https://api2.splinterlands.com/season?id=${report_array.season.id - 1}`)).data.ends
+
+    console.log(report_array.season_start)
+    console.log(report_array.season_end)
+
     // report_array.season_start = Date.parse(report_array.season.season_end_times[report_array.season.id - 2]);
-    // report_array.season_end = Date.parse(data.previous_season.ends);
+    // report_array.season_end = Date.parse(report_array.season.season_end_times[report_array.season.id - 1]);
 
     report_array.permlink = `splinterstats-season-${report_array.season.nameNum - 1}-report-card`;
     if (report_array.season.nameNum === 77) report_array.permlink = `splinterstats-season-7b-report-card`;
