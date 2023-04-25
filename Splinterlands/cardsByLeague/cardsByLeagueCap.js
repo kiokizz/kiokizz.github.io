@@ -81,7 +81,9 @@ let editions = {
   "4": "untamed",
   "5": "dice",
   "6": "gladius",
-  "7": "chaos"
+  "7": "chaos",
+  "8": "rift",
+  "10": "soulbound"
 };
 
 const backgroundColor = {
@@ -136,7 +138,7 @@ function calculations() {
   summoner = parseInt(el("Summoner").value);
   league = el("League").value;
 
-  const additionFilters = ["beta", "promo", "reward", "untamed", "dice", "gladius", "chaos"];
+  const additionFilters = ["beta", "promo", "reward", "untamed", "dice", "gladius", "chaos", "rift"];
   editionsToFilter = additionFilters.filter(c => el(c).checked);
 
   let abilities = [
@@ -211,6 +213,7 @@ function monsters_array() {
     //ToList Edition
     fail = editionsToFilter.length >= 1 &&
         !editionsToFilter.includes(obj.edition);
+    if (fail && editionsToFilter.includes("reward") && obj.edition === "soulbound") fail = false
     if (fail) return;
 
     //ToList Stat
@@ -393,7 +396,7 @@ function createHTMLPage(table) {
 
     el("selectorsFilter").onclick = () => calculations()
 
-    let fields_change = [`Summoner`, `League`, `beta`, `promo`, `reward`, `untamed`, `dice`, `gladius`, `chaos`, `ability1`,
+    let fields_change = [`Summoner`, `League`, `beta`, `promo`, `reward`, `untamed`, `dice`, `gladius`, `chaos`, `rift`, `ability1`,
       `ability2`, `ability3`, `stat`, `operator`, `statvalue`, `summonersCheckbox`, `galleryCheckbox`]
     fields_change.forEach((field) => el(field).onchange = () => calculations());
 
