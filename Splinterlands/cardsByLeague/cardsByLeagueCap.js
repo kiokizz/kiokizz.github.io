@@ -279,6 +279,7 @@ function summoner_array() {
         // ToList Edition
         fail = editionsToFilter.length >= 1 &&
             !editionsToFilter.includes(obj.edition);
+        if (fail && editionsToFilter.includes("reward") && obj.edition === "soulbound") fail = false
         if (fail) return;
 
         data.summoners.push(obj);
