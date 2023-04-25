@@ -98,6 +98,7 @@ async function change_table(field = false) {
   let editions = [];
   for (let x of ["alpha", "beta", "promo", "reward", "untamed", "dice", "gladius", "chaos", "rift"]) if (el(x).checked) {
     if (x === "beta") editions.push("1", "0,1")
+    else if (x === "reward") editions.push("3", "10")
     else editions.push(edition_ids[x])
   }
 
