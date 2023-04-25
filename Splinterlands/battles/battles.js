@@ -13,6 +13,29 @@ let emojis = {
   Gold: `🟡`
 }
 
+let edition_ids = {
+  "alpha": "0,1",
+  "beta": "0,1",
+  "promo": "2",
+  "reward": "3",
+  "untamed": "4",
+  "dice": "5",
+  "gladius": "6",
+  "chaos": "7",
+  "rift": "8",
+  "soulbound": 10
+};
+
+const splinterColor = {
+  fire: `Red`,
+  earth: `Green`,
+  life: `White`,
+  neutral: `Gray`,
+  dragon: `Gold`,
+  water: `Blue`,
+  death: `Black`
+};
+
 init()
 
 async function init() {
@@ -64,10 +87,19 @@ let sorted = {
 
 async function change_table(field = false) {
   let format;
-  for (let x of [`combined`, `modern`, `wild`]) if (document.getElementById(`format_${x}`).checked) format = x;
+  for (let x of [`combined`, `modern`, `wild`]) if (document.getElementById(`format_${x}`).checked) format = x
 
   let league;
-  for (let x of [`Bronze`, `Silver`, `Gold`, `Diamond`, `Champ`]) if (document.getElementById(`league_${x}`).checked) league = x;
+  for (let x of [`Bronze`, `Silver`, `Gold`, `Diamond`, `Champ`]) if (document.getElementById(`league_${x}`).checked) league = x
+
+  let splinters = []
+  for (let x of [`fire`, `water`, `earth`, `life`, `death`, `dragon`, `neutral`]) if (el(x).checked) splinters.push(splinterColor[x])
+
+  let editions = [];
+  for (let x of ["alpha", "beta", "promo", "reward", "untamed", "dice", "gladius", "chaos", "rift"]) if (el(x).checked) {
+    if (x === "beta") editions.push("1", "0,1")
+    else editions.push(edition_ids[x])
+  }
 
   console.log(format, league, field, sorted[field])
   let selected_data = data[`${format}${league}`]
@@ -79,7 +111,6 @@ async function change_table(field = false) {
     sorted[field] = sorted.default_sort * -1
     sort(field)
   }
-
 
   function sort(field) {
     if (sorted[field] === undefined) sorted[field] = 1
@@ -103,9 +134,25 @@ async function change_table(field = false) {
   let report_mon = `<table class="w3-table w3-striped w3-bordered" id="monster"><tr><th onclick="change_table('usage_rate', 'monster')">Usage%</th><th onclick="change_table('name', 'monster')">Monster</th><th onclick="change_table('win_count', 'monster')">Win</th><th onclick="change_table('loss_count', 'monster')">Loss</th><th onclick="change_table('win_rate', 'monster')">Win Rate</th><th onclick="change_table('rating_movement', 'monster')">Rating Index</th></tr>`
   let report_sum = `<table class="w3-table w3-striped w3-bordered" id="summoner"><tr><th onclick="change_table('usage_rate', 'summoner')">Usage%</th><th onclick="change_table('name', 'summoner')">Summoner</th><th onclick="change_table('win_count', 'summoner')">Win</th><th onclick="change_table('loss_count', 'summoner')">Loss</th><th onclick="change_table('win_rate', 'summoner')">Win Rate</th><th onclick="change_table('rating_movement', 'summoner')">Rating Index</th></tr>`
 
+  function cardFilterPass(card) {
+    let pass = true;
+
+    card = cards[card.id]
+    console.log(card)
+    console.log({format, league, splinters, editions})
+
+    if (editions.length > 0 && splinters.length > 0) pass = editions.includes(card.editions) && splinters.includes(card.color)
+    else if (editions.length > 0) pass = editions.includes(card.editions)
+    else if (splinters.length > 0) pass = splinters.includes(card.color)
+
+    console.log(pass)
+    return pass;
+  }
+
   for (let card of selected_data) {
     if (typeof card !== "object") continue
     if (card.play_count < 50) continue
+    if (!cardFilterPass(card)) continue
     let row =
         `<tr>`
         + `<td>${card.usage_rate.toFixed(2)}%</td>`
