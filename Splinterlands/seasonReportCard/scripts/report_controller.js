@@ -985,21 +985,21 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
 
   function generateEarningsTemplate(calc, loot_chests) {
     return `##### Standard Foil Cards`
-        + `\n|Rarity|Quantity|🔥DEC🔥|`
-        + `\n|-|-|-|`
-        + `\n|Common|${calc.stand_common_count}|${calc.stand_common_dec}|`
-        + `\n|Rare|${calc.stand_rare_count}|${calc.stand_rare_dec}|`
-        + `\n|Epic|${calc.stand_epic_count}|${calc.stand_epic_dec}|`
-        + `\n|Legendary|${calc.stand_legendary_count}|${calc.stand_legendary_dec}|`
-        + `\n|Total Standard|${calc.total_stand_count}|${calc.total_stand_dec}|`
+        + `\n|Rarity|Quantity|`
+        + `\n|-|-|`
+        + `\n|Common|${calc.stand_common_count}|`
+        + `\n|Rare|${calc.stand_rare_count}|`
+        + `\n|Epic|${calc.stand_epic_count}|`
+        + `\n|Legendary|${calc.stand_legendary_count}|`
+        + `\n|Total Standard|${calc.total_stand_count}|`
         + `\n##### Gold Foil Cards\n`
-        + `\n|Rarity|Quantity|🔥DEC🔥|`
-        + `\n|-|-|-|`
-        + `\n|Common|${calc.gold_common_count}|${calc.gold_common_dec}|`
-        + `\n|Rare|${calc.gold_rare_count}|${calc.gold_rare_dec}|`
-        + `\n|Epic|${calc.gold_epic_count}|${calc.gold_epic_dec}|`
-        + `\n|Legendary|${calc.gold_legendary_count}|${calc.gold_legendary_dec}|`
-        + `\n|Total Gold|${calc.total_gold_count}|${calc.total_gold_dec}|`
+        + `\n|Rarity|Quantity|`
+        + `\n|-|-|`
+        + `\n|Common|${calc.gold_common_count}|`
+        + `\n|Rare|${calc.gold_rare_count}|`
+        + `\n|Epic|${calc.gold_epic_count}|`
+        + `\n|Legendary|${calc.gold_legendary_count}|`
+        + `\n|Total Gold|${calc.total_gold_count}|`
         + `\n#### Loot Chests\n`
         + `\n|Reward Chests|Dailies|Season|Total| 💲Token |`
         + `\n|-|-|-|-|-|`
@@ -1030,7 +1030,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         + `|${calc.total_dailies_count}`
         + `|${calc.total_season_count}`
         + `|${calc.total_all_count}`
-        + `|🟣 ${calc.total_all_dec}|`
+        + `|-|`
         // +`${(!(report_array.dec_balances.leaderboard_prize <= 0) ? `\n` :
         //   `\n### Leaderboard Prizes\n\n${report_array.leaderboard_table}\n\n`)}
         + `\n#### Captured DEC/SPS (Ranked Rewards)\n`
