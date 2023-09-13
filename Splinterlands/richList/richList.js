@@ -1,5 +1,6 @@
 function data_collector() {
   let context = this;
+  let query;
   let rowData = {};
   let supply = 0;
   let numbAccounts = 0;
@@ -42,7 +43,7 @@ function data_collector() {
     el("content").innerHTML = 'Loading...';
     el('generate').disabled = true;
 
-    let query = el('type').value;
+    query = el('type').value;
 
     request(`https://api2.splinterlands.com/players/richlist?token_type=${query}`, 0, context.sortData);
   }
@@ -53,6 +54,8 @@ function data_collector() {
     supply = data.total_quantity;
     numbAccounts = data.total_accounts;
     context.makeTable();
+    let CSVs = document.getElementsByClassName("CSV");
+    Array.from(CSVs).map(c => c.style.display = "block");
   }
 
   this.makeTable = function () {
@@ -92,5 +95,29 @@ Percentage Owned by:
   <a href="https://github.com/kiokizz">GitHub</a>
   | Check out my blogs <a href="https://hive.blog/@kiokizz">@kiokizz</a>
   & <a href="https://hive.blog/@splinterstats">@splinterstats</a>`
+  }
+
+  this.download = function () {
+    let dataCSV = `#,Player,${types_names[el('type').value]} Balance,% Total\n`;
+    rowData.forEach((player, i) => {
+      dataCSV += `${i + 1},${player.player},${parseFloat(player.balance).toFixed(3)},${(player.balance / supply * 100).toFixed(2)}%\n`;
+    })
+
+    let csv_text = document.createElement('a');
+    csv_text.setAttribute('href',
+        'data:text/plain;charset=utf-8,' + encodeURIComponent(dataCSV));
+
+    let d = new Date();
+    let date_string = d.getFullYear().toString() +
+        d.getDate().toString() +
+        d.getHours().toString() +
+        d.getSeconds().toString();
+    let descriptor = `${query}-${date_string}`;
+    csv_text.setAttribute('download', `${descriptor}.csv`);
+
+    csv_text.style.display = 'none';
+    document.body.appendChild(csv_text);
+    csv_text.click();
+    document.body.removeChild(csv_text);
   }
 }
