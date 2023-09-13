@@ -56,7 +56,7 @@ function data_collector() {
   }
 
   this.makeTable = function () {
-    let header = `<th>#</th><th>Player</th><th>${types_names[el('type').value]} Balance</th>`;
+    let header = `<th>#</th><th>Player</th><th>${types_names[el('type').value]} Balance</th><th>% Total</th>`;
     let body = ``;
 
     let top = {10: 0, 50: 0, 100: 0, 200: 0};
@@ -66,7 +66,7 @@ function data_collector() {
       topKeys.forEach((category, index) => {
         if (i <= category) top[category] += player.balance;
       })
-      body += `<tr><td>${i + 1}</td><td>${player.player}</td><td> ${formatter(parseFloat(player.balance).toFixed(3))} (${(player.balance / supply * 100).toFixed(2)}%)</td></tr>`;
+      body += `<tr><td>${i + 1}</td><td>${player.player}</td><td> ${formatter(parseFloat(player.balance).toFixed(3))}</td><td>${(player.balance / supply * 100).toFixed(2)}%</td></tr>`;
     })
 
     el("content").innerHTML =
