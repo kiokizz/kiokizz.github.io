@@ -761,7 +761,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         else if (tx.type === "modern") report_array.modern_stake_rewards += amount;
         else if (tx.type === "season") report_array.season_stake_rewards += amount;
         else if (tx.type === "focus") report_array.focus_stake_rewards += amount;
-        else if (tx.type === "land") report_array.land_stake_rewards += amount;
+        else if (tx.type === "land_mining") report_array.land_stake_rewards += amount;
         else if (tx.type === "nightmare") report_array.nightmare_stake_rewards += amount;
         else if (tx.type === "license") report_array.license_stake_rewards += amount;
         else if (tx.type === "brawl") report_array.brawl_stake_rewards += amount;
