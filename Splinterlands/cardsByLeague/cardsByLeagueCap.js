@@ -83,7 +83,8 @@ let editions = {
   "6": "gladius",
   "7": "chaos",
   "8": "rift",
-  "10": "soulbound"
+  "10": "soulbound",
+  "12": "rebellion"
 };
 
 const backgroundColor = {
@@ -138,8 +139,8 @@ function calculations() {
   summoner = parseInt(el("Summoner").value);
   league = el("League").value;
 
-  const additionFilters = ["beta", "promo", "reward", "untamed", "dice", "gladius", "chaos", "rift"];
-  editionsToFilter = additionFilters.filter(c => el(c).checked);
+  const editionFilters = ["beta", "promo", "reward", "untamed", "dice", "gladius", "chaos", "rift", "rebellion"];
+  editionsToFilter = editionFilters.filter(c => el(c).checked);
 
   let abilities = [
     el("ability1").value,
@@ -222,7 +223,7 @@ function monsters_array() {
             (statFilter[1] === ">") ? (a, b) => a > b : (a, b) => a === b;
 
     // ToList Splinter
-    console.log(card)
+    // console.log(card)
     let colours = [];
     let splinters = [`fire`, `water`, `earth`, `life`, `death`, `dragon`, `neutral`];
     splinters.forEach((splinter) => {
@@ -397,14 +398,14 @@ function createHTMLPage(table) {
 
     el("selectorsFilter").onclick = () => calculations()
 
-    let fields_change = [`Summoner`, `League`, `beta`, `promo`, `reward`, `untamed`, `dice`, `gladius`, `chaos`, `rift`, `ability1`,
+    let fields_change = [`Summoner`, `League`, `beta`, `promo`, `reward`, `untamed`, `dice`, `gladius`, `chaos`, `rift`, 'rebellion', `ability1`,
       `ability2`, `ability3`, `stat`, `operator`, `statvalue`, `summonersCheckbox`, `galleryCheckbox`]
     fields_change.forEach((field) => el(field).onchange = () => calculations());
 
     let fields_keyup = [`ability1`, `ability2`, `ability3`];
     fields_keyup.forEach((field) => el(field).onkeyup = () => calculations());
 
-    document.getElementById("chaos").checked = true;
+    document.getElementById("rebellion").checked = true;
     calculations();
   }
 }
