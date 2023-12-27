@@ -23,7 +23,8 @@ let edition_ids = {
   "gladius": "6",
   "chaos": "7",
   "rift": "8",
-  "soulbound": 10
+  "soulbound": "10",
+  "rebellion": "12"
 };
 
 const splinterColor = {
@@ -41,7 +42,7 @@ init()
 async function init() {
   // ToDo cache loaded data??
   await get_card_details();
-  await load_season_data(`123`)
+  await load_season_data(`124`)
   change_table()
 }
 
@@ -96,7 +97,7 @@ async function change_table(field = false) {
   for (let x of [`fire`, `water`, `earth`, `life`, `death`, `dragon`, `neutral`]) if (el(x).checked) splinters.push(splinterColor[x])
 
   let editions = [];
-  for (let x of ["alpha", "beta", "promo", "reward", "untamed", "dice", "gladius", "chaos", "rift"]) if (el(x).checked) {
+  for (let x of ["alpha", "beta", "promo", "reward", "untamed", "dice", "gladius", "chaos", "rift", "rebellion"]) if (el(x).checked) {
     if (x === "beta") editions.push("1", "0,1")
     else if (x === "reward") editions.push("3", "10")
     else editions.push(edition_ids[x])
