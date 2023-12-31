@@ -1,6 +1,9 @@
 const el = id => document.getElementById(id);
 
 let data = {}
+let title_string = `.`
+let battles_string = `.`
+let utc_string = `.`
 let cards = {}
 
 let emojis = {
@@ -42,7 +45,13 @@ init()
 async function init() {
   // ToDo cache loaded data??
   await get_card_details();
-  await load_season_data(`124`)
+  let season = await get_parameter_by_name(`season`)
+  season = (season && season !== '' && !Number.isNaN(season)) ? season : `124`
+  await load_season_data(season)
+  console.log(title_string, battles_string, utc_string)
+  el('title_string').innerHTML = `<h2>${title_string}</h2>`
+  el('battles_string').innerHTML = `<h3>${battles_string}</h3>`
+  el('utc_string').innerHTML = utc_string
   change_table()
 }
 
@@ -185,4 +194,15 @@ async function change_table(field = false) {
   else if (summoners) data_div = summoner_div
 
   el(`data`).innerHTML = data_div
+}
+
+async function get_parameter_by_name(name) {
+  let url = window.location.href;
+  name = name.replace(/[\[\]]/g, "\\$&");
+  let regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)")
+  let results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
