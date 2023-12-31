@@ -69,17 +69,25 @@ function data_collector() {
 
     let top = {10: 0, 50: 0, 100: 0, 200: 0};
     let topKeys = Object.keys(top);
+    let null_val = 0;
 
     rowData.forEach((player, i) => {
       topKeys.forEach((category, index) => {
-        if (i <= category) top[category] += player.balance;
+        if (player.player === "null") null_val = 1
+        else if (i - null_val <= category) top[category] += player.balance;
       })
-      body += `<tr><td>${i + 1}</td><td>${player.player}</td><td> ${formatter(parseFloat(player.balance).toFixed(3))}</td><td>${(player.balance / supply * 100).toFixed(2)}%</td></tr>`;
+      let position = i + 1 - null_val
+      let style = ``
+      if (player.player === "null") {
+        position = "-"
+        style = ` style="color:#bcbcbc"`
+      }
+      body += `<tr${style}><td>${position}</td><td>${player.player}</td><td> ${formatter(parseFloat(player.balance).toFixed(3))}</td><td>${(player.balance / supply * 100).toFixed(2)}%</td></tr>`;
     })
 
     el("content").innerHTML =
         `Total ${types_names[el('type').value]} in circulation: ${formatter(supply)} in ${formatter(numbAccounts)} accounts.<br><br>
-Percentage Owned by:
+Percentage Owned by <i>(exlcuding @null)</i>:
 <ul>
   <li>Top 10: ${formatter(top[10].toFixed(3))} ${types_names[el('type').value]} (${(top[10] / supply * 100).toFixed(2)}%)</li>
   <li>Top 50: ${formatter(top[50].toFixed(3))} ${types_names[el('type').value]} (${(top[50] / supply * 100).toFixed(2)}%) </li>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>[Testing] Transaction Results</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="unlocks/network_handler.js?v=1"></script>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .transaction {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+        }
+
+        .item {
+            border: 1px solid #ddd;
+            padding: 5px;
+            margin: 5px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .red-flashing {
+            color: red;
+            animation: blinker 1s linear infinite;
+        }
+
+        .red-solid {
+            color: red;
+        }
+
+        .blue {
+            color: rgba(0, 61, 175, 0.99);
+        }
+
+        @keyframes blinker {
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<h1>Transaction Results</h1>
+<div id="transactionDetails">
+    <!-- Transaction details will be displayed here -->
+</div>
+
+<script>
+  run();
+
+  async function run() {
+    // Function to check if the "id" parameter is present in the URL
+    async function getParameterByName(name, url) {
+      if (!url) url = window.location.href;
+      name = name.replace(/[\[\]]/g, "\\$&");
+      let regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)")
+      let results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+
+      console.log(regex)
+      console.log(results[2])
+      console.log(decodeURIComponent(results[2].replace(/\+/g, " ")))
+
+      return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+    // Function to validate the received "id" (to be developed)
+    async function validateId(id) {
+      // You can add your validation logic here
+      // For this example, we assume the "id" is valid if it's not empty
+
+      transactionData = await transaction_lookup(idParam);
+      console.log(transactionData)
+
+      let success = transactionData.trx_info.success
+      let type = transactionData.type = "unlock_assets"
+
+      return success && type
+    }
+
+    // Function to display an error message
+    function displayErrorMessage(message) {
+      let transactionDetails = document.getElementById("transactionDetails");
+      let errorDiv = document.createElement("div");
+      errorDiv.className = "error";
+      errorDiv.innerText = message;
+      transactionDetails.appendChild(errorDiv);
+    }
+
+    // Check if the "id" parameter is present in the URL
+    let idParam = await getParameterByName("id");
+    let transactionData
+
+    if (idParam === null || undefined) {
+      // "id" parameter is not provided
+      displayErrorMessage("No id provided.");
+    } else {
+      let valid = await validateId(idParam)
+      // "id" parameter is provided, validate it
+      if (valid) {
+
+        await displayTransaction();
+      } else {
+        // "id" is invalid
+        displayErrorMessage("Invalid transaction. Please try again later.");
+      }
+    }
+
+    // Function to display transaction details (replace with your implementation)
+    async function displayTransaction() {
+      let transactionDetails = document.getElementById("transactionDetails");
+
+      // Function to display an error message
+      function displayErrorMessage(message) {
+        let transactionDetails = document.getElementById("transactionDetails");
+        let errorDiv = document.createElement("div");
+        errorDiv.className = "error";
+        errorDiv.innerText = message;
+        transactionDetails.appendChild(errorDiv);
+      }
+
+      // Check if the "id" parameter is present in the URL
+      let idParam = getParameterByName("id");
+
+      if (idParam === null) {
+        // "id" parameter is not provided
+        displayErrorMessage("No id provided.");
+      } else {
+        // "id" parameter is provided, validate it
+        if (await validateId(idParam)) {
+          // "id" is valid, proceed with displaying transaction details
+          // Call the function to display transaction details here
+          displayTransaction();
+        } else {
+          // "id" is invalid
+          displayErrorMessage("Invalid transaction. Please try again later.");
+        }
+      }
+
+      // Function to display transaction details (replace with your implementation)
+      function displayTransaction() {
+        let days, hours, minutes
+
+        function calculateTimeRemaining(unlockDate) {
+          let now = new Date();
+          let unlock = new Date(unlockDate);
+
+          let timeDifference = unlock - now;
+          if (timeDifference <= 0) {
+            return "Unlocked";
+          }
+
+          days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+          hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+
+          return `${days} days ${hours} hours ${minutes} minutes`;
+        }
+
+        let transactionDetails = document.getElementById("transactionDetails");
+
+        let result = JSON.parse(transactionData.trx_info.result)
+        let data = JSON.parse(transactionData.trx_info.data)
+
+        let types = {"item": "Non-card Asset", undefined: "Card"}
+        let type = types[data.type]
+
+        let iterator
+        if (type === "Card") iterator = result.cards;
+        else iterator = result.items;
+
+        // Create a div for each item in the transaction
+        iterator.forEach(function (item) {
+          let itemDiv = document.createElement("div");
+          itemDiv.className = "item";
+
+          // Calculate time remaining until unlock date
+          let timeRemaining = calculateTimeRemaining(item.unlock_date);
+          let localUnlockDate = new Date(item.unlock_date)
+
+          // Add CSS classes based on time remaining
+          if (timeRemaining.includes("Unlocked")) {
+            itemDiv.innerHTML = `
+                        <strong>UID:</strong> ${item.uid}<br>
+                        <strong>Player:</strong> ${item.player}<br>
+                        <strong>Lock Days:</strong> ${item.lock_days}<br>
+                        <strong>Unlock Date:</strong> ${localUnlockDate}<br>
+                        <strong>Time Remaining:</strong> <span class="black">${timeRemaining}</span><br>
+                        <!-- Add more item details here if needed -->
+                    `;
+          } else {
+            let timeRemainingClass = "";
+
+            if (minutes + days * 1440 < 15) {
+              timeRemainingClass = "red-flashing";
+            } else if (minutes + days * 1440 + hours * 60 < 60) {
+              timeRemainingClass = "red-solid";
+            } else if (minutes + days * 1440 + hours * 60 < 360) {
+              timeRemainingClass = "blue";
+            } else {
+              timeRemainingClass = "black";
+            }
+
+            itemDiv.innerHTML = `
+                        <strong>UID:</strong> ${item.uid}<br>
+                        <strong>Player:</strong> ${item.player}<br>
+                        <strong>Lock Days:</strong> ${item.lock_days}<br>
+                        <strong>Unlock Date (Local Time):</strong> "${localUnlockDate}"<br>
+                        <strong>Time Remaining:</strong> <span class="${timeRemainingClass}">${timeRemaining}</span><br>
+                        <!-- Add more item details here if needed -->
+                    `;
+          }
+
+          // Append the item div to the transaction details container
+          transactionDetails.appendChild(itemDiv);
+        });
+      }
+    }
+  }
+</script>
+</body>
+</html>
