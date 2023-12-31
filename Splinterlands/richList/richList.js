@@ -79,16 +79,19 @@ function data_collector() {
       })
       let position = i + 1 - null_val
       let style = ``
+      let percent_total = `${(player.balance / supply * 100).toFixed(2)}%`
       if (player.player === "null") {
         position = "-"
         style = ` style="color:#bcbcbc"`
         player_null = player
+        supply = supply - player_null.balance
+        percent_total = '-'
       }
-      body += `<tr${style}><td>${position}</td><td>${player.player}</td><td> ${formatter(parseFloat(player.balance).toFixed(3))}</td><td>${(player.balance / supply * 100).toFixed(2)}%</td></tr>`;
+      body += `<tr${style}><td>${position}</td><td>${player.player}</td><td> ${formatter(parseFloat(player.balance).toFixed(3))}</td><td>${percent_total}</td></tr>`;
     })
 
     el("content").innerHTML =
-        `Total ${types_names[el('type').value]} in circulation: ${formatter(supply - player_null.balance)} in ${formatter(numbAccounts - null_val)} accounts.<br><br>
+        `Total ${types_names[el('type').value]} in circulation: ${formatter(supply)} in ${formatter(numbAccounts - null_val)} accounts.<br><br>
 Percentage Owned by:
 <ul>
   <li>Top 10: ${formatter(top[10].toFixed(3))} ${types_names[el('type').value]} (${(top[10] / supply * 100).toFixed(2)}%)</li>
