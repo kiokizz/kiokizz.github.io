@@ -46,7 +46,7 @@ async function init() {
   // ToDo cache loaded data??
   await get_card_details();
   let season = await get_parameter_by_name(`season`)
-  season = (season && season !== '' && !Number.isNaN(season)) ? season : `126`
+  season = (season && season !== '' && !Number.isNaN(season)) ? season : `127`
   await load_season_data(season)
   console.log(title_string, battles_string, utc_string)
   el('title_string').innerHTML = `<h2>${title_string}</h2>`
