@@ -218,9 +218,8 @@ function report_controller() {
 
     // request(`https://api.splinterlands.com/players/leaderboard_with_player?season=${report_array.season.id - 1}&token=${report_array.token}&username=${report_array.player}&leaderboard=${report_array.season_number_count++}&season_details=true`, 0, context.lastSeason)
     // request(`https://api.splinterlands.com/players/details?name=${report_array.player}&season_details=true&season=${report_array.season.id - 1}`, 0, context.lastSeason)
-    let url = `https://cache-api.splinterlands.com/players/leaderboard_with_player`
-        + `?season=${report_array.season.id - 1}`
-        + `&username=${report_array.player}`;
+    let url = `https://api2.splinterlands.com/players/leaderboard_with_player?token=${report_array.token}&username=${report_array.player}`
+        + `&season=${report_array.season.id - 1}`;
     request(url, 0, context.lastSeason);
   };
 
@@ -230,7 +229,7 @@ function report_controller() {
       report_array.player_season = {
         wild: data.player
       }
-      let url = `https://cache-api.splinterlands.com/players/leaderboard_with_player`
+      let url = `https://api2.splinterlands.com/players/leaderboard_with_player`
           + `?season=${report_array.season.id - 1}`
           + `&username=${report_array.player}&format=modern`;
       request(url, 0, context.lastSeason);
@@ -309,7 +308,8 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
           + `?username=${report_array.player}`
           + `&from_block=-1`
           + `&limit=500`
-          + `${report_array.general_query_types}`;
+          + `${report_array.general_query_types}`
+          + `&token=${report_array.token}`;
       request(url, 0, context.playerHistory);
     }
   };
@@ -333,13 +333,13 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         gift_packs,card_award,claim_reward,sm_battle,enter_tournament,
         leave_tournament,token_transfer`;
       request(
-          `https://api.splinterlands.com/players/history?username=${report_array.player}&from_block=-1&before_block=${before_block}&limit=500${report_array.general_query_types}`,
+          `https://api.splinterlands.com/players/history?username=${report_array.player}&from_block=-1&before_block=${before_block}&limit=500${report_array.general_query_types}&token=${report_array.token}`,
           0,
           context.playerHistory);
     } else {
       console.log(report_array.tx_types);
       report_array.dec_query_types = `&types=rental_payment_fees,market_rental,rental_payment,rental_refund,leaderboard_prizes,dec_reward`;
-      request(`https://api.splinterlands.com/players/balance_history?token_type=DEC&offset=0&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}`, 0, context.playerDECBalanceHistory);
+      request(`https://api.splinterlands.com/players/balance_history?token_type=DEC&offset=0&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}&token=${report_array.token}`, 0, context.playerDECBalanceHistory);
     }
   };
 
@@ -367,12 +367,12 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
       offset = 500 * Math.ceil(report_array.dec_transfers.length / 500);
       update_status(`Getting player DEC transactions with offset: ${offset}.`);
       request(
-          `https://api.splinterlands.com/players/balance_history?token_type=DEC&offset=${offset}&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}`,
+          `https://api.splinterlands.com/players/balance_history?token_type=DEC&offset=${offset}&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}&token=${report_array.token}`,
           0,
           context.playerDECBalanceHistory);
     } else {
       console.log(`DEC Transfers`, report_array.dec_transfer_types);
-      request(`https://api.splinterlands.com/players/balance_history?token_type=SPS&offset=0&limit=${limit}&username=${report_array.player}`, 0, context.playerSPSBalanceHistory);
+      request(`https://api.splinterlands.com/players/balance_history?token_type=SPS&offset=0&limit=${limit}&username=${report_array.player}&token=${report_array.token}`, 0, context.playerSPSBalanceHistory);
     }
   };
 
@@ -396,12 +396,12 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
       offset = 500 * Math.ceil(report_array.sps_transfers.length / 500);
       update_status(`Getting player SPS transactions with offset: ${offset}.`);
       request(
-          `https://api.splinterlands.com/players/balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}`,
+          `https://api.splinterlands.com/players/balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}&token=${report_array.token}`,
           0,
           context.playerSPSBalanceHistory);
     } else {
       console.log(`SPS Transfers`, report_array.sps_transfer_types);
-      request(`https://api.splinterlands.com/players/balance_history?token_type=VOUCHER&offset=0&limit=${limit}&username=${report_array.player}`, 0, context.playerVOUCHERBalanceHistory);
+      request(`https://api.splinterlands.com/players/balance_history?token_type=VOUCHER&offset=0&limit=${limit}&username=${report_array.player}&token=${report_array.token}`, 0, context.playerVOUCHERBalanceHistory);
     }
   };
 
@@ -425,12 +425,12 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
       offset = 500 * Math.ceil(report_array.voucher_transfers.length / 500);
       update_status(`Getting player VOUCHER transactions with offset: ${offset}.`);
       request(
-          `https://api.splinterlands.com/players/balance_history?token_type=VOUCHER&offset=${offset}&limit=${limit}&username=${report_array.player}`,
+          `https://api.splinterlands.com/players/balance_history?token_type=VOUCHER&offset=${offset}&limit=${limit}&username=${report_array.player}&token=${report_array.token}`,
           0,
           context.playerVOUCHERBalanceHistory);
     } else {
       console.log(`VOUCHER Transfers`, report_array.voucher_transfer_types, report_array.voucher_transfers);
-      request(`https://api.splinterlands.com/players/unclaimed_balance_history?token_type=SPS&offset=0&limit=${limit}&username=${report_array.player}`, 0, context.playerSTAKEREWARDSBalanceHistory);
+      request(`https://api.splinterlands.com/players/unclaimed_balance_history?token_type=SPS&offset=0&limit=${limit}&username=${report_array.player}&token=${report_array.token}`, 0, context.playerSTAKEREWARDSBalanceHistory);
     }
   };
 
@@ -454,7 +454,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
     if (limit === data.length) {
       offset = 500 * Math.ceil(report_array.STAKEREWARDS_count / 500);
       update_status(`Getting player (unclaimed) Staked Rewards transactions with offset: ${offset}.`);
-      request(`https://api.splinterlands.com/players/unclaimed_balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}`, 0, context.playerSTAKEREWARDSBalanceHistory);
+      request(`https://api.splinterlands.com/players/unclaimed_balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}&token=${report_array.token}`, 0, context.playerSTAKEREWARDSBalanceHistory);
     } else {
       console.log(`Staked Rewards Transfers`, report_array.voucher_transfer_types, report_array.voucher_transfers);
       context.sortHistory();
