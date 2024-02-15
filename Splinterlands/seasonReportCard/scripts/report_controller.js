@@ -400,7 +400,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
           0,
           context.playerSPSBalanceHistory);
     } else {
-      console.log(`SPS Transfers`, report_array.sps_transfer_types, sps_transfers);
+      console.log(`SPS Transfers`, report_array.sps_transfer_types, report_array.sps_transfers);
       request(`https://api.splinterlands.com/players/balance_history?token_type=VOUCHER&offset=0&limit=${limit}&username=${report_array.player}&token=${report_array.token}`, 0, context.playerVOUCHERBalanceHistory);
     }
   };
