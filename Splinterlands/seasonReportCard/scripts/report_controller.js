@@ -400,7 +400,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
           0,
           context.playerSPSBalanceHistory);
     } else {
-      console.log(`SPS Transfers`, report_array.sps_transfer_types);
+      console.log(`SPS Transfers`, report_array.sps_transfer_types, sps_transfers);
       request(`https://api.splinterlands.com/players/balance_history?token_type=VOUCHER&offset=0&limit=${limit}&username=${report_array.player}&token=${report_array.token}`, 0, context.playerVOUCHERBalanceHistory);
     }
   };
@@ -456,7 +456,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
       update_status(`Getting player (unclaimed) Staked Rewards transactions with offset: ${offset}.`);
       request(`https://api.splinterlands.com/players/unclaimed_balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}&token=${report_array.token}`, 0, context.playerSTAKEREWARDSBalanceHistory);
     } else {
-      console.log(`Staked Rewards Transfers`, report_array.voucher_transfer_types, report_array.voucher_transfers);
+      console.log(`Staked Rewards Transfers`, report_array.voucher_transfer_types, report_array.STAKEREWARDS_transfers);
       context.sortHistory();
     }
   };
