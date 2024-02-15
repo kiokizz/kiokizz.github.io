@@ -731,7 +731,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
       if (valid) {
         let amount = parseFloat(tx.amount);
         if (tx.type === "token_award") report_array.voucher_balance += amount;
-        if (tx.type === "claim_staking_rewards") report_array.voucher_balance += amount;
+        else if (tx.type === "claim_staking_rewards") report_array.voucher_balance += amount;
         else console.log(`Unexpected VOUCHER Type: ${tx.type}`, tx);
       }
     });
