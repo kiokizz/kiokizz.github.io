@@ -2,7 +2,7 @@ function report_controller() {
   let el = id => document.getElementById(id);
 
   let context = this;
-  let testing = false;
+  let testing = false; //
 
   let prices = {
     LEGENDARY: 40,
@@ -339,14 +339,13 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
     } else {
       console.log(report_array.tx_types);
       report_array.dec_query_types = `&types=rental_payment_fees,market_rental,rental_payment,rental_refund,leaderboard_prizes,dec_reward`;
-      request(`https://api.splinterlands.com/players/balance_history?token_type=DEC&offset=0&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}&token=${report_array.token}`, 0, context.playerDECBalanceHistory);
+      request(`https://api.splinterlands.com/players/balance_history?token_type=DEC&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}&token=${report_array.token}`, 0, context.playerDECBalanceHistory);
     }
   };
 
 //Get player DEC history
   this.playerDECBalanceHistory = function (data) {
     let trx_too_old = false;
-    let offset = 0;
     let limit = 500;
     if (data.length !== 0) {
       //console.log(data);
@@ -364,21 +363,21 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
       console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.dec_transfers.length}`);
     }
     if (limit === data.length && !trx_too_old) {
-      offset = 500 * Math.ceil(report_array.dec_transfers.length / 500);
-      update_status(`Getting player DEC transactions with offset: ${offset}.`);
+      let from_date = data[data.length - 1].created_date;
+      let last_update_date = data[data.length - 1].last_update_date;
+      update_status(`Getting player DEC transactions  from: ${from_date}.`);
       request(
-          `https://api.splinterlands.com/players/balance_history?token_type=DEC&offset=${offset}&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}&token=${report_array.token}`,
+          `https://api.splinterlands.com/players/balance_history?token_type=DEC&from=${from_date}&last_update_date=${last_update_date}&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}&token=${report_array.token}`,
           0,
           context.playerDECBalanceHistory);
     } else {
       console.log(`DEC Transfers`, report_array.dec_transfer_types);
-      request(`https://api.splinterlands.com/players/balance_history?token_type=SPS&offset=0&limit=${limit}&username=${report_array.player}&token=${report_array.token}`, 0, context.playerSPSBalanceHistory);
+      request(`https://api.splinterlands.com/players/balance_history?token_type=SPS&limit=${limit}&username=${report_array.player}&token=${report_array.token}`, 0, context.playerSPSBalanceHistory);
     }
   };
 
 //Get player SPS history
   this.playerSPSBalanceHistory = function (data) {
-    let offset = 0;
     let limit = 500;
     if (data.length !== 0) {
       //console.log(data);
@@ -393,22 +392,22 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
       console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.sps_transfers.length}`);
     }
     if (limit === data.length) {
-      offset = 500 * Math.ceil(report_array.sps_transfers.length / 500);
-      update_status(`Getting player SPS transactions with offset: ${offset}.`);
+      let from_date = data[data.length - 1].created_date;
+      let last_update_date = data[data.length - 1].last_update_date;
+      update_status(`Getting player SPS transactions from: ${from_date}.`);
       request(
-          `https://api.splinterlands.com/players/balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}&token=${report_array.token}`,
+          `https://api.splinterlands.com/players/balance_history?token_type=SPS&from=${from_date}&last_update_date=${last_update_date}&limit=${limit}&username=${report_array.player}&token=${report_array.token}`,
           0,
           context.playerSPSBalanceHistory);
     } else {
       console.log(`SPS Transfers`, report_array.sps_transfer_types, report_array.sps_transfers);
-      request(`https://api.splinterlands.com/players/balance_history?token_type=VOUCHER&offset=0&limit=${limit}&username=${report_array.player}&token=${report_array.token}`, 0, context.playerVOUCHERBalanceHistory);
+      request(`https://api.splinterlands.com/players/balance_history?token_type=VOUCHERlimit=${limit}&username=${report_array.player}&token=${report_array.token}`, 0, context.playerVOUCHERBalanceHistory);
     }
   };
 
 //Get player VOUCHER history
   this.playerVOUCHERBalanceHistory = function (data) {
     //console.log(data);
-    let offset = 0;
     let limit = 500;
     if (data.length !== 0) {
       data.forEach((e) => {
@@ -422,10 +421,11 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
       console.log(`a Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.voucher_transfers.length}`);
     }
     if (limit === data.length) {
-      offset = 500 * Math.ceil(report_array.voucher_transfers.length / 500);
-      update_status(`Getting player VOUCHER transactions with offset: ${offset}.`);
+      let from_date = data[data.length - 1].created_date;
+      let last_update_date = data[data.length - 1].last_update_date;
+      update_status(`Getting player VOUCHER transactions from: ${from_date}.`);
       request(
-          `https://api.splinterlands.com/players/balance_history?token_type=VOUCHER&offset=${offset}&limit=${limit}&username=${report_array.player}&token=${report_array.token}`,
+          `https://api.splinterlands.com/players/balance_history?token_type=VOUCHER&from=${from_date}&last_update_date=${last_update_date}&limit=${limit}&username=${report_array.player}&token=${report_array.token}`,
           0,
           context.playerVOUCHERBalanceHistory);
     } else {
