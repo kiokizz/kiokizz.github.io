@@ -4,7 +4,7 @@
 function draw_controller() {
 
   let divider_images = {
-    dec: `![](https://cdn.discordapp.com/attachments/736372750385676389/744494310224953405/DEC-divider-new.png)`,
+    dec: `![](https://images.hive.blog/p/X37EMQ9WSwsLaUVnWj5v4rfuehQsoVtukrb5zwdXbo5aA1Ad39Ag3xeAuev4oKHyQB5FyEMzJdfVbeoKkF6tdcUQeL5wybJC3MDBL)`,
     splinterlands: `![](https://images.hive.blog/p/8SzwQc8j2KJZo6c43w4Bg9ysSuq4sua46yAeUgxyy3WnRJ2vSgsYa6T5u6asHVF6eMYuF9XWYmE755f299tPfJ6JY9Kb1V6xwphPWfm74ma96sejW9c?format=match&mode=fit)`,
     userDefined: ""
   }
