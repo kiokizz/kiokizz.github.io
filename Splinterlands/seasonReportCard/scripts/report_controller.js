@@ -452,7 +452,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
       console.log(`a Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.STAKEREWARDS_transfers.length}`);
     }
     if (limit === data.length) {
-      offset = 500 * Math.ceil(report_array.STAKEREWARDS_count / 500);
+      offset = data[data.length - 1].id;
       update_status(`Getting player (unclaimed) Staked Rewards transactions with offset: ${offset}.`);
       request(`https://api.splinterlands.com/players/unclaimed_balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}&token=${report_array.token}`, 0, context.playerSTAKEREWARDSBalanceHistory);
     } else {
