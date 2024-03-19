@@ -46,11 +46,11 @@ async function init() {
   // ToDo cache loaded data??
   await get_card_details();
   let season = await get_parameter_by_name(`season`)
-  season = (season && season !== '' && !Number.isNaN(season)) ? season : `129`
+  season = (season && season !== '' && !Number.isNaN(season)) ? season : `130`
   await load_season_data(season)
   console.log(title_string, battles_string, utc_string)
   el('title_string').innerHTML = `<h2>${title_string}</h2>`
-  el('battles_string').innerHTML = `<h3>${battles_string}</h3>`
+  el('battles_string').innerHTML = `${battles_string}`
   el('utc_string').innerHTML = utc_string
   change_table()
 }
@@ -142,8 +142,8 @@ async function change_table(field = false) {
     });
   }
 
-  let report_mon = `<table class="w3-table w3-striped w3-bordered" id="monster"><tr><th onclick="change_table('usage_rate', 'monster')">Usage%</th><th onclick="change_table('name', 'monster')">Monster</th><th onclick="change_table('win_count', 'monster')">Win</th><th onclick="change_table('loss_count', 'monster')">Loss</th><th onclick="change_table('win_rate', 'monster')">Win Rate</th><th onclick="change_table('rating_movement', 'monster')">Rating Index</th></tr>`
-  let report_sum = `<table class="w3-table w3-striped w3-bordered" id="summoner"><tr><th onclick="change_table('usage_rate', 'summoner')">Usage%</th><th onclick="change_table('name', 'summoner')">Summoner</th><th onclick="change_table('win_count', 'summoner')">Win</th><th onclick="change_table('loss_count', 'summoner')">Loss</th><th onclick="change_table('win_rate', 'summoner')">Win Rate</th><th onclick="change_table('rating_movement', 'summoner')">Rating Index</th></tr>`
+  let report_mon = `<table class="w3-table w3-striped w3-bordered" id="monster"><tr><th onclick="change_table('usage_rate', 'monster')">Usage%</th><th onclick="change_table('name', 'monster')">Monster</th><th>Average Level</th><th onclick="change_table('win_count', 'monster')">Win</th><th onclick="change_table('loss_count', 'monster')">Loss</th><th onclick="change_table('win_rate', 'monster')">Win Rate</th><th onclick="change_table('rating_movement', 'monster')">Rating Index</th></tr>`
+  let report_sum = `<table class="w3-table w3-striped w3-bordered" id="summoner"><tr><th onclick="change_table('usage_rate', 'summoner')">Usage%</th><th onclick="change_table('name', 'summoner')">Summoner</th><th>Average Level</th><th onclick="change_table('win_count', 'summoner')">Win</th><th onclick="change_table('loss_count', 'summoner')">Loss</th><th onclick="change_table('win_rate', 'summoner')">Win Rate</th><th onclick="change_table('rating_movement', 'summoner')">Rating Index</th></tr>`
 
   function cardFilterPass(card) {
     let pass = true;
@@ -168,6 +168,7 @@ async function change_table(field = false) {
         `<tr>`
         + `<td>${card.usage_rate.toFixed(2)}%</td>`
         + `<td>${emojis[cards[card.id].color]} ${card.name}</td>`
+        + `<td>${card.average_level ? card.average_level.toFixed(2) : `-`}</td>`
         + `<td>${card.win_count}</td>`
         + `<td>${card.play_count - card.win_count}</td>`
         + `<td>${card.win_rate.toFixed(2)}%</td>`
