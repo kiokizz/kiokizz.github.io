@@ -63,7 +63,7 @@ Follow @splinterstats and come visit us in [Discord](https://discord.com/invite/
         && report_array.sps_balances.airdrop === 0
         && report_array.net_sps === 0) stop_on_error(`There are no tournaments, rental or staking details found. Aborting.`);
 
-      if (!divider) divider = divider_images.userDefined;
+    if (!divider) divider = divider_images.userDefined;
     if (divider_images.userDefined === "") divider = divider_images.dec;
 
     report_array.custom_title = `${document.getElementById('title').value}`;

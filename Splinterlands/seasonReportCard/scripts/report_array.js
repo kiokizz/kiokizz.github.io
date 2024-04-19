@@ -270,5 +270,8 @@ let report_array = {
   nightmare_stake_rewards: 0,
   license_stake_rewards: 0,
   allCards: [],
-  rental_report_only: false
+  rental_report_only: false,
+  GLINT_transfer_types: [],
+  GLINT_transfer_ids: [],
+  GLINT_transfers: []
 }

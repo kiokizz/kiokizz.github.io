@@ -2,7 +2,23 @@ function report_controller() {
   let el = id => document.getElementById(id);
 
   let context = this;
-  let testing = false; //
+  let testing = {enabled: true, account_bypass: false, adjust_season: 0}
+
+  function maintenance_mode(utcTimeString) {
+    const targetTime = new Date(utcTimeString);
+    const currentTime = new Date();
+
+    if (currentTime.getTime() > targetTime.getTime()) return true;
+    else return false;
+
+  }
+
+  const maintenance_time = "9999-04-15T14:00:00.000Z";
+  if (maintenance_mode(maintenance_time)) {
+    console.log("Maintenance Mode Enabled.");
+    el('generate').disabled = true;
+    document.getElementById('content').innerHTML = `<div style="color: red"><b>Please be advised the report card will be in maintenance mode for 24-48 hours after the end of season 45 to develop the Glint rewards section.</b><div>`;
+  }
 
   let prices = {
     LEGENDARY: 40,
@@ -37,7 +53,7 @@ function report_controller() {
     el('generate').disabled = true;
     add_border('viewer_div');
     report_array.player = `${el("username").value}`;
-    if (testing) {
+    if (testing.account_bypass) {
       update_status(`Account Check Bypassed!! Reason: Testing`);
       context.getDetails();
     } else if (report_array.logInType === `keychainBegin`) context.keychainBegin();
@@ -120,7 +136,7 @@ function report_controller() {
 
   this.seasonNum = async function (data) {
     console.log(data);
-    report_array.season.id = data.season.id;
+    report_array.season.id = data.season.id + testing.adjust_season;
     report_array.season.name = data.season.name;
     report_array.season.nameNum = data.season.id - 13;
     report_array.season_start = Date.parse((await axios.get(`https://api2.splinterlands.com/season?id=${report_array.season.id - 2}`)).data.ends)
@@ -145,7 +161,7 @@ function report_controller() {
           console.log(err, result);
           console.log(report_array.permlink);
           result.forEach(post => {
-            if (post.permlink === report_array.permlink && !testing)
+            if (post.permlink === report_array.permlink && !testing.enabled)
               stop_on_error(`@${report_array.player}'s Season Report has already ` +
                   ` been posted. Please go to www.splintertalk.io/@${report_array.player}/${report_array.permlink}`);
           });
@@ -372,6 +388,39 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
           context.playerDECBalanceHistory);
     } else {
       console.log(`DEC Transfers`, report_array.dec_transfer_types);
+      request(`https://api.splinterlands.com/players/balance_history?token_type=GLINT&limit=${limit}&username=${report_array.player}&token=${report_array.token}`, 0, context.playerGLINTBalanceHistory);
+    }
+  };
+
+  //Get player GLINT history
+  this.playerGLINTBalanceHistory = function (data) {
+    let trx_too_old = false;
+    let limit = 500;
+    if (data.length !== 0) {
+      //console.log(data);
+      data.forEach((e) => {
+        if (!report_array.GLINT_transfer_types.includes(e.type)) report_array.GLINT_transfer_types.push(e.type);
+        if (!report_array.GLINT_transfers.includes(e)) {
+          report_array.GLINT_transfer_ids.push(e.trx_id);
+          report_array.GLINT_transfers.push(e);
+        } //else console.log(`${i}: ${e.id}`);
+      });
+      let trx_date = new Date(data[0].created_date).getTime();
+      let season_start = report_array.season_start;
+      trx_too_old = (trx_date < season_start - (3 * 86400000)); /*Season end + 3 days for errors */
+
+      console.log(`Limit: ${limit} Data.length: ${data.length} Total GLINT transfers recorded: ${report_array.GLINT_transfers.length}`);
+    }
+    if (limit === data.length && !trx_too_old) {
+      let from_date = data[data.length - 1].created_date;
+      let last_update_date = data[data.length - 1].last_update_date;
+      update_status(`Getting player GLINT transactions  from: ${from_date}.`);
+      request(
+          `https://api.splinterlands.com/players/balance_history?token_type=GLINT&from=${from_date}&last_update_date=${last_update_date}&limit=${limit}&username=${report_array.player}${report_array.dec_query_types}&token=${report_array.token}`,
+          0,
+          context.playerGLINTBalanceHistory);
+    } else {
+      console.log(`DEC Transfers`, report_array.dec_transfer_types);
       request(`https://api.splinterlands.com/players/balance_history?token_type=SPS&limit=${limit}&username=${report_array.player}&token=${report_array.token}`, 0, context.playerSPSBalanceHistory);
     }
   };
@@ -478,7 +527,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
       if (tx.type === "sm_battle") {
         processBattle(tx);
       } else if (tx.type === "claim_reward") {//console.log(`Reward Claim: `, tx);
-        processClaimReward(tx);
+        // processClaimReward(tx);
       } else if (tx.type === "enter_tournament") {//Add to tournament list
         let enter_result = JSON.parse(tx.data);
         report_array.matches.Tournament.ids.push(enter_result["tournament_id"]);
@@ -498,6 +547,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
 
     sortSTAKEREWARDSHistory();
     sortDecHistory();
+    sortGLINTHistory()
     sortSpsHistory();
     sortVoucherHistory();
 
@@ -665,6 +715,29 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
     if (report_array.dec_balances.leaderboard_prize > 0) report_array.leaderboard_table = `|Prize|\n|-|\n|${report_array.dec_balances.leaderboard_prize} DEC|`;
   }
 
+  function sortGLINTHistory() {
+    report_array.GLINT_balances = {
+      GLINT_reward: 0,
+      rentals: {
+        in: 0,
+        fees: 0,
+        out: 0,
+        refund: 0,
+        count: 0
+      },
+      leaderboard_prize: 0
+    };
+    report_array.GLINT_transfers.forEach((tx) => {
+      let created_date = Date.parse(tx.created_date);
+      let valid = false;
+      if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
+      if (valid) {
+        let amount = parseFloat(tx.amount);
+        report_array.GLINT_balances.GLINT_reward += parseFloat(tx.amount);
+      }
+    });
+  }
+
   function sortSpsHistory() {
     report_array.sps_balances = {
       airdrop: 0,
@@ -804,7 +877,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
                     prize = true
                   }
                 });
-                if (!prize) add_to_prizeList(player, tournament, [{type: "CUSTOM",text: "" }]);
+                if (!prize) add_to_prizeList(player, tournament, [{type: "CUSTOM", text: ""}]);
                 //TODO accumulate entry fees to list on report
                 let player_league = report_array.matches.league;
                 let fee = ``;
@@ -984,66 +1057,66 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
   }
 
   function generateEarningsTemplate(calc, loot_chests) {
-    return `##### Standard Foil Cards`
-        + `\n|Rarity|Quantity|`
-        + `\n|-|-|`
-        + `\n|Common|${calc.stand_common_count}|`
-        + `\n|Rare|${calc.stand_rare_count}|`
-        + `\n|Epic|${calc.stand_epic_count}|`
-        + `\n|Legendary|${calc.stand_legendary_count}|`
-        + `\n|Total Standard|${calc.total_stand_count}|`
-        + `\n##### Gold Foil Cards\n`
-        + `\n|Rarity|Quantity|`
-        + `\n|-|-|`
-        + `\n|Common|${calc.gold_common_count}|`
-        + `\n|Rare|${calc.gold_rare_count}|`
-        + `\n|Epic|${calc.gold_epic_count}|`
-        + `\n|Legendary|${calc.gold_legendary_count}|`
-        + `\n|Total Gold|${calc.total_gold_count}|`
-        + `\n#### Loot Chests\n`
-        + `\n|Reward Chests|Dailies|Season|Total| 💲Token |`
-        + `\n|-|-|-|-|-|`
-        + `\n|Legendary Potions`
-        + `|${loot_chests.daily.legendary_potion}`
-        + `|${loot_chests.season.legendary_potion}`
-        + `|${calc.total_legendary_potions_count}`
-        + `|🟡 ${calc.total_legendary_potions_credits}|`
-        + `\n|Alchemy Potions`
-        + `|${loot_chests.daily.alchemy_potion}`
-        + `|${loot_chests.season.alchemy_potion}|${calc.total_alchemy_potions_count}`
-        + `|🟡 ${calc.total_alchemy_potions_credits}|`
-        + `\n|DEC|${loot_chests.daily.dec}|${loot_chests.season.dec}|-|🟣 ${calc.total_loot_dec}|`
-        + `\n|SPS`
-        + `|${loot_chests.daily.sps.toFixed(3)}`
-        + `|${loot_chests.season.sps.toFixed(3)}|-`
-        + `|⭐ ${calc.total_loot_sps.toFixed(3)}|`
-        + `\n|Merits`
-        + `|${loot_chests.daily.merits}`
-        + `|${loot_chests.season.merits}|-`
-        + `|🎀 ${calc.total_loot_merits}|`
-        + `\n|CHAOS Packs`
-        + `|${loot_chests.daily.chaos_packs}`
-        + `|${loot_chests.season.chaos_packs}`
-        + `|${calc.total_chaos_packs_count}`
-        + `|🟡 ${calc.total_chaos_packs_credits}|`
-        + `\n|Cards (Total)`
-        + `|${calc.total_dailies_count}`
-        + `|${calc.total_season_count}`
-        + `|${calc.total_all_count}`
-        + `|-|`
-        // +`${(!(report_array.dec_balances.leaderboard_prize <= 0) ? `\n` :
-        //   `\n### Leaderboard Prizes\n\n${report_array.leaderboard_table}\n\n`)}
-        + `\n#### Captured DEC/SPS (Ranked Rewards)\n`
-        + `\n|Ranked Play Wins|DEC Earned|`
+    return `\n#### Earnt Tokens (Ranked Rewards)\n`
+        + `\n|Ranked Play Wins|Tokens Received|`
         + `\n|-|-|`
         + `\n|${report_array.matches.api_wins_count_total}|`
-        + `🟣 ${report_array.dec_balances.dec_reward.toFixed(0)} + ⭐${(report_array.modern_stake_rewards + report_array.wild_stake_rewards).toFixed(3)}|`
-        + `\n#### Total Ranked Play Rewards\n`
-        + `\n|Total Ranked Play Earnings|`
-        + `\n|-|`
-        + `\n|🟣 ${(calc.total_dec + report_array.dec_balances.leaderboard_prize).toFixed(0)} DEC|`
-        + `\n|🟡 ${calc.toal_credits} CREDITS|`
-        + `\n|⭐ ${calc.total_sps.toFixed(3)} SPS|`;
+        + `✨ ${report_array.GLINT_balances.GLINT_reward.toFixed(0)} Glint + ⭐${(report_array.modern_stake_rewards + report_array.wild_stake_rewards).toFixed(3)} SPS|`
+        + `\n\n *Glint season rewards will show in the season they are claimed.*`;
+    // + `\n#### Total Ranked Play Rewards\n`
+    // + `\n|Total Ranked Play Earnings|`
+    // + `\n|-|`
+    // + `\n|🟣 ${(calc.total_dec + report_array.dec_balances.leaderboard_prize).toFixed(0)} DEC|`
+    // + `\n|🟡 ${calc.toal_credits} CREDITS|`
+    // + `\n|⭐ ${calc.total_sps.toFixed(3)} SPS|`;
+
+    //   `##### Standard Foil Cards`
+    // + `\n|Rarity|Quantity|`
+    // + `\n|-|-|`
+    // + `\n|Common|${calc.stand_common_count}|`
+    // + `\n|Rare|${calc.stand_rare_count}|`
+    // + `\n|Epic|${calc.stand_epic_count}|`
+    // + `\n|Legendary|${calc.stand_legendary_count}|`
+    // + `\n|Total Standard|${calc.total_stand_count}|`
+    // + `\n##### Gold Foil Cards\n`
+    // + `\n|Rarity|Quantity|`
+    // + `\n|-|-|`
+    // + `\n|Common|${calc.gold_common_count}|`
+    // + `\n|Rare|${calc.gold_rare_count}|`
+    // + `\n|Epic|${calc.gold_epic_count}|`
+    // + `\n|Legendary|${calc.gold_legendary_count}|`
+    // + `\n|Total Gold|${calc.total_gold_count}|`
+    // + `\n#### Loot Chests\n`
+    // + `\n|Reward Chests|Dailies|Season|Total| 💲Token |`
+    // + `\n|-|-|-|-|-|`
+    // + `\n|Legendary Potions`
+    // + `|${loot_chests.daily.legendary_potion}`
+    // + `|${loot_chests.season.legendary_potion}`
+    // + `|${calc.total_legendary_potions_count}`
+    // + `|🟡 ${calc.total_legendary_potions_credits}|`
+    // + `\n|Alchemy Potions`
+    // + `|${loot_chests.daily.alchemy_potion}`
+    // + `|${loot_chests.season.alchemy_potion}|${calc.total_alchemy_potions_count}`
+    // + `|🟡 ${calc.total_alchemy_potions_credits}|`
+    // + `\n|DEC|${loot_chests.daily.dec}|${loot_chests.season.dec}|-|🟣 ${calc.total_loot_dec}|`
+    // + `\n|SPS`
+    // + `|${loot_chests.daily.sps.toFixed(3)}`
+    // + `|${loot_chests.season.sps.toFixed(3)}|-`
+    // + `|⭐ ${calc.total_loot_sps.toFixed(3)}|`
+    // + `\n|Merits`
+    // + `|${loot_chests.daily.merits}`
+    // + `|${loot_chests.season.merits}|-`
+    // + `|🎀 ${calc.total_loot_merits}|`
+    // + `\n|CHAOS Packs`
+    // + `|${loot_chests.daily.chaos_packs}`
+    // + `|${loot_chests.season.chaos_packs}`
+    // + `|${calc.total_chaos_packs_count}`
+    // + `|🟡 ${calc.total_chaos_packs_credits}|`
+    // + `\n|Cards (Total)`
+    // + `|${calc.total_dailies_count}`
+    // + `|${calc.total_season_count}`
+    // + `|${calc.total_all_count}`
+    // + `|-|`
   }
 
   this.cardUsageData = function (data) {
