@@ -1,4 +1,4 @@
-title_string = `Card Usage Statistics - Ranked Rewards Season xx (Season 1xx/1xx)`
+title_string = `Card Usage Statistics - Ranked Rewards Season 45 (Season 119/132)`
 battles_string = `<h3>Battles: 2992947</h3>
 <table class="w3-table w3-striped w3-bordered" id="battles" style="max-width: 500px">
     <tr>
