@@ -5,6 +5,7 @@ let title_string = `.`
 let battles_string = `.`
 let utc_string = `.`
 let cards = {}
+let prices = {}
 
 let emojis = {
   Red: `🔴`,
@@ -45,10 +46,12 @@ init()
 async function init() {
   // ToDo cache loaded data??
   await get_card_details();
+  await get_card_prices()
   let season = await get_parameter_by_name(`season`)
   season = (season && season !== '' && !Number.isNaN(season)) ? season : `135`
   await load_season_data(season)
-  console.log(title_string, battles_string, utc_string)
+  await assign_value_index()
+  // console.log(title_string, battles_string, utc_string)
   el('title_string').innerHTML = `<h2>${title_string}</h2>`
   el('battles_string').innerHTML = `${battles_string}`
   el('utc_string').innerHTML = utc_string
@@ -63,6 +66,45 @@ async function get_card_details(name) {
   // console.log(result_data)
   cards = result_data
   console.log(cards)
+}
+
+async function get_card_prices(name) {
+  let url = `https://api2.splinterlands.com/market/for_sale_grouped`
+  let raw_data = (await axios.get(url)).data;
+  let result_data = {};
+  raw_data.forEach((card) => {
+    if (!result_data[card.card_detail_id]) result_data[card.card_detail_id] = {}
+    result_data[card.card_detail_id][card.gold] = card
+  })
+  prices = result_data
+  console.log(prices)
+}
+
+async function assign_value_index(name) {
+  let rarity_multiplier = {
+    1: 400,
+    2: 115,
+    3: 46,
+    4: 11
+  }
+
+  console.log("assign_value_index")
+  for (let report of Object.values(data)) {
+    let total_ri = 0
+    for (let card of report) {
+      total_ri += card.rating_movement
+    }
+    for (let card of report) {
+      let rarity = cards[card.id].rarity
+
+      card.price_index_false = 0
+      card.price_index_true = 0
+
+      if (prices[card.id])
+        if (prices[card.id][false]) card.price_index_false = card.rating_movement / prices[card.id][false].low_price_bcx / rarity_multiplier[rarity]
+    }
+  }
+  console.log(data)
 }
 
 async function load_season_data(name) {
@@ -142,21 +184,21 @@ async function change_table(field = false) {
     });
   }
 
-  let report_mon = `<table class="w3-table w3-striped w3-bordered" id="monster"><tr><th onclick="change_table('usage_rate', 'monster')">Usage%</th><th onclick="change_table('name', 'monster')">Monster</th><th>Average Level</th><th onclick="change_table('win_count', 'monster')">Win</th><th onclick="change_table('loss_count', 'monster')">Loss</th><th onclick="change_table('win_rate', 'monster')">Win Rate</th><th onclick="change_table('rating_movement', 'monster')">Rating Index</th></tr>`
-  let report_sum = `<table class="w3-table w3-striped w3-bordered" id="summoner"><tr><th onclick="change_table('usage_rate', 'summoner')">Usage%</th><th onclick="change_table('name', 'summoner')">Summoner</th><th>Average Level</th><th onclick="change_table('win_count', 'summoner')">Win</th><th onclick="change_table('loss_count', 'summoner')">Loss</th><th onclick="change_table('win_rate', 'summoner')">Win Rate</th><th onclick="change_table('rating_movement', 'summoner')">Rating Index</th></tr>`
+  let report_mon = `<table class="w3-table w3-striped w3-bordered" id="monster"><tr><th onclick="change_table('usage_rate', 'monster')">Usage%</th><th onclick="change_table('name', 'monster')">Monster</th><th>Average Level</th><th onclick="change_table('win_count', 'monster')">Win</th><th onclick="change_table('loss_count', 'monster')">Loss</th><th onclick="change_table('win_rate', 'monster')">Win Rate</th><th onclick="change_table('rating_movement', 'monster')">Rating Index</th></tr><th onclick="change_table('price_index_false', 'monster')">$Estimated Value to Performance (NFA-DYOR)<br>Rating Index / Low BCX Price / (C400/R115/E46/L11))</th></tr>`
+  let report_sum = `<table class="w3-table w3-striped w3-bordered" id="summoner"><tr><th onclick="change_table('usage_rate', 'summoner')">Usage%</th><th onclick="change_table('name', 'summoner')">Summoner</th><th>Average Level</th><th onclick="change_table('win_count', 'summoner')">Win</th><th onclick="change_table('loss_count', 'summoner')">Loss</th><th onclick="change_table('win_rate', 'summoner')">Win Rate</th><th onclick="change_table('rating_movement', 'summoner')">Rating Index</th><th onclick="change_table('price_index_false', 'summoner')">$Estimated Value to Performance (NFA-DYOR)<br>Rating Index / Low BCX Price / (C400/R115/E46/L11))</th></tr>`
 
   function cardFilterPass(card) {
     let pass = true;
 
     card = cards[card.id]
-    console.log(card)
-    console.log({format, league, splinters, editions})
+    // console.log(card)
+    // console.log({format, league, splinters, editions})
 
     if (editions.length > 0 && splinters.length > 0) pass = editions.includes(card.editions) && splinters.includes(card.color)
     else if (editions.length > 0) pass = editions.includes(card.editions)
     else if (splinters.length > 0) pass = splinters.includes(card.color)
 
-    console.log(pass)
+    // console.log(pass)
     return pass;
   }
 
@@ -173,6 +215,7 @@ async function change_table(field = false) {
         + `<td>${card.play_count - card.win_count}</td>`
         + `<td>${card.win_rate.toFixed(2)}%</td>`
         + `<td>${card.rating_movement.toFixed(0)}</td>`
+        + `<td>${card.price_index_false.toFixed(2)}</td>`
         + `</tr>\n`
     if (card.type === `Monster`) report_mon += row
     else if (card.type === `Summoner`) report_sum += row
