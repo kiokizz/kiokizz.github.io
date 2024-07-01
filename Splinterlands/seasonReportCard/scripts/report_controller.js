@@ -2,10 +2,10 @@ function report_controller() {
   let el = id => document.getElementById(id);
 
   let context = this;
-  let testing = {enabled: true, account_bypass: false, adjust_season: 0}
+  let testing = {enabled: false, account_bypass: false, adjust_season: 0}
 
   function maintenance_mode(utcTimeString) {
-    const targetTime = new Date(utcTimeString);
+    const targetTime = new Date(); new Date(utcTimeString);
     const currentTime = new Date();
 
     if (currentTime.getTime() > targetTime.getTime()) return true;
