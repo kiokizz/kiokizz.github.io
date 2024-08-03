@@ -44,9 +44,3 @@ function stop_on_error(error_message) {
   update_status(error_message);
   throw error_message;
 }
-
-let hiveAPI = "https://api.deathwing.me";
-hive.api.setOptions({
-  url: hiveAPI
-});
-console.log(`HIVE API: ${hiveAPI}`)

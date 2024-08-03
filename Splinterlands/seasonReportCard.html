@@ -171,9 +171,11 @@
 </div>
 
 <script>
+  let hiveAPI = "https://hive-api.arcange.eu";
   hive.api.setOptions({
-    url: 'https://anyx.io'
+    url: hiveAPI
   });
+  console.log(`HIVE API: ${hiveAPI}`)
 
   let drawer = new draw_controller();
   let reporter = new report_controller();
