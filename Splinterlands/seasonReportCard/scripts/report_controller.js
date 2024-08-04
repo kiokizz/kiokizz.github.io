@@ -139,11 +139,13 @@ function report_controller() {
     report_array.season.id = data.season.id + testing.adjust_season;
     report_array.season.name = data.season.name;
     report_array.season.nameNum = data.season.id - 13;
-    report_array.season_start = Date.parse((await axios.get(`https://api2.splinterlands.com/season?id=${report_array.season.id - 2}`)).data.ends)
-    report_array.season_end = Date.parse((await axios.get(`https://api2.splinterlands.com/season?id=${report_array.season.id - 1}`)).data.ends)
+    let season_start_string = (await axios.get(`https://api2.splinterlands.com/season?id=${report_array.season.id - 2}`)).data.ends
+    report_array.season_start = Date.parse(season_start_string)
+    let season_ends_string = (await axios.get(`https://api2.splinterlands.com/season?id=${report_array.season.id - 1}`)).data.ends
+    report_array.season_end = Date.parse(season_ends_string)
 
-    console.log(`start`, report_array.season_start)
-    console.log(`end`, report_array.season_end)
+    console.log(`start`, report_array.season_start, season_start_string)
+    console.log(`end`, report_array.season_end, season_ends_string)
 
     // report_array.season_start = Date.parse(report_array.season.season_end_times[report_array.season.id - 2]);
     // report_array.season_end = Date.parse(report_array.season.season_end_times[report_array.season.id - 1]);
@@ -427,6 +429,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
 
 //Get player SPS history
   this.playerSPSBalanceHistory = function (data) {
+    let trx_too_old = false;
     let limit = 500;
     if (data.length !== 0) {
       //console.log(data);
@@ -438,9 +441,13 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         } //else console.log(`${i}: ${e.id}`);
       });
       //throw 'error';
+      let trx_date = new Date(data[0].created_date).getTime();
+      let season_start = report_array.season_start;
+      trx_too_old = (trx_date < season_start - (3 * 86400000)); /*Season end + 3 days for errors */
+
       console.log(`Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.sps_transfers.length}`);
     }
-    if (limit === data.length) {
+    if (limit === data.length && !trx_too_old) {
       let from_date = data[data.length - 1].created_date;
       let last_update_date = data[data.length - 1].last_update_date;
       update_status(`Getting player SPS transactions from: ${from_date}.`);
@@ -456,6 +463,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
 
 //Get player VOUCHER history
   this.playerVOUCHERBalanceHistory = function (data) {
+    let trx_too_old = false;
     //console.log(data);
     let limit = 500;
     if (data.length !== 0) {
@@ -467,9 +475,14 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         } //else console.log(`${i}: ${e.id}`);
       });
       //throw 'error';
+
+      let trx_date = new Date(data[0].created_date).getTime();
+      let season_start = report_array.season_start;
+      trx_too_old = (trx_date < season_start - (3 * 86400000)); /*Season end + 3 days for errors */
+
       console.log(`a Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.voucher_transfers.length}`);
     }
-    if (limit === data.length) {
+    if (limit === data.length && !trx_too_old) {
       let from_date = data[data.length - 1].created_date;
       let last_update_date = data[data.length - 1].last_update_date;
       update_status(`Getting player VOUCHER transactions from: ${from_date}.`);
@@ -485,6 +498,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
 
   //Get player Staked Rewards history
   this.playerSTAKEREWARDSBalanceHistory = function (data) {
+    let trx_too_old = false;
     //console.log(data);
     let offset = 0;
     let limit = 500;
@@ -498,9 +512,13 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         }
       });
       //throw 'error';
+      let trx_date = new Date(data[0].created_date).getTime();
+      let season_start = report_array.season_start;
+      trx_too_old = (trx_date < season_start - (3 * 86400000)); /*Season end + 3 days for errors */
+
       console.log(`a Limit: ${limit} Data.length: ${data.length} Total transfers recorded: ${report_array.STAKEREWARDS_transfers.length}`);
     }
-    if (limit === data.length) {
+    if (limit === data.length && !trx_too_old) {
       offset = data[data.length - 1].id;
       update_status(`Getting player (unclaimed) Staked Rewards transactions with offset: ${offset}.`);
       request(`https://api.splinterlands.com/players/unclaimed_balance_history?token_type=SPS&offset=${offset}&limit=${limit}&username=${report_array.player}&token=${report_array.token}`, 0, context.playerSTAKEREWARDSBalanceHistory);
@@ -718,24 +736,27 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
   function sortGLINTHistory() {
     report_array.GLINT_balances = {
       GLINT_reward: 0,
-      rentals: {
-        in: 0,
-        fees: 0,
-        out: 0,
-        refund: 0,
-        count: 0
-      },
+      GLINT_season_claim : 0,
+      GLINT_spent: 0,
       leaderboard_prize: 0
     };
     report_array.GLINT_transfers.forEach((tx) => {
       let created_date = Date.parse(tx.created_date);
       let valid = false;
       if (created_date > report_array.season_start && created_date < report_array.season_end) valid = true;
+      if (parseFloat(tx.amount) > 10000) {
+        console.log(`valid` + valid)
+        console.log(tx)
+      }
       if (valid) {
         let amount = parseFloat(tx.amount);
-        report_array.GLINT_balances.GLINT_reward += parseFloat(tx.amount);
+        if (tx.type === "season_rewards") report_array.GLINT_balances.GLINT_season_claim += amount;
+        else if (tx.type === "ranked_rewards") report_array.GLINT_balances.GLINT_reward += amount;
+        else report_array.GLINT_balances.GLINT_spent += amount;
       }
     });
+    console.log(`sortGLINTHistory() finished.`)
+    // throw "testing stop"
   }
 
   function sortSpsHistory() {
@@ -1062,6 +1083,10 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         + `\n|-|-|`
         + `\n|${report_array.matches.api_wins_count_total}|`
         + `✨ ${report_array.GLINT_balances.GLINT_reward.toFixed(0)} Glint + ⭐${(report_array.modern_stake_rewards + report_array.wild_stake_rewards).toFixed(3)} SPS|`
+        + `\n|Season Rewards Claimed|`
+        + `✨ ${report_array.GLINT_balances.GLINT_season_claim.toFixed(0)} Glint|`
+        + `\n|Glint Spent|`
+        + `✨ (${-report_array.GLINT_balances.GLINT_spent.toFixed(0)}) Glint|`
         + `\n\n *Glint season rewards will show in the season they are claimed.*`;
     // + `\n#### Total Ranked Play Rewards\n`
     // + `\n|Total Ranked Play Earnings|`
