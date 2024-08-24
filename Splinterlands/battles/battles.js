@@ -48,7 +48,7 @@ async function init() {
   await get_card_details();
   await get_card_prices()
   let season = await get_parameter_by_name(`season`)
-  season = (season && season !== '' && !Number.isNaN(season)) ? season : `135`
+  season = (season && season !== '' && !Number.isNaN(season)) ? season : `137`
   await load_season_data(season)
   await assign_value_index()
   // console.log(title_string, battles_string, utc_string)
@@ -150,7 +150,7 @@ async function change_table(field = false) {
   let editions = [];
   for (let x of ["alpha", "beta", "promo", "reward", "untamed", "dice", "gladius", "chaos", "rift", "rebellion"]) if (el(x).checked) {
     if (x === "beta") editions.push("1", "0,1")
-    else if (x === "reward") editions.push("3", "10")
+    else if (x === "reward") editions.push("3", "10", "13")
     else editions.push(edition_ids[x])
   }
 
