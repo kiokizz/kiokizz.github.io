@@ -1,5 +1,5 @@
-title_string = `Card Usage Statistics - Ranked Rewards Season xx (Season 1xx/1xx)`
-battles_string = `<h3>Battles: 818814</h3>
+title_string = `Card Usage Statistics - Ranked Rewards Season 54 (Season 128/141)`
+battles_string = `<h3>Battles: 818,814</h3>
 <table class="w3-table w3-striped w3-bordered" id="battles" style="max-width: 500px">
     <tr>
         <td>League</td>
@@ -9,33 +9,33 @@ battles_string = `<h3>Battles: 818814</h3>
     </tr>
     <tr>
         <td>Champion</td>
-        <td>158617</td>
-        <td>20437</td>
-        <td>138180</td>
+        <td>158,617</td>
+        <td>20,437</td>
+        <td>138,180</td>
     </tr>
     <tr>
         <td>Diamond</td>
-        <td>336640</td>
-        <td>49080</td>
-        <td>287560</td>
+        <td>336,640</td>
+        <td>49,080</td>
+        <td>287,560</td>
     </tr>
     <tr>
         <td>Gold</td>
-        <td>151884</td>
-        <td>54507</td>
-        <td>97377</td>
+        <td>151,884</td>
+        <td>54,507</td>
+        <td>97,377</td>
     </tr>
     <tr>
         <td>Silver</td>
-        <td>100490</td>
-        <td>74492</td>
-        <td>25998</td>
+        <td>100,490</td>
+        <td>74,492</td>
+        <td>25,998</td>
     </tr>
     <tr>
         <td>Novice/Bronze</td>
-        <td>71183</td>
-        <td>65404</td>
-        <td>5779</td>
+        <td>71,183</td>
+        <td>65,404</td>
+        <td>5,779</td>
     </tr>
 </table>
 <br>`
