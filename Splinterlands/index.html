@@ -20,6 +20,23 @@
 </div>
 
 <script defer>
+  import("https://www.googletagmanager.com/gtag/js?id=G-DB2Z620NEG").then((mod2) => {
+    console.log(`Google Analytics`);
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    let domain = window.location.hostname
+    if (domain === "https://splinterstats.net/") {
+      gtag('config', 'G-DB2Z620NEG');
+      console.log(`SplinterStats accessed via ${domain} (G-DB2Z620NEG)`)
+    }
+    else {
+      gtag('config', 'G-0QWWFX50FM');
+      console.log(`SplinterStats accessed via ${domain} (G-0QWWFX50FM)`)
+    }
+  });
+
   let update_prices = () => {
     fetch("https://api2.splinterlands.com/settings")
         .then(r => r.json())
