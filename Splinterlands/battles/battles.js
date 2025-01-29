@@ -6,6 +6,7 @@ let battles_string = `.`
 let utc_string = `.`
 let cards = {}
 let prices = {}
+let season
 
 let emojis = {
   Red: `🔴`,
@@ -47,10 +48,14 @@ async function init() {
   // ToDo cache loaded data??
   await get_card_details();
   await get_card_prices()
-  let season = await get_parameter_by_name(`season`)
+  season = await get_parameter_by_name(`season`)
   season = (season && season !== '' && !Number.isNaN(season)) ? season : `150`
   await load_season_data(season)
   await assign_value_index()
+  seasonListElementD.value = `https://splinterstats.net/battles.html?season=${season}`
+  document.getElementById(`season=${season}`).classList.remove("w3-theme-light")
+  document.getElementById(`season=${season}`).classList.add("w3-grey")
+  console.log(`Loaded Page: https://splinterstats.net/battles.html?season=${season}`)
   // console.log(title_string, battles_string, utc_string)
   el('title_string').innerHTML = `<h2>${title_string}</h2>`
   el('battles_string').innerHTML = `${battles_string}`
@@ -184,8 +189,8 @@ async function change_table(field = false) {
     });
   }
 
-  let report_mon = `<table class="w3-table w3-striped w3-bordered" id="monster"><tr><th onclick="change_table('usage_rate', 'monster')">Usage%</th><th onclick="change_table('name', 'monster')">Monster</th><th>Average Level</th><th onclick="change_table('win_count', 'monster')">Win</th><th onclick="change_table('loss_count', 'monster')">Loss</th><th onclick="change_table('win_rate', 'monster')">Win Rate</th><th onclick="change_table('rating_movement', 'monster')">Rating Index</th><th onclick="change_table('price_index_false', 'monster')">$Estimated Value to Performance (NFA-DYOR)<br>Rating Index / Low BCX Price / (C400/R115/E46/L11))</th></tr>`
-  let report_sum = `<table class="w3-table w3-striped w3-bordered" id="summoner"><tr><th onclick="change_table('usage_rate', 'summoner')">Usage%</th><th onclick="change_table('name', 'summoner')">Summoner</th><th>Average Level</th><th onclick="change_table('win_count', 'summoner')">Win</th><th onclick="change_table('loss_count', 'summoner')">Loss</th><th onclick="change_table('win_rate', 'summoner')">Win Rate</th><th onclick="change_table('rating_movement', 'summoner')">Rating Index</th><th onclick="change_table('price_index_false', 'summoner')">$Estimated Value to Performance (NFA-DYOR)<br>Rating Index / Low BCX Price / (C400/R115/E46/L11))</th></tr>`
+  let report_mon = `<table class="w3-table w3-striped w3-bordered" id="monster"><tr><th onclick="change_table('usage_rate', 'monster')">Usage%</th><th onclick="change_table('name', 'monster')">Monster</th><th>Average Level</th><th onclick="change_table('win_count', 'monster')">Win</th><th onclick="change_table('loss_count', 'monster')">Loss</th><th onclick="change_table('win_rate', 'monster')">Win Rate</th><th onclick="change_table('rating_movement', 'monster')">Rating Index</th><th onclick="change_table('price_index_false', 'monster')">Estimated Value/Performance (NFA-DYOR)<br><code>Rating Index / LowBCX$ / C400/R115/E46/L11)</code></th></tr>`
+  let report_sum = `<table class="w3-table w3-striped w3-bordered" id="summoner"><tr><th onclick="change_table('usage_rate', 'summoner')">Usage%</th><th onclick="change_table('name', 'summoner')">Summoner</th><th>Average Level</th><th onclick="change_table('win_count', 'summoner')">Win</th><th onclick="change_table('loss_count', 'summoner')">Loss</th><th onclick="change_table('win_rate', 'summoner')">Win Rate</th><th onclick="change_table('rating_movement', 'summoner')">Rating Index</th><th onclick="change_table('price_index_false', 'summoner')">Estimated Value/Performance (NFA-DYOR)<br><code>Rating Index / LowBCX$ / C400/R115/E46/L11)</code></th></tr>`
 
   function cardFilterPass(card) {
     let pass = true;
