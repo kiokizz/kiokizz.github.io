@@ -34,13 +34,13 @@ import("https://www.googletagmanager.com/gtag/js?id=G-DB2Z620NEG").then((mod2) =
   gtag('js', new Date());
 
   let domain = window.location.hostname
-  if (domain === "https://splinterstats.net/") {
+  if (domain === "splinterstats.net") {
     gtag('config', 'G-DB2Z620NEG');
     console.log(`SplinterStats accessed via ${domain} (G-DB2Z620NEG)`)
   }
   else {
     gtag('config', 'G-0QWWFX50FM');
-    console.log(`SplinterStats accessed via ${domain} (G-0QWWFX50FM)`)
+    console.log(`SplinterStats accessed via ${domain} (github) (G-0QWWFX50FM)`)
   }
 });
 
