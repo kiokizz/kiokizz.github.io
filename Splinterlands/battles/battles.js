@@ -49,7 +49,7 @@ async function init() {
   await get_card_details();
   await get_card_prices()
   season = await get_parameter_by_name(`season`)
-  season = (season && season !== '' && !Number.isNaN(season)) ? season : `151`
+  season = (season && season !== '' && !Number.isNaN(season)) ? season : `152`
   await load_season_data(season)
   await assign_value_index()
   seasonListElementD.value = `https://splinterstats.net/battles.html?season=${season}`
