@@ -383,9 +383,10 @@
   function populateSeasonList() {
     let domain = window.location.hostname
     if (domain === `https://kiokizz.github.io`) domain = `https://kiokizz.github.io/Splinterlands`
+    else domain = `https://${domain}`
 
     configureNav();
-    axios.get(`https://${window.location.hostname}/battles/data_files/`)
+    axios.get(`${domain}/battles/data_files`)
         .then(response => {
           const parser = new DOMParser();
           const htmlDoc = parser.parseFromString(response.data, 'text/html');
@@ -405,14 +406,14 @@
 
             // Create a clickable link for each season
             const option = document.createElement('option');
-            option.value = `https://${window.location.hostname}/battles.html?season=${seasonName}`;
+            option.value = `${domain}/battles.html?season=${seasonName}`;
             option.text = label; // Display as 'Season {seasonName}' or just the name
 
             seasonListElementD.appendChild(option);
 
             // Create a clickable link for each season
             const linkElement = document.createElement('a');
-            linkElement.href = `https://${window.location.hostname}/battles.html?season=${seasonName}`;
+            linkElement.href = `${domain}/battles.html?season=${seasonName}`;
             linkElement.id = `season=${seasonName}`;
             linkElement.textContent = label; // Display as 'Season {seasonName}' or just the name
             linkElement.className = 'w3-bar-item w3-button';
