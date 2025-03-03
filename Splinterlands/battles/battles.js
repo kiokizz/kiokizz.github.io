@@ -43,7 +43,7 @@ const splinterColor = {
 };
 
 let domain = window.location.hostname
-if (domain === `https://kiokizz.github.io`) domain = `https://kiokizz.github.io/Splinterlands`
+if (domain === `kiokizz.github.io`) domain = `https://kiokizz.github.io/Splinterlands`
 else domain = `https://${domain}`
 
 init()
