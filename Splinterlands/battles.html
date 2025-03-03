@@ -381,12 +381,13 @@
   const seasonListElement = document.getElementById('season-list');
   const seasonListElementD = document.getElementById('season-list-drop');
   function populateSeasonList() {
-    let domain = window.location.hostname
-    if (domain === `kiokizz.github.io`) domain = `https://kiokizz.github.io/Splinterlands`
-    else domain = `https://${domain}`
+    if (window.location.hostname === "kiokizz.github.io") {
+      window.location.href = "https://splinterstats.net/battles.html";
+    }
+    let domain = `https://${window.location.hostname}`
 
     configureNav();
-    axios.get(`${domain}/battles/data_files`)
+    axios.get(`https://splinterstats.net/battles/data_files`)
         .then(response => {
           const parser = new DOMParser();
           const htmlDoc = parser.parseFromString(response.data, 'text/html');
