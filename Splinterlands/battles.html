@@ -381,6 +381,8 @@
   const seasonListElement = document.getElementById('season-list');
   const seasonListElementD = document.getElementById('season-list-drop');
   function populateSeasonList() {
+    let domain = window.location.hostname
+    if (domain === `https://kiokizz.github.io`) domain = `https://kiokizz.github.io/Splinterlands`
 
     configureNav();
     axios.get(`https://${window.location.hostname}/battles/data_files/`)

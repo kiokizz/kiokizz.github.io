@@ -42,6 +42,9 @@ const splinterColor = {
   death: `Black`
 };
 
+let domain = window.location.hostname
+if (domain === `https://kiokizz.github.io`) domain = `https://kiokizz.github.io/Splinterlands`
+
 init()
 
 async function init() {
@@ -52,10 +55,10 @@ async function init() {
   season = (season && season !== '' && !Number.isNaN(season)) ? season : `153`
   await load_season_data(season)
   await assign_value_index()
-  seasonListElementD.value = `https://${window.location.hostname}/battles.html?season=${season}`
+  seasonListElementD.value = `https://${domain}/battles.html?season=${season}`
   document.getElementById(`season=${season}`).classList.remove("w3-theme-light")
   document.getElementById(`season=${season}`).classList.add("w3-grey")
-  console.log(`Loaded Page: https://${window.location.hostname}/battles.html?season=${season}`)
+  console.log(`Loaded Page: https://${domain}/battles.html?season=${season}`)
   // console.log(title_string, battles_string, utc_string)
   el('title_string').innerHTML = `<h2>${title_string}</h2>`
   el('battles_string').innerHTML = `${battles_string}`
