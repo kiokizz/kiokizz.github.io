@@ -3,8 +3,7 @@ var body1 = "Data regarding the remaining reward edition cards for Splinterlands
 document.getElementById("body1").innerHTML = body1;
 
 var body2 =
-    "Disclaimer: Human error could result in mistakes in the representation of the above data. Extracted from https://api2.splinterlands.com/cards/get_details.<br>" +
-    "<br><a href=\"https://github.com/kiokizz\">GitHub</a> | Check out my blogs <a href=\"https://hive.blog/@kiokizz\">@kiokizz</a> & <a href=\"https://hive.blog/@splinterstats\">@splinterstats</a>"
+    "Disclaimer: Human error could result in mistakes in the representation of the above data. Extracted from https://api2.splinterlands.com/cards/get_details.<br>"
 
 document.getElementById("body2").innerHTML = body2;
 
@@ -41,7 +40,7 @@ function getRewardCards() {
     if (data) {
       for (let i = 0; i < data.length; i++) {
         const e = data[i];
-        if (["3", "10"].includes(e.editions)) rewardCards.push(e);
+        if (["3", "10", "13"].includes(e.editions)) rewardCards.push(e);
       }
     }
     getPrices();
@@ -130,13 +129,16 @@ function calculations() {
     c.yBCXTotal = c.bcxExist + c.bcxBurn;
     if (e.id < 331) {
       c.complete = e.total_printed / oldCardCap[e.rarity] >= 1;
-      c.bcxPercent = parseFloat(e.total_printed / oldCardCap[e.rarity] * 100).toFixed(2) + "%";
+      c.bcxPercent = parseFloat(e.total_printed / oldCardCap[e.rarity] * 100).toFixed(1) + "%";
     } else if ([331,334,337,340,343,349,].includes(e.id)) {
       c.complete = e.total_printed / newCardCap[e.rarity] >= 1;
-      c.bcxPercent = parseFloat(e.total_printed / newCardCap[e.rarity] * 100).toFixed(2) + "%";
+      c.bcxPercent = parseFloat(e.total_printed / newCardCap[e.rarity] * 100).toFixed(1) + "%";
     } else if (e.id < 463) {
       c.complete = e.total_printed / newCardCap[e.rarity] >= 1;
-      c.bcxPercent = parseFloat(e.total_printed / newCardCap[e.rarity] * 100).toFixed(2) + "% 🚫";
+      c.bcxPercent = parseFloat(e.total_printed / newCardCap[e.rarity] * 100).toFixed(1) + "%🚫";
+    } else if (e.id <= 552) {
+      c.complete = true
+      c.bcxPercent = "✔️"
     } else {
       c.complete = false
       c.bcxPercent = "\t⌛"
@@ -213,7 +215,7 @@ function makeTable(data) {
       "<th><button id=\"gold_btn\" class=\"btn\">Gold BCX 🔄</button></th>" +
       "<th><button id=\"burn_btn\" class=\"btn\">BCX 🔥</button></th>" +
       "<th>Total BCX</th>" +
-      "<th><button id=\"percent_btn\" class=\"btn\">% Printed</button></th>" +
+      "<th><button id=\"percent_btn\" class=\"btn\">🖨️ Status</button></th>" +
       "<th><button id=\"price_btn\" class=\"btn\">💰</button></th></tr>";
 
   //Card Rows
@@ -250,20 +252,23 @@ function makeTable(data) {
     let urlName = e.card.replace(/\s/g, "%20");
     let edition_name = "reward";
     if (data[i].id >= 510 ) edition_name = "soulbound";
+
     let imageLink = `https://d36mxiodymuqjm.cloudfront.net/cards_by_level/${edition_name}/${urlName}_lv1.png`;
+    if (data[i].id >= 553 ) imageLink = `https://d36mxiodymuqjm.cloudfront.net/cards_soulboundrb/${urlName}.jpg`;
+
     let cardToolTip = "<a class=\"tooltip\">" + e.card + "<span><img style=\"max-width:100%;height:auto;\" src=\"" + imageLink +
         "\"><h3></h3></span></a>";
 
     let burnedToolTip = "<a class=\"tooltip\">" + e.bcxBurn + "<span  style=\"color:white;width: 205px\">Normal: " + e.nBCXBurn + " | Gold: " + e.gBCXBurn;
     +"<h3></h3></span></a>";
-    let priceToolTip = "<a href=\"https://peakmonsters.com/market?card=" + data[i].id + "&edition=reward\"  target=\"_blank\" class=\"tooltip\">" + e.price.toFixed(3) + "<span  style=\"color:white;width: 310px\">Low_BCX: Normal $" + e.price_bcx.toFixed(3) + " | Gold: $" + e.goldPrice_bcx.toFixed(3);
+    let priceToolTip = "<a href=\"https://peakmonsters.com/market?card=" + data[i].id + "\" target=\"_blank\" class=\"tooltip\">" + e.price.toFixed(3) + "<span  style=\"color:white;width: 310px\">Low_BCX: Normal $" + e.price_bcx.toFixed(3) + " | Gold: $" + e.goldPrice_bcx.toFixed(3);
     +"<h3></h3></span></a>";
 
     let normToolTip = "<a class=\"tooltip\">" +e.bcxNormExist+  "<span  style=\"color:white;width: 205px\">Total cards: " + e.totalNorm;
     let goldToolTip = "<a class=\"tooltip\">" + e.bcxGoldExist + "<span  style=\"color:white;width: 205px\">Total cards: " + e.totalGold;
 
-    if (e.id > 462) {
-      priceToolTip = "<a href=\"https://peakmonsters.com/market?card=" + data[i].id + "&edition=reward\"  target=\"_blank\" class=\"tooltip\">-.--" +
+    if (e.id > 552) {
+      priceToolTip = "<a href=\"https://peakmonsters.com/market?card=" + data[i].id + "\" target=\"_blank\" class=\"tooltip\">-.--" +
           "<span  style=\"color:white;width: 310px\">Not yet marketable.</span></a>";
     }
 
@@ -273,7 +278,7 @@ function makeTable(data) {
         "</td><td class='cell'>" +
         e.bcxTotal + "</td><td class='cell'>" + e.bcxPercent + "</td><td class='cell'> $" + priceToolTip + "</td></tr>";
 
-    if (hidden.complete && e.id < 463) rowData = "", hidden.length++, hiddenString += " | " + e.card;
+    if (hidden.complete && e.id <= 552) rowData = "", hidden.length++, hiddenString += " | " + e.card;
 
     rows += rowData;
   }
@@ -290,7 +295,7 @@ function makeTable(data) {
       "<tr><td>BCX Existing</td><td>" + global.totalNormalBCX + "</td><td>" + global.totalGoldBCX + "</td><td><b>" + (global.totalNormalBCX + global.totalGoldBCX) + "</b></td></tr>" +
       "<tr><td>BCX Burnt</td><td>" + global.totalNormalBurnt + "</td><td>" + global.totalGoldBurnt + "</td><td><b>" + (global.totalNormalBurnt + global.totalGoldBurnt) + "</b></td></tr>" +
       "<tr><td>Total BCX Printed</td><td>" + global.normalPrinted + "</td><td>" + global.goldPrinted + "</td><td><b>" + global.totalBCX + "</b></td></tr>" +
-      "<tr><td>Average % Printed (still printing)</td><td>" + "-" + "</td><td>" + "-" + "</td><td>" + global.avgPrintRate + "</td></tr>" +
+      // "<tr><td>Average % Printed (still printing)</td><td>" + "-" + "</td><td>" + "-" + "</td><td>" + global.avgPrintRate + "</td></tr>" +
       "<tr><td>Total % Burnt</td><td>" + global.normalPercentageBurnt + "%</td><td>" + global.goldPercentageBurnt + "%</td><td><b>" + global.totalPercentageBurnt + "%</b></td></tr>" +
       "<tr><td># Cards Still Printing</td><td>" + "-" + "</td><td>" + "-" + "</td><td>" + global.numCardsPrinting + "</td></tr>" +
       "<tr><td># Cards Out of Print</td><td>" + "-" + "</td><td>" + "-" + "</td><td>" + global.numCardsFinished + "</td></tr>" +
