@@ -383,8 +383,7 @@
   function populateSeasonList() {
 
     configureNav();
-
-    axios.get('https://splinterstats.net/battles/data_files/')
+    axios.get(`https://${parent.location.hostname}/battles/data_files/`)
         .then(response => {
           const parser = new DOMParser();
           const htmlDoc = parser.parseFromString(response.data, 'text/html');
@@ -404,14 +403,14 @@
 
             // Create a clickable link for each season
             const option = document.createElement('option');
-            option.value = `https://splinterstats.net/battles.html?season=${seasonName}`;
+            option.value = `https://${parent.location.hostname}/battles.html?season=${seasonName}`;
             option.text = label; // Display as 'Season {seasonName}' or just the name
 
             seasonListElementD.appendChild(option);
 
             // Create a clickable link for each season
             const linkElement = document.createElement('a');
-            linkElement.href = `https://splinterstats.net/battles.html?season=${seasonName}`;
+            linkElement.href = `https://${parent.location.hostname}/battles.html?season=${seasonName}`;
             linkElement.id = `season=${seasonName}`;
             linkElement.textContent = label; // Display as 'Season {seasonName}' or just the name
             linkElement.className = 'w3-bar-item w3-button';
