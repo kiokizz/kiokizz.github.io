@@ -4,7 +4,8 @@ let pages = {
   "rewardCards.html": "Rewards Cards",
   "cardsByLeagueCap.html": "Cards by League Cap",
   "richList.html": "Rich List",
-  "bites.html": "Splinter Bites"
+  "bites.html": "Splinter Bites",
+  "validators.html": "Validators"
 };
 
 let rewards_cards_experimental_colour = `<div class="toggle-container">

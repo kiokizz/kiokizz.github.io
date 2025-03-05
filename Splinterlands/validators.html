@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SplinterStats - Validators</title>
+    <link rel="shortcut icon" href="resources/rose.jpg"/>
+<!--    <link rel="stylesheet" type="text/css" href="battles/validators.css">-->
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script src="validators/validator_api.js"></script>
+    <script src="validators/validators.js"></script>
+
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+<body>
+
+<!-- Navbar -->
+<div>
+    <div id="header" class="w3-theme w3-left-align w3-large">
+        <div class="w3-container w3-margin-bottom">
+            <h1><a href='index.html'>SplinterStats</a> - Battle Data</h1>
+            <sub>Check which cards perform best in the Splinterlands ranked format.</sub>
+        </div>
+        <div class="" id="nav_div"></div>
+        <script src="scripts/navigation_loader.js" defer></script>
+    </div>
+</div>
+
+<!-- Main Body -->
+<div id="main" class="main w3-padding w3-left">
+
+<div id="validators_table">Loading data..</div>
+
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    validator_api.status()
+    await validator_api.get_validators()
+    load_table()
+  });
+</script>
+
+<footer id="footer" class="w3-row">
+    <script src="scripts/footer_loader.js" defer></script>
+    <div class="" id="footer_div"></div>
+</footer>
+
+<!-- END MAIN -->
+</div>
+
+</body>
+</html>
