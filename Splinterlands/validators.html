@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SplinterStats - Validators</title>
     <link rel="shortcut icon" href="resources/rose.jpg"/>
-<!--    <link rel="stylesheet" type="text/css" href="battles/validators.css">-->
+    <link rel="stylesheet" type="text/css" href="validators/validators.css">
     <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
     <script src="validators/validator_api.js"></script>
     <script src="validators/validators.js"></script>
+    <script src="scripts/log_in.js"></script>
 
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
@@ -23,7 +24,8 @@
     <div id="header" class="w3-theme w3-left-align w3-large">
         <div class="w3-container w3-margin-bottom">
             <h1><a href='index.html'>SplinterStats</a> - Validators</h1>
-            <sub>Check which cards perform best in the Splinterlands ranked format.</sub>
+            <sub>View Splinterlands Validators</sub>
+            <!--            <img src="/resources/hive_keychain_logo.png" alt="Hive Keychain Logo"  width="40" height="40" class="width: fit-content; margin-left: auto;>-->
         </div>
         <div class="" id="nav_div"></div>
         <script src="scripts/navigation_loader.js" defer></script>
@@ -33,15 +35,29 @@
 <!-- Main Body -->
 <div id="main" class="main w3-padding w3-left">
 
-<div id="validators_table">Loading data..</div>
+    <div id="validators_table">Loading data..</div>
+
+    <!-- Log in Modal -->
+    <div id="login_modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="login_status">Login coming soon.</p>
+            <label>Player (without @): </label>
+            <input class="w3-input w3-border" type="text" id="username" value="" placeholder="username">
+            <button id="login_btn" class="w3-button w3-theme">Log In</button>
+        </div>
+    </div>
 
 </div>
 
 <script>
   document.addEventListener("DOMContentLoaded", async () => {
-    validator_api.status()
+    console.log(`***Load Validators***`)
     await validator_api.get_validators()
-    load_table()
+    console.log(`***Load Table***`)
+    await load_table()
+    console.log(`***Load API Status***`)
+    await get_api_statuses()
   });
 </script>
 

@@ -7,16 +7,15 @@ let validator_api = {
 let params = {
   monthly_sps_rewards: 375000,
   validator_data: false,
-  validator_status: false
 }
 
-validator_api.status = async function () {
-  console.log(`status`)
-  let url = `${validator_api.selected_api}/status`
+validator_api.status = async function (url) {
+  console.log(`status ${url}`)
+  url = `${url}/status`
   try {
-    params.validator_status = (await axios.get(url)).data;
-    console.log('status:', params.validator_status);
-    return params.validator_status
+    let validator_status = (await axios.get(url)).data;
+    console.log('status:', validator_status);
+    return validator_status
   } catch (error) {
     console.error('Error checking validator status:', error.message);
   }
