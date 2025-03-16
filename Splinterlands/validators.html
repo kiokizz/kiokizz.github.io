@@ -57,7 +57,11 @@
     console.log(`***Load Table***`)
     await load_table()
     console.log(`***Load API Status***`)
-    await get_api_statuses()
+    get_api_statuses()
+    if (getLoginCookie()){
+      console.log(`***Load User's Votes***`)
+      show_user_votes()
+    }
   });
 </script>
 
