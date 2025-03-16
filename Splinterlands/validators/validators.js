@@ -7,7 +7,7 @@ let load_table = async function () {
   console.log(params.validators)
 
   let table_head =
-      `<tr">
+      `<tr class="w3-dark-grey">
                 <th>#</th>
                 <th>Validator</th>
                 <th>API</th>
@@ -17,13 +17,14 @@ let load_table = async function () {
                 <th>Misses</th>
                 <th>Votes</th>
                 <th>Weight</th>
+                <th id="votes_header" class="w3-center">Vote</th>
       </tr>`
 
   let position = 1
   let table_body = ``
   for (let val of params.validators) {
     let row =
-        `<tr>
+        `<tr id="row_${val.account_name}">
             <td>${val.is_active ? `${position <= 10 ? `<b>${position++}</b>` : position++}` : '-'}</td>
             <td><img src="https://images.hive.blog/u/${val.account_name}/avatar" alt="Hive Avatar"  width="28" height="28"> ${val.account_name}</td>
             <td id="val.${val.account_name}">${val.api_url ? `<a href="${filterAPIurl(val.api_url)}" target="_blank">API</a>` : '-'}</td>
@@ -33,6 +34,7 @@ let load_table = async function () {
             <td>${val.missed_blocks}</td>
             <td>${num_formatter(val.total_votes)}</td>
             <td>${val.weight > 0 ? val.weight.toFixed(2) + `%` : `-`}</td>
+            <td id="btn_${val.account_name}"><button id="inner_button_${val.account_name}" onclick="vote(\`${val.account_name}\`)" class="w3-button w3-dark-grey w3-hover-green w3-block w3-medium" disabled><b>Vote</b></button></td>
         </tr>\n`
     table_body += row
   }
@@ -74,7 +76,7 @@ let get_api_statuses = async function () {
 
   let apiUrlMap = new Map();
 
-  // Step 1: Count occurrences of each API URL
+  // Count occurrences of each API URL
   params.validators.forEach(validator => {
     let apiUrl = validator.api_url?.trim(); // Ensure it's a string and remove spaces
     if (!apiUrl) return; // Skip null/undefined API URLs
@@ -82,14 +84,14 @@ let get_api_statuses = async function () {
     apiUrlMap.set(apiUrl, (apiUrlMap.get(apiUrl) || 0) + 1);
   });
 
-  // Step 2: Filter validators with unique API URLs
+  // Filter validators with unique API URLs
   let uniqueValidators = params.validators.filter((validator, index) => {
     let apiUrl = validator.api_url?.trim();
     params.validators[index].unique_api = (apiUrl && apiUrlMap.get(apiUrl) === 1)
     return apiUrl && apiUrlMap.get(apiUrl) === 1;
   });
 
-  // Step 2: Fetch validator statuses
+  // Fetch validator statuses
   async function fetchValidatorStatuses() {
     for (let validator of params.validators) {
       if (!validator.api_url) continue
@@ -107,24 +109,17 @@ let get_api_statuses = async function () {
       let last_block = validator_status.last_block;
       if (!validator_status.last_block) validator_status.last_block = 1
 
-      if (count === 0) {
-        average_block = last_block;
-      } else {
-        average_block = ((average_block * count) + last_block) / (count++);
-      }
+      if (count === 0) average_block = last_block;
+      else average_block = ((average_block * count) + last_block) / (count++);
 
       // Compare `last_block` with `average_block` and update UI
       let diff = Math.abs(last_block - average_block);
-      if (diff > 300) {
-        validator_td.innerHTML = `🔴${unique_warning} ${validator_td.innerHTML}`
-      } else if (diff > 30) {
-        validator_td.innerHTML = `🟡${unique_warning} ${validator_td.innerHTML}`
-      } else {
-        validator_td.innerHTML = `🟢${unique_warning} ${validator_td.innerHTML}`
-      }
+      if (diff > 300) validator_td.innerHTML = `🔴${unique_warning} ${validator_td.innerHTML}`
+      else if (diff > 30) validator_td.innerHTML = `🟡${unique_warning} ${validator_td.innerHTML}`
+      else validator_td.innerHTML = `🟢${unique_warning} ${validator_td.innerHTML}`
 
     } catch (error) {
-      console.error(`Error fetching status for ${validator.account_name}:`, error);
+      // console.error(`Error fetching status for ${validator.account_name}:`, error);
       validator_td.innerHTML = `⁉️${unique_warning} ${validator_td.innerHTML}`
     }
   }
@@ -140,4 +135,71 @@ function filterAPIurl(url) {
   // Remove /status is
   url = url.endsWith(`status`) ? url.slice(0, -7) : url;
   return url
+}
+
+let show_user_votes = async function () {
+  let user = getLoginCookie()
+  let user_votes = await validator_api.votes_by_account(user)
+
+  let votes = []
+  user_votes.forEach(val => {
+    votes.push(val.validator)
+  });
+
+  for (let val of params.validators) {
+    // Validator Row Highlight
+    let row = el(`row_${val.account_name}`);
+    if (votes.includes(val.account_name)) row.classList.add("w3-pale-green")
+    else row.classList = ``
+
+    // Vote Button
+    let btn = el(`btn_${val.account_name}`)
+    if (votes.includes(val.account_name)) btn.innerHTML =
+        `<button id="inner_button_${val.account_name}" onclick="remove_vote(\`${val.account_name}\`)" class="w3-button w3-light-green w3-hover-red w3-block w3-medium"><b>Un-Vote</b></button>`
+    else btn.innerHTML =
+        `<button id="inner_button_${val.account_name}" onclick="vote(\`${val.account_name}\`)" class="w3-button w3-dark-grey w3-hover-green w3-block w3-medium"><b>Vote</b></button>`
+
+    // Disable vote button if too votes full.
+    let inner_btn = el(`inner_button_${val.account_name}`)
+    if (user_votes.length === 10 && !votes.includes(val.account_name)) inner_btn.disabled = true
+  }
+
+  el(`votes_header`).innerText = `Votes\n(${user_votes.length}/10)`
+}
+
+async function vote(account) {
+  el(`inner_button_${account}`).disabled = true
+
+  let user = getLoginCookie()
+  let id = `sm_approve_validator`
+  let json = JSON.stringify({
+    "account_name": account
+  })
+  const hive_keychain = window.hive_keychain;
+  hive_keychain.requestCustomJson(user, id, 'Active', json, `Vote for @${account}'s as Validator`, async (response) => {
+    console.log(response);
+    await new Promise(resolve => setTimeout(resolve, 6000));
+    await show_user_votes()
+    await new Promise(resolve => setTimeout(resolve, 10000));
+    await show_user_votes()
+  })
+}
+
+
+async function remove_vote(account) {
+  el(`inner_button_${account}`).disabled = true
+
+  let user = getLoginCookie()
+  let id = `sm_unapprove_validator`
+  let json = JSON.stringify({
+    "account_name": account
+  })
+  const hive_keychain = window.hive_keychain;
+  hive_keychain.requestCustomJson(user, id, 'Active', json, `Remove vote for @${account}'s as Validator`, async (response) => {
+    console.log(response);
+    await new Promise(resolve => setTimeout(resolve, 6000));
+    await show_user_votes()
+    await new Promise(resolve => setTimeout(resolve, 10000));
+    await show_user_votes()
+  })
 }

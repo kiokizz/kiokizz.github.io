@@ -1,9 +1,9 @@
 // Function to get a cookie by name
-function getCookie(name) {
+function getLoginCookie() {
   let cookies = document.cookie.split('; ');
   for (let cookie of cookies) {
     let [key, value] = cookie.split('=');
-    if (key === name) return decodeURIComponent(value);
+    if (key === `username`) return decodeURIComponent(value);
   }
   return null;
 }
@@ -31,7 +31,7 @@ function clearUser(name) {
 document.addEventListener("DOMContentLoaded", function () {
   setTimeout(function () {
     // Check if the "username" cookie exists
-    let logged_in = getCookie("username");
+    let logged_in = getLoginCookie();
     if (logged_in) {
       el(`login_status`).innerText = `You are logged in as @${logged_in}`
       el(`logged_in_msg`).innerText = `@${logged_in}`
@@ -46,14 +46,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
       let username = el("username").value
 
-      // TODO keychain prompt to log in with provided username
       const hive_keychain = window.hive_keychain;
       const message = username + Date.now();
       hive_keychain.requestSignBuffer(username, message, 'Posting', (response) => {
         console.log(response)
         if (response.success) {
           setUser("username", username, 7); // Expires in 7 days
-          let logged_in = getCookie("username");
+          show_user_votes()
+          let logged_in = getLoginCookie("username");
           if (logged_in) {
             el(`login_status`).innerText = `You are logged in as @${logged_in}`
             el(`logged_in_msg`).innerText = `@${logged_in}`
