@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SplinterStats - Validators</title>
+    <link rel="shortcut icon" href="resources/rose.jpg"/>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script src="validator_api.js"></script>
+    <script src="validators.js"></script>
+
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue-grey.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+<body>
+
+<!-- Navbar -->
+<div>
+    <div id="header" class="w3-theme w3-left-align w3-large">
+        <div class="w3-container w3-margin-bottom">
+            <h1><a href='https://splinterstats.net'>SplinterStats</a> - Validator Votes</h1>
+            <sub>Calculations on Validator Votes</sub>
+            <!--            <img src="/resources/hive_keychain_logo.png" alt="Hive Keychain Logo"  width="40" height="40" class="width: fit-content; margin-left: auto;>-->
+        </div>
+        <div class="" id="nav_div"></div>
+    </div>
+</div>
+
+<!-- Main Body -->
+<div id="main" class="main w3-padding w3-left">
+
+</div>
+
+<script>
+
+  let run = async function () {
+    let total_staked = await get_total_staked()
+
+    el(`main`).innerHTML = el(`main`).innerHTML + `<br>`
+    el(`main`).innerHTML = el(`main`).innerHTML + `Total Staked: ${num_formatter(total_staked)} <br><br>(${total_staked})`
+
+    let validators = await validator_api.get_validators()
+    console.log(validators)
+
+    el(`main`).innerHTML = el(`main`).innerHTML + `<br><br>`
+    el(`main`).innerHTML = el(`main`).innerHTML + `There are ${validators.count} validators.`
+
+    el(`main`).innerHTML = el(`main`).innerHTML + `<br><br>`
+    el(`main`).innerHTML = el(`main`).innerHTML + `<p id="current_voter">Checking votes for validators</p>`
+
+    let total_votes = 0
+    let voters = []
+    let total_voted_sps = 0
+    for (let [i, val] of validators.validators.entries()) {
+      el(`current_voter`).innerHTML = `Checking votes for ${i+1}/${validators.count} ${val.account_name}. Accumulated voted SPS: ${total_voted_sps}`
+      if (parseFloat(val.total_votes) === 0) continue
+      let votes_on_validator = await validator_api.votes_by_validator(val.account_name)
+
+      for (let vote of votes_on_validator) {
+        if (!voters.includes(vote.voter)){
+          voters.push(vote.voter)
+          total_voted_sps += parseFloat(vote.vote_weight)
+        }
+      }
+      await new Promise(resolve => setTimeout(resolve, 800));
+    }
+
+    el(`main`).innerHTML = el(`main`).innerHTML + `<br><br>`
+    el(`main`).innerHTML = el(`main`).innerHTML + `There are ${voters.length} unique voters.<br>`
+    el(`main`).innerHTML = el(`main`).innerHTML + `The total voting SPS is ${num_formatter(total_voted_sps)} from ${voters.length} accounts.<br>${total_voted_sps}`
+
+    el(`main`).innerHTML = el(`main`).innerHTML + `<br><br>`
+    el(`main`).innerHTML = el(`main`).innerHTML + `${(total_voted_sps / total_staked * 100).toFixed(2)}% of SPS is voting.`
+  }
+
+  let get_total_staked = async function () {
+    let url = `https://ec-api.splinterlands.com/players/sps_data`
+    try {
+      let result = (await axios.get(url)).data;
+      console.log('sps_data:', result.total_staked);
+      return result.total_staked
+    } catch (error) {
+      console.error('Error getting list of validators:', error.message);
+    }
+  }
+
+
+  run()
+</script>
+
+<footer id="footer" class="w3-row">
+    <script src="../scripts/footer_loader.js" defer></script>
+    <div class="" id="footer_div"></div>
+</footer>
+
+<!-- END MAIN -->
+</div>
+
+</body>
+</html>
