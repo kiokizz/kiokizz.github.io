@@ -34,6 +34,15 @@
 
 <!-- Main Body -->
 <div id="main" class="main w3-padding w3-left">
+    <h2>Intro</h2>
+    <div>
+        <p style="max-width: 1000px">Validators for the SPS Chain, a Delegated Proof of Stake (DPoS) side chain ran on the Hive Blockchain.
+            Each Splinterlands account receives 10 votes weighted at 100% of their staked SPS to vote towards validators.
+            For more information regarding Validators see the <a href="https://sps.splinterlands.com/sps-chain/">SPS Whitepaper</a>
+        </p>
+        <p  style="max-width: 1000px" id="intro_stats"></p>
+    </div>
+    <h2>Validators</h2>
 
     <div id="validators_table">Loading data..</div>
 
@@ -57,11 +66,13 @@
     console.log(`***Load Table***`)
     await load_table()
     console.log(`***Load API Status***`)
+    console.log(`***Load Intro Stats***`)
     get_api_statuses()
     if (getLoginCookie()){
       console.log(`***Load User's Votes***`)
-      show_user_votes()
+      await show_user_votes()
     }
+    load_intro_stats()
   });
 </script>
 

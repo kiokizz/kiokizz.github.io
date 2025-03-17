@@ -140,6 +140,7 @@ function filterAPIurl(url) {
 let show_user_votes = async function () {
   let user = getLoginCookie()
   let user_votes = await validator_api.votes_by_account(user)
+  params.user_votes = user_votes
 
   let votes = []
   user_votes.forEach(val => {
@@ -164,7 +165,7 @@ let show_user_votes = async function () {
     if (user_votes.length === 10 && !votes.includes(val.account_name)) inner_btn.disabled = true
   }
 
-  el(`votes_header`).innerText = `Votes\n(${user_votes.length}/10)`
+  el(`votes_header`).innerText = `Votes (${user_votes.length}/10)`
 }
 
 async function vote(account) {
@@ -185,7 +186,6 @@ async function vote(account) {
   })
 }
 
-
 async function remove_vote(account) {
   el(`inner_button_${account}`).disabled = true
 
@@ -202,4 +202,32 @@ async function remove_vote(account) {
     await new Promise(resolve => setTimeout(resolve, 10000));
     await show_user_votes()
   })
+}
+
+let load_intro_stats = function () {
+  let top_10_weight = 0
+  let next_10_weight = 0
+  let other_active_notes_with_votes = 0
+  let user_votes = params.user_votes
+
+  let position = 1
+
+  console.log(`load intro stats`, params.validators)
+
+  params.validators.forEach(val => {
+    if (val.is_active) {
+      if (position <= 10) top_10_weight += val.weight
+      else if (position <= 20) next_10_weight += val.weight
+      else if (parseFloat(val.total_votes) > 0) other_active_notes_with_votes++
+      position++
+    }
+  })
+
+  let used_votes = getLoginCookie() ? `- You are currently voting for ${params.user_votes.length} of your 10 votes.<br>` : ``
+
+  el(`intro_stats`).innerHTML =
+      `${used_votes}
+        - The top 10 validators are currently verifying ${top_10_weight.toFixed(2)}% of blocks.<br>
+        - The next 10 validators are currently verifying ${next_10_weight.toFixed(2)}% of blocks.<br>
+        - The remaining ${(100-top_10_weight-next_10_weight).toFixed(2)}% of blocks are verified by the remaining ${other_active_notes_with_votes} nodes with votes.`
 }
