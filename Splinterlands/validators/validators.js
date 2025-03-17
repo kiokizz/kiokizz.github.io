@@ -7,7 +7,7 @@ let load_table = async function () {
   console.log(params.validators)
 
   let table_head =
-      `<tr class="w3-dark-grey">
+      `<tr class="w3-dark-grey" style="border-bottom: 2px double black">
                 <th>#</th>
                 <th>Validator</th>
                 <th>API</th>
@@ -24,7 +24,7 @@ let load_table = async function () {
   let table_body = ``
   for (let val of params.validators) {
     let row =
-        `<tr id="row_${val.account_name}">
+        `<tr id="row_${val.account_name}" ${position === 10 ? ` style="border-bottom: 1px dashed black"` : ``}> 
             <td>${val.is_active ? `${position <= 10 ? `<b>${position++}</b>` : position++}` : '-'}</td>
             <td><img src="https://images.hive.blog/u/${val.account_name}/avatar" alt="Hive Avatar"  width="28" height="28"> ${val.account_name}</td>
             <td id="val.${val.account_name}">${val.api_url ? `<a href="${filterAPIurl(val.api_url)}" target="_blank">API</a>` : '-'}</td>
@@ -34,14 +34,14 @@ let load_table = async function () {
             <td>${val.missed_blocks}</td>
             <td>${num_formatter(val.total_votes)}</td>
             <td>${val.weight > 0 ? val.weight.toFixed(2) + `%` : `-`}</td>
-            <td id="btn_${val.account_name}"><button id="inner_button_${val.account_name}" onclick="vote(\`${val.account_name}\`)" class="w3-button w3-dark-grey w3-hover-green w3-block w3-medium" disabled><b>Vote</b></button></td>
+            <td id="btn_${val.account_name}"><button id="inner_button_${val.account_name}" onclick="vote(\`${val.account_name}\`)" class="w3-button w3-dark-grey w3-hover-green w3-block w3-medium"><b>Vote</b></button></td>
         </tr>\n`
     table_body += row
   }
 
   let table =
       `<table class="w3-table w3-striped w3-bordered>
-            ${table_head}
+            <thead class="w3-grey">${table_head}</thead>
             ${table_body}   
        </table>`
 
