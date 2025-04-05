@@ -383,7 +383,7 @@ function report_controller() {
       report_array.stats =
           `|Stat|${tv(`modern`, 0)}${tv(`wild`, 0)}${tv(`survival`, 0)}
 |-|${tv(`modern`, `x`)}${tv(`wild`, `x`)}${tv(`survival`, `x`)}
-|${tv(`modern`, 2, false)}${tv(`modern`, 4)}${tv(`wild`, 2, false)}${tv(`wild`, 4)}${tv(`survival`, 2, false)}${tv(`survival`, 4)}
+|Rank|${tv(`modern`, 2, false)}${tv(`modern`, 4)}${tv(`wild`, 2, false)}${tv(`wild`, 4)}${tv(`survival`, 2, false)}${tv(`survival`, 4)}
 |Rating|${tv(`modern`, 5)}${tv(`wild`, 5)}${tv(`survival`, 5)}
 |Rating High|${tv(`modern`, 6)}${tv(`wild`, 6)}${tv(`survival`, 6)}
 |Ratio (Win/Loss)|${wc(`modern`)}${wc(`wild`)}${wc(`survival`)}
