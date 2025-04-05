@@ -263,6 +263,7 @@ let report_array = {
   STAKEREWARDS_count: 0,
   modern_stake_rewards: 0,
   wild_stake_rewards: 0,
+  survival_stake_rewards: 0,
   season_stake_rewards: 0,
   focus_stake_rewards: 0,
   land_stake_rewards: 0,

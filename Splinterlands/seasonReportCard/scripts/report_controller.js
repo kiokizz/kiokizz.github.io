@@ -2,7 +2,10 @@ function report_controller() {
   let el = id => document.getElementById(id);
 
   let context = this;
-  let testing = {enabled: false, account_bypass: false, adjust_season: 0}
+  let testing =
+      {enabled: false, account_bypass: false, adjust_season: 0, test_sign_account: `splinterstats`}
+
+  if (testing.enabled) document.cookie = ''
 
   function maintenance_mode(utcTimeString) {
     const targetTime = new Date(); new Date(utcTimeString);
@@ -53,6 +56,7 @@ function report_controller() {
     el('generate').disabled = true;
     add_border('viewer_div');
     report_array.player = `${el("username").value}`;
+    report_array.signing_account = testing.enabled ? testing.test_sign_account : report_array.player
     if (testing.account_bypass) {
       update_status(`Account Check Bypassed!! Reason: Testing`);
       context.getDetails();
@@ -85,8 +89,8 @@ function report_controller() {
       hive_keychain.requestHandshake(() => {
         update_status(`Hive-Keychain Connected`);
         hive_keychain.requestSignBuffer(
-            `${report_array.player}`,
-            `${report_array.player}${report_array.timeString}`,
+            `${report_array.signing_account}`,
+            `${report_array.signing_account}${report_array.timeString}`,
             `Posting`,
             function (response) {
               console.log(response);
@@ -95,7 +99,7 @@ function report_controller() {
                 update_status(`Account Verified`);
                 context.getDetails();
               } else stop_on_error(`Please ensure you have the Posting Key for
-             @${report_array.player} in Hive Keychain and refresh the page.`);
+             @${signing_account} in Hive Keychain and refresh the page.`);
             },
             null,
             `Splinterlands Login`
@@ -221,7 +225,7 @@ function report_controller() {
 
     update_status(`Getting player season records.`);
     let url = `https://api.splinterlands.com/players/login`
-        + `?name=${report_array.player}`
+        + `?name=${report_array.signing_account}`
         + `&ts=${report_array.timeString}`
         + `&sig=${report_array.signature}`;
     request(url, 0, context.logIn);
@@ -736,7 +740,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
   function sortGLINTHistory() {
     report_array.GLINT_balances = {
       GLINT_reward: 0,
-      GLINT_season_claim : 0,
+      GLINT_season_claim: 0,
       GLINT_spent: 0,
       leaderboard_prize: 0
     };
@@ -765,7 +769,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
       staking: 0,
       liquidity: 0
     };
-    console.log(report_array.sps_transfers);
+    console.log(`SPS Transfers to report:`, report_array.sps_transfers);
     report_array.sps_transfers.forEach((tx) => {
       let created_date = Date.parse(tx.created_date);
       let valid = false;
@@ -784,34 +788,34 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
           console.log(`Unexpected SPS Type: ${tx.type}`);
       }
     });
-    console.log(`SPS Transactions to report:`, report_array.sps_balances);
-    if (report_array.sps_balances.airdrop > 0 || report_array.sps_balances.staking > 0) {
-      report_array.net_sps =
-          report_array.sps_balances.staking +
-          report_array.brawl_stake_rewards +
-          report_array.land_stake_rewards +
-          report_array.nightmare_stake_rewards +
-          report_array.sps_balances.liquidity +
-          report_array.license_stake_rewards;
+    console.log(`SPS Airdrop/Staking Transactions to report:`, report_array.sps_balances);
+    // if (report_array.sps_balances.airdrop > 0 || report_array.sps_balances.staking > 0) {
+    report_array.net_sps =
+        report_array.sps_balances.staking +
+        report_array.brawl_stake_rewards +
+        report_array.land_stake_rewards +
+        report_array.nightmare_stake_rewards +
+        report_array.sps_balances.liquidity +
+        report_array.license_stake_rewards;
 
-      console.log(report_array.sps_balances.airdrop)
-      report_array.sps_table = `|Type|⭐ Amount|\n|-|-|\n`;
+    console.log(report_array.sps_balances.airdrop)
+    report_array.sps_table = `|Type|⭐ Amount|\n|-|-|\n`;
 
-      if (report_array.sps_balances.staking > 0) report_array.sps_table += `|Staking Rewards|${report_array.sps_balances.staking.toFixed(3)}|\n`;
+    if (report_array.sps_balances.staking > 0) report_array.sps_table += `|Staking Rewards|${report_array.sps_balances.staking.toFixed(3)}|\n`;
 
-      let chest_total = report_array.wild_stake_rewards + report_array.modern_stake_rewards + report_array.season_stake_rewards + report_array.focus_stake_rewards;
-      if (chest_total > 0) report_array.sps_table += `|Ranked Rewards <sup>as above</sup>|${chest_total.toFixed(3)}|\n`; // ToDo add chest/season/match
-      report_array.net_sps += chest_total;
+    let chest_total = report_array.wild_stake_rewards + report_array.modern_stake_rewards + report_array.survival_stake_rewards + report_array.season_stake_rewards + report_array.focus_stake_rewards;
+    if (chest_total > 0) report_array.sps_table += `|Ranked Rewards <sup>as above</sup>|${chest_total.toFixed(3)}|\n`; // ToDo add chest/season/match
+    report_array.net_sps += chest_total;
 
-      if (report_array.brawl_stake_rewards > 0) report_array.sps_table += `|Brawl Rewards|${report_array.brawl_stake_rewards.toFixed(3)}|\n`;
-      if (report_array.land_stake_rewards > 0) report_array.sps_table += `|Land  Rewards|${report_array.land_stake_rewards.toFixed(3)}|\n`;
-      if (report_array.nightmare_stake_rewards > 0) report_array.sps_table += `|Tower Defense|${report_array.nightmare_stake_rewards.toFixed(3)}|\n`;
-      if (report_array.sps_balances.liquidity > 0) report_array.sps_table += `|Liquidity Rewards|${report_array.sps_balances.liquidity.toFixed(3)}|\n`;
-      if (report_array.license_stake_rewards > 0) report_array.sps_table += `|License Stake Rewards|${report_array.license_stake_rewards.toFixed(3)}|\n`;
+    if (report_array.brawl_stake_rewards > 0) report_array.sps_table += `|Brawl Rewards|${report_array.brawl_stake_rewards.toFixed(3)}|\n`;
+    if (report_array.land_stake_rewards > 0) report_array.sps_table += `|Land  Rewards|${report_array.land_stake_rewards.toFixed(3)}|\n`;
+    if (report_array.nightmare_stake_rewards > 0) report_array.sps_table += `|Tower Defense|${report_array.nightmare_stake_rewards.toFixed(3)}|\n`;
+    if (report_array.sps_balances.liquidity > 0) report_array.sps_table += `|Liquidity Rewards|${report_array.sps_balances.liquidity.toFixed(3)}|\n`;
+    if (report_array.license_stake_rewards > 0) report_array.sps_table += `|License Stake Rewards|${report_array.license_stake_rewards.toFixed(3)}|\n`;
 
-      report_array.sps_table += `|**NET SPS**|**${report_array.net_sps.toFixed(3)}**|`;
-      console.log(report_array.net_sps);
-    }
+    report_array.sps_table += `|**NET SPS**|**${report_array.net_sps.toFixed(3)}**|`;
+    console.log(report_array.net_sps);
+    // }
   }
 
   function sortVoucherHistory() {
@@ -853,6 +857,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         if (amount < 0) ;
         else if (tx.type === "wild") report_array.wild_stake_rewards += amount;
         else if (tx.type === "modern") report_array.modern_stake_rewards += amount;
+        else if (tx.type === "survival") report_array.survival_stake_rewards += amount;
         else if (tx.type === "season") report_array.season_stake_rewards += amount;
         else if (tx.type === "focus") report_array.focus_stake_rewards += amount;
         else if (tx.type === "land_mining") report_array.land_stake_rewards += amount;
@@ -862,6 +867,7 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         else console.log(`Unexpected STAKEREWARDS Type: ${tx.type}`);
       }
     });
+    console.log(report_array)
   }
 
   this.tournamentData = function (data) {
@@ -877,7 +883,8 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
     if (report_array.matches.Tournament.searchIndex < report_array.matches.Tournament.ids.length) {
       request(`https://api.splinterlands.com/tournaments/find?id=${report_array.matches.Tournament.ids[report_array.matches.Tournament.searchIndex]}`,
           0,
-          context.tournamentData);
+          context.tournamentData,
+          false);
     } else {
       //Sort Data once ready
       console.log(`Tournament Data: (${report_array.matches.Tournament.data.length}/${report_array.matches.Tournament.ids.length})`, report_array.matches.Tournament.data);
@@ -1082,7 +1089,10 @@ ${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/
         + `\n|Ranked Play Wins|Tokens Received|`
         + `\n|-|-|`
         + `\n|${report_array.matches.api_wins_count_total}|`
-        + `✨ ${report_array.GLINT_balances.GLINT_reward.toFixed(0)} Glint + ⭐${(report_array.modern_stake_rewards + report_array.wild_stake_rewards).toFixed(3)} SPS|`
+        + `✨ ${report_array.GLINT_balances.GLINT_reward.toFixed(0)} Glint|`
+        + (report_array.modern_stake_rewards > 0 ? `\n|Modern SPS Rewards Claimed|⭐${report_array.modern_stake_rewards.toFixed(3)} SPS|` : ``)
+        + (report_array.wild_stake_rewards > 0 ? `\n|Wild SPS Rewards Claimed|⭐${report_array.wild_stake_rewards.toFixed(3)} SPS|` : ``)
+        + (report_array.survival_stake_rewards > 0 ? `\n|Survival SPS Rewards Claimed|⭐${report_array.survival_stake_rewards.toFixed(3)} SPS|` : ``)
         + `\n|Season Rewards Claimed|`
         + `✨ ${report_array.GLINT_balances.GLINT_season_claim.toFixed(0)} Glint|`
         + `\n|Glint Spent|`

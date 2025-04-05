@@ -7,17 +7,20 @@ function isJSON(str) {
     const result = JSON.parse(str);
     const type = Object.prototype.toString.call(result);
     return type === '[object Object]' ||
-      type === '[object Array]';
+        type === '[object Array]';
   } catch (err) {
     return false;
   }
 }
 
 //Ajax URL Call
-function request(url, x, proceedingFunction) {
+function request(url, x, proceedingFunction, send_cookies = true) {
   $.ajax({
     url: url,
     type: 'GET',
+    xhrFields: {
+      withCredentials: send_cookies // ✅ sends cookies like document.cookie
+    },
     success: function (data) {
       proceedingFunction(data);
     },
