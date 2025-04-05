@@ -13,7 +13,6 @@ function report_controller() {
 
     if (currentTime.getTime() > targetTime.getTime()) return true;
     else return false;
-
   }
 
   const maintenance_time = "9999-04-15T14:00:00.000Z";
@@ -63,6 +62,7 @@ function report_controller() {
     } else if (report_array.logInType === `keychainBegin`) context.keychainBegin();
     else if (report_array.logInType === `keyBegin`) context.keyBegin();
     else throw `Error with logInTpye;`;
+
   };
 
   this.toggleLogin = function () {
@@ -240,7 +240,7 @@ function report_controller() {
 
     // request(`https://api.splinterlands.com/players/leaderboard_with_player?season=${report_array.season.id - 1}&token=${report_array.token}&username=${report_array.player}&leaderboard=${report_array.season_number_count++}&season_details=true`, 0, context.lastSeason)
     // request(`https://api.splinterlands.com/players/details?name=${report_array.player}&season_details=true&season=${report_array.season.id - 1}`, 0, context.lastSeason)
-    let url = `https://api2.splinterlands.com/players/leaderboard_with_player?token=${report_array.token}&username=${report_array.player}`
+    let url = `https://api2.splinterlands.com/players/leaderboard_with_player?token=${report_array.token}&username=${report_array.player}&format=wild`
         + `&season=${report_array.season.id - 1}`;
     request(url, 0, context.lastSeason);
   };
@@ -249,18 +249,31 @@ function report_controller() {
     console.log(data);
     if (!report_array.player_season) {
       report_array.player_season = {
-        wild: data.player
+        wild: data.player,
+        modern: false,
+        survival: false
       }
       let url = `https://api2.splinterlands.com/players/leaderboard_with_player`
           + `?season=${report_array.season.id - 1}`
           + `&username=${report_array.player}&format=modern`;
-      request(url, 0, context.lastSeason);
-    } else report_array.player_season.modern = data.player;
+      return request(url, 0, context.lastSeason);
+    }
+    if (!report_array.player_season.modern) {
+      report_array.player_season.modern = data.player;
+      let url = `https://api2.splinterlands.com/players/leaderboard_with_player`
+          + `?season=${report_array.season.id - 1}`
+          + `&username=${report_array.player}&format=survival`;
+      return request(url, 0, context.lastSeason);
+    }
+    report_array.player_season.survival = data.player
+
+    // console.log(report_array.player_season)
+    // return console.log(`This should be the last line in the console.....`)
 
     let season_details = data.player;
     if (data.error) stop_on_error(data.error);
 
-    if (report_array.player_season.modern === null && report_array.player_season.wild === null) {
+    if (report_array.player_season.modern === null && report_array.player_season.wild === null && report_array.player_season.survival === null) {
       stop_on_error(`No player records found for the previous season.`);
     } else if (report_array.player_season.modern.season !== report_array.season.id - 1 && report_array.player_season.wild.season !== report_array.season.id - 1) {
       console.log(season_details);
@@ -281,9 +294,47 @@ function report_controller() {
       console.log(`Season data exists.`);
 
       let season_details_to_display = [];
+      let table_values = {
+        wild: {
+          0: `# Wild`,
+          1: ``,
+          2: ``,
+          3: ``,
+          4: ``,
+          5: ``,
+          6: ``,
+          7: ``,
+          8: ``,
+          9: ``,
+          10: ``,
+          11: ``,
+          12: ``,
+          x: `-`
+        },
+        modern: {
+          0: `# Modern`,
+          1: ``,
+          2: ``,
+          3: ``,
+          4: ``,
+          5: ``,
+          6: ``,
+          7: ``,
+          8: ``,
+          9: ``,
+          10: ``,
+          11: ``,
+          12: ``,
+          x: `-`
+        },
+        survival: {
+          0: `# Survival`, 1: ``, 2: ``, 3: ``, 4: ``, 5: ``, 6: ``, 7: ``, 8: ``, 9: ``, 10: ``, 11: ``, 12: ``, x: `-`
+        },
+      }
       report_array.matches.api_wins_count_total = 0;
       if (report_array.player_season.wild.rating) season_data_format(`wild`);
       if (report_array.player_season.modern.rating) season_data_format(`modern`);
+      if (report_array.player_season.survival.rating) season_data_format(`survival`);
 
       function season_data_format(format) {
         season_details_to_display.push(format)
@@ -300,27 +351,43 @@ function report_controller() {
         report_array.matches[`${format}_api_loss_count`] = report_array.matches[`${format}_api_battles_count`] - report_array.matches[`${format}_api_wins_count`];
         report_array.matches[`${format}_api_draw_count`] = `n/a`;
         report_array.matches.api_wins_count_total += report_array.player_season[format].wins;
+
+        table_values[`${format}`][1] = report_array.player_season[format].guild_name;
+        table_values[`${format}`][2] = rankings[report_array.player_season[format].league].name;
+        table_values[`${format}`][3] = rankings[report_array.player_season[format].league].group;
+        table_values[`${format}`][4] = report_array.player_season[format].rank;
+        table_values[`${format}`][5] = report_array.player_season[format].rating;
+        table_values[`${format}`][6] = report_array.player_season[format].max_rating;
+        table_values[`${format}`][7] = report_array.player_season[format].longest_streak;
+        table_values[`${format}`][8] = report_array.player_season[format].battles;
+        table_values[`${format}`][9] = report_array.player_season[format].wins;
+        table_values[`${format}`][10] = report_array.matches[`${format}_api_battles_count`] - report_array.matches[`${format}_api_wins_count`];
+        table_values[`${format}`][11] = (table_values[`${format}`][9] / table_values[`${format}`][10]).toFixed(2);
+
+        report_array.matches.api_wins_count_total += report_array.player_season[format].wins;
       }
 
-      if (season_details_to_display.length === 1) report_array.stats =
-          `|Stat|#${season_details_to_display[0]}|
-|-|-|
-|${report_array.matches[`${season_details_to_display[0]}_league_name`]} Rank|${report_array.matches[`${season_details_to_display[0]}_rank`]}|
-|Rating|${report_array.matches[`${season_details_to_display[0]}_rating`]} - ${report_array.matches[`${season_details_to_display[0]}_league`]}|
-|Rating High|${report_array.matches[`${season_details_to_display[0]}_highRating`]}|
-|Ratio (Win/Loss)|${(report_array.matches[`${season_details_to_display[0]}_api_wins_count`] / (report_array.matches[`${season_details_to_display[0]}_api_loss_count`] + 0)).toFixed(2)} (${report_array.matches[`${season_details_to_display[0]}_api_wins_count`]}/${report_array.matches[`${season_details_to_display[0]}_api_loss_count`]})|
-${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/Loss+Draw)|${(!isNaN(report_array.matches[`Tournament`].wins / (report_array.matches[`Tournament`].loss + report_array.matches[`Tournament`].draws)) ? (report_array.matches[`Tournament`].wins / (report_array.matches[`Tournament`].loss + report_array.matches[`Tournament`].draws)).toFixed(2) : 0)} (${report_array.matches[`Tournament`].wins}/${report_array.matches[`Tournament`].loss}/${report_array.matches[`Tournament`].draws})|\n|Tournament Reward Placements|${report_array.matches[`Tournament`].prize_list.length}/${report_array.matches[`Tournament`].ids.length}|\n` : ``}|Longest Streak|${report_array.matches[`${season_details_to_display[0]}_longestStreak`]}|`
+      function tv(format, value, include_bar = true) {
+        if (season_details_to_display.includes(format)) return table_values[`${format}`][`${value}`] + (include_bar ? `|` : ``)
+        return ``
+      }
 
-      if (season_details_to_display.length === 2) report_array.stats =
-          `|Stat|#Wild|#Modern|
-|-|-|-|
-|Rank|${report_array.matches[`${season_details_to_display[0]}_league_name`]} #${report_array.matches[`${season_details_to_display[0]}_rank`]}|${report_array.matches[`${season_details_to_display[1]}_league_name`]} #${report_array.matches[`${season_details_to_display[1]}_rank`]}|
-|Rating|${report_array.matches[`${season_details_to_display[0]}_rating`]} - ${report_array.matches[`${season_details_to_display[0]}_league`]}|${report_array.matches[`${season_details_to_display[1]}_rating`]} - ${report_array.matches[`${season_details_to_display[1]}_league`]}|
-|Rating High|${report_array.matches[`${season_details_to_display[0]}_highRating`]}|${report_array.matches[`${season_details_to_display[1]}_highRating`]}|
-|Ratio (Win/Loss)|${(report_array.matches[`${season_details_to_display[0]}_api_wins_count`] / (report_array.matches[`${season_details_to_display[0]}_api_loss_count`] + 0)).toFixed(2)} (${report_array.matches[`${season_details_to_display[0]}_api_wins_count`]}/${report_array.matches[`${season_details_to_display[0]}_api_loss_count`]})|` +
-          `${(report_array.matches[`${season_details_to_display[1]}_api_wins_count`] / (report_array.matches[`${season_details_to_display[1]}_api_loss_count`] + 0)).toFixed(2)} (${report_array.matches[`${season_details_to_display[1]}_api_wins_count`]}/${report_array.matches[`${season_details_to_display[1]}_api_loss_count`]})|
-${(report_array.matches[`Tournament`].ids.length > 0) ? `|Tournament Ratio (Win/Loss+Draw)|${(!isNaN(report_array.matches[`Tournament`].wins / (report_array.matches[`Tournament`].loss + report_array.matches[`Tournament`].draws)) ? (report_array.matches[`Tournament`].wins / (report_array.matches[`Tournament`].loss + report_array.matches[`Tournament`].draws)).toFixed(2) : 0)} (${report_array.matches[`Tournament`].wins}/${report_array.matches[`Tournament`].loss}/${report_array.matches[`Tournament`].draws})|\n|Tournament Reward Placements|${report_array.matches[`Tournament`].prize_list.length}/${report_array.matches[`Tournament`].ids.length}|\n` : ``}|Longest Streak|${report_array.matches[`${season_details_to_display[0]}_longestStreak`]}|${report_array.matches[`${season_details_to_display[1]}_longestStreak`]}|`
+      function wc(format) {
+        if (season_details_to_display.includes(format))
+          return `${(tv(format, 11, false))} (${tv(format, 9, false)}/${tv(format, 10, false)})|`
+        return ``
+      }
 
+      console.log(table_values)
+
+      report_array.stats =
+          `|Stat|${tv(`modern`, 0)}${tv(`wild`, 0)}${tv(`survival`, 0)}
+|-|${tv(`modern`, `x`)}${tv(`wild`, `x`)}${tv(`survival`, `x`)}
+|${tv(`modern`, 2, false)}${tv(`modern`, 4)}${tv(`wild`, 2, false)}${tv(`wild`, 4)}${tv(`survival`, 2, false)}${tv(`survival`, 4)}
+|Rating|${tv(`modern`, 5)}${tv(`wild`, 5)}${tv(`survival`, 5)}
+|Rating High|${tv(`modern`, 6)}${tv(`wild`, 6)}${tv(`survival`, 6)}
+|Ratio (Win/Loss)|${wc(`modern`)}${wc(`wild`)}${wc(`survival`)}
+|Longest Streak|${tv(`modern`, 7)}${tv(`wild`, 7)}${tv(`survival`, 7)}`
 
       update_status(`Getting player transactions before block: n/a.`);
       report_array.general_query_types = `&types=market_purchase,market_sale,
