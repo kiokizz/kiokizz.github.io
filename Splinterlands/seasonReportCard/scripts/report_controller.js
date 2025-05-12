@@ -850,8 +850,9 @@ function report_controller() {
             console.log(tx)
             // throw 'debugging';
           }
-        } else if (tx.type === "claim_staking_rewards") report_array.sps_balances.staking += amount;
-        else if (!["token_transfer", "stake_tokens"].includes(tx.type))
+        } else if (tx.type === "claim_staking_rewards" || tx.type === "claim_staking_rewards_staking_rewards") {
+          report_array.sps_balances.staking += amount;
+        } else if (!["token_transfer", "stake_tokens"].includes(tx.type))
           console.log(`Unexpected SPS Type: ${tx.type}`);
       }
     });
