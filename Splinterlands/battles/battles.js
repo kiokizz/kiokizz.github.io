@@ -51,7 +51,7 @@ async function init() {
   await get_card_details();
   await get_card_prices()
   season = await get_parameter_by_name(`season`)
-  season = (season && season !== '' && !Number.isNaN(season)) ? season : `154`
+  season = (season && season !== '' && !Number.isNaN(season)) ? season : `156`
   await load_season_data(season)
   await assign_value_index()
   seasonListElementD.value = `${domain}/battles.html?season=${season}`
