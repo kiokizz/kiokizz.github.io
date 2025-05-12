@@ -8,7 +8,8 @@ function report_controller() {
   if (testing.enabled) document.cookie = ''
 
   function maintenance_mode(utcTimeString) {
-    const targetTime = new Date(); new Date(utcTimeString);
+    const targetTime = new Date();
+    new Date(utcTimeString);
     const currentTime = new Date();
 
     if (currentTime.getTime() > targetTime.getTime()) return true;
