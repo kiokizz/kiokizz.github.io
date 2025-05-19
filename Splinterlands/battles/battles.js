@@ -29,7 +29,8 @@ let edition_ids = {
   "chaos": "7",
   "rift": "8",
   "soulbound": "10",
-  "rebellion": "12"
+  "rebellion": "12",
+  "conclave_arcana":"14"
 };
 
 const splinterColor = {
@@ -155,7 +156,7 @@ async function change_table(field = false) {
   for (let x of [`fire`, `water`, `earth`, `life`, `death`, `dragon`, `neutral`]) if (el(x).checked) splinters.push(splinterColor[x])
 
   let editions = [];
-  for (let x of ["alpha", "beta", "promo", "reward", "untamed", "dice", "gladius", "chaos", "rift", "rebellion"]) if (el(x).checked) {
+  for (let x of ["alpha", "beta", "promo", "reward", "untamed", "dice", "gladius", "chaos", "rift", "rebellion", "conclave_arcana"]) if (el(x).checked) {
     if (x === "beta") editions.push("1", "0,1")
     else if (x === "reward") editions.push("3", "10", "13")
     else editions.push(edition_ids[x])

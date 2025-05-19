@@ -38,7 +38,6 @@
 </div>
 
 
-
 <!-- Main Body -->
 
 <div id="main" class="main w3-padding w3-left">
@@ -100,6 +99,7 @@
                 <label>Summoners</label>
             </div>
             Edition:
+            <br>
             <span style="position: relative; top: 6px">
             <input class="filter_check" type="checkbox" name="alpha" id="alpha" value="0,1" onchange="change_table()">
             <label for="alpha">
@@ -226,6 +226,13 @@
                         points="303.68 108.85 443.4 248.57 497.81 194.17 303.64 0 109.48 194.17 163.92 248.61 303.68 108.85"/><polygon
                         class="cls-1"
                         points="607.37 302.32 606.5 302.32 552.48 248.3 552.25 248.07 497.85 302.48 498.07 302.7 498.07 302.7 498.07 302.7 459.84 340.94 459.61 340.71 405.21 395.12 405.43 395.34 405.43 395.34 405.43 395.34 303.64 497.15 201.89 395.39 201.89 395.39 201.89 395.39 202.16 395.12 147.71 340.67 147.43 340.94 109.25 302.75 109.25 302.75 109.25 302.75 109.52 302.48 55.07 248.03 54.79 248.3 .79 302.32 0 302.32 .39 302.71 .39 302.71 .39 302.71 54.84 357.16 54.84 357.16 93.03 395.35 93.03 395.35 98.45 400.77 147.48 449.8 303.68 606 459.89 449.8 487.09 422.6 514.3 395.4 514.3 395.4 514.3 395.4 552.53 357.16 579.73 329.96 606.94 302.76 606.94 302.76 606.94 302.76 607.37 302.32"/></g></svg>
+            </label><span style="position: relative; top: 5px">
+            <input class="filter_check" type="checkbox" name="conclave_arcana" id="conclave_arcana" value="14"
+                   onchange="change_table()">
+            <label for="conclave_arcana">
+                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" id="black" viewBox="0 0 50 50">    <script xmlns=""/><path
+                        fill="#FFFFFF"
+                        d="M28,42.27h-6v-6h6v6ZM28,28.26c0-.83-.67-1.5-1.5-1.5h-12.1v-2.43c0-5.85,4.75-10.6,10.6-10.6h3v-6h-3c-9.17,0-16.6,7.43-16.6,16.6v8.43h19.6v-4.5ZM41.6,33.83c0-9.17-7.43-16.6-16.6-16.6h-1.5c-.83,0-1.5.67-1.5,1.5v4.5h3c5.85,0,10.6,4.75,10.6,10.6v8.44h6v-8.44Z"/>    </svg>
             </label>
             </span>
         </span>
@@ -380,6 +387,7 @@
 
   const seasonListElement = document.getElementById('season-list');
   const seasonListElementD = document.getElementById('season-list-drop');
+
   function populateSeasonList() {
     if (window.location.hostname === "kiokizz.github.io") {
       window.location.href = "https://splinterstats.net/battles.html";
@@ -436,7 +444,7 @@
 
   window.onresize = configureNav;
 
-  function configureNav (){
+  function configureNav() {
     let side_nav = document.getElementById("side-nav")
     let side_nav_d = document.getElementById("side-nav-d")
 
