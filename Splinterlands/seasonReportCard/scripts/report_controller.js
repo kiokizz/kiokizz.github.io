@@ -164,7 +164,7 @@ function report_controller() {
     console.log(`Season: ${report_array.season.nameNum}`);
 
     hive.api.getDiscussionsByAuthorBeforeDate(report_array.player, null,
-        new Date().toISOString().split('.')[0], 100, function (err, result) {
+        new Date().toISOString().split('.')[0], 20, function (err, result) {
           console.log(err, result);
           console.log(report_array.permlink);
           result.forEach(post => {
